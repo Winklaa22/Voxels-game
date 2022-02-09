@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 869453275}
   - component: {fileID: 869453274}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Chunk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -197,10 +197,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 869453273}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 597a252347cea5f4e87b737cf3d79478, type: 3}
+  m_Script: {fileID: 11500000, guid: d73d8916083448847a70d9ffa6910450, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _material: {fileID: 2100000, guid: 6c3f5d1a5f967ad44aea965628d025eb, type: 2}
+  _size: 8
+  _blockMaterial: {fileID: 2100000, guid: 6c3f5d1a5f967ad44aea965628d025eb, type: 2}
 --- !u!4 &869453275
 Transform:
   m_ObjectHideFlags: 0
@@ -209,7 +210,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 869453273}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.15779305, y: 2.19, z: 0.16198254}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

@@ -4,9 +4,15 @@ using UnityEngine;
 
 namespace Block
 {
-    public class Voxel : MonoBehaviour
+    public class Voxel
     {
-        [SerializeField] private Material _material;
+        private BlockType _type;
+        private bool _isTransparent;
+        private Vector3 _position;
+        private Transform _parent;
+        private Material _material;
+        
+        #region MESH_PARAMETERS
 
         private BlockSide[] _voxelSides = new BlockSide[]
         {
@@ -39,15 +45,18 @@ namespace Block
             
         };
 
+        #endregion
 
-        private void Start()
+        public Voxel(BlockType type, Transform parent , Vector3 position, Material material)
         {
-            CreateBlock();
-            CombineSides();
+            _type = type;
+            _position = position;
+            _parent = parent;
+            _material = material;
+            _isTransparent = type.Equals(BlockType.AIR) || type.Equals(BlockType.WATER);
         }
 
-
-        private void CreateBlock()
+        public void CreateBlock()
         {
             foreach (var side in _voxelSides)
             {
@@ -62,13 +71,15 @@ namespace Block
 
             var blockSide = new GameObject()
             {
+                name = side.ToString(),
+
                 transform =
                 {
-                    name = side.ToString(),
-                    parent = transform
+                    parent = _parent,
+                    position = _position
                 }
             };
-
+                
             var meshFilter = blockSide.AddComponent<MeshFilter>();
             meshFilter.mesh = mesh;
         }
@@ -171,25 +182,6 @@ namespace Block
             return mesh;
         }
 
-        private void CombineSides()
-        {
-            var meshFilters = GetComponentsInChildren<MeshFilter>();
-            var combineInstances = new CombineInstance[meshFilters.Length];
-            
-            Debug.Log(meshFilters.Length);
 
-            for (int i = 0; i < meshFilters.Length; i++)
-            {
-                combineInstances[i].mesh = meshFilters[i].sharedMesh;
-                combineInstances[i].transform = meshFilters[i].transform.localToWorldMatrix;
-                Destroy(meshFilters[i].gameObject);
-            }
-            
-            var voxelFilter = gameObject.AddComponent<MeshFilter>();
-            voxelFilter.mesh = new Mesh();
-            voxelFilter.mesh.CombineMeshes(combineInstances);
-
-            gameObject.AddComponent<MeshRenderer>().material = _material;
-        }
     }
 }

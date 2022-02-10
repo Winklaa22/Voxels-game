@@ -9,7 +9,8 @@ namespace Chunk
     {
         [SerializeField] private int _size;
         [SerializeField] private Material _blockMaterial;
-        private Voxel[,,] _chunkBlocks;
+        
+        public Voxel[,,] _chunkBlocks { private set; get; }
 
         private void Start()
         {
@@ -26,7 +27,7 @@ namespace Chunk
                 {
                     for (int y = 0; y < chunkSize; y++)
                     {
-                        _chunkBlocks[x, y, z] = new Voxel(BlockType.DIRT, transform,new Vector3(x, y, z), _blockMaterial);
+                        _chunkBlocks[x, y, z] = new Voxel(BlockType.DIRT, this,new Vector3(x, y, z), _blockMaterial);
                     }
                 }
             }

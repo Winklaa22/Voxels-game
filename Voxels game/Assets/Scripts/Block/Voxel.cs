@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Chunk;
 using UnityEngine;
 
 namespace Block
@@ -9,7 +10,7 @@ namespace Block
         private BlockType _type;
         private bool _isTransparent;
         private Vector3 _position;
-        private Transform _parent;
+        private ChunkController _chunkParent;
         private Material _material;
         
         #region MESH_PARAMETERS
@@ -47,22 +48,74 @@ namespace Block
 
         #endregion
 
-        public Voxel(BlockType type, Transform parent , Vector3 position, Material material)
+        public Voxel(BlockType type, ChunkController chunkParent , Vector3 position, Material material)
         {
             _type = type;
             _position = position;
-            _parent = parent;
+            _chunkParent = chunkParent;
             _material = material;
             _isTransparent = type.Equals(BlockType.AIR) || type.Equals(BlockType.WATER);
         }
 
+        private Vector3 GetSideDirection(BlockSide side)
+        {
+            switch (side)
+            {
+                case BlockSide.TOP:
+                    return new Vector3(0, 1, 0);
+                
+                case BlockSide.BOTTOM:
+                    return new Vector3(0, -1, 0);
+
+                case BlockSide.FRONT:
+                    return new Vector3(0, 0, 1);
+
+                case BlockSide.BACK:
+                    return new Vector3(0, 0, -1);
+                
+                case BlockSide.RIGHT:
+                    return new Vector3(1, 0, 0);
+                
+                case BlockSide.LEFT:
+                    return new Vector3(-1, 0, 0);
+            }
+            
+            return Vector3.zero;
+        }
+
+        private bool HasTransparentNeighbour(BlockSide blockSide)
+        {
+            var chunkVoxels = _chunkParent._chunkBlocks;
+
+            var neighbourPos = _position + GetSideDirection(blockSide);
+
+            if (!(neighbourPos.x >= 0 && neighbourPos.y >= 0 && neighbourPos.z >= 0)) 
+                return true;
+            
+            if (neighbourPos.x < chunkVoxels.GetLength(0))
+            {
+                if (neighbourPos.y < chunkVoxels.GetLength(1))
+                {
+                    if (neighbourPos.z < chunkVoxels.GetLength(2))
+                    {
+                        return chunkVoxels[(int) neighbourPos.x, (int) neighbourPos.y, (int) neighbourPos.z]._isTransparent;
+                    }
+                }
+            }
+            
+            return true;
+        }
+        
+        
         public void CreateBlock()
         {
             foreach (var side in _voxelSides)
             {
-                CreateBlockSide(side);
+                if(HasTransparentNeighbour(side))
+                    CreateBlockSide(side);
             }
         }
+        
 
         private void CreateBlockSide(BlockSide side)
         {
@@ -75,7 +128,7 @@ namespace Block
 
                 transform =
                 {
-                    parent = _parent,
+                    parent = _chunkParent.transform,
                     position = _position
                 }
             };

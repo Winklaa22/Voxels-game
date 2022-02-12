@@ -4,6 +4,6 @@ namespace Block
 {
     public enum BlockType
     {
-        DIRT, AIR, WATER
+        DIRT, AIR, WATER, FUCK
     }
 }

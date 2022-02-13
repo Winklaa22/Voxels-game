@@ -1,10 +1,19 @@
-using Block;
 using UnityEngine;
 
-namespace VoxelManagement
+namespace Management.VoxelManagement
 {
     public static class VoxelData
     {
+
+        public static readonly int TextureAtlasSize = 4;
+
+        public static float BlockTextureSize
+        {
+            get
+            {
+                return 1 / (float) TextureAtlasSize;
+            }
+        }
 
         public static readonly int[] ChunkSize = new int[2] {6, 6};
 

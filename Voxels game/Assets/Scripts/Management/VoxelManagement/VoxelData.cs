@@ -1,3 +1,4 @@
+using Blocks;
 using UnityEngine;
 
 namespace Management.VoxelManagement
@@ -16,6 +17,16 @@ namespace Management.VoxelManagement
         }
 
         public static readonly int[] ChunkSize = new int[2] {6, 6};
+
+        public static readonly BlockSide[] Sides = new BlockSide[6]
+        {
+            BlockSide.FRONT,
+            BlockSide.BACK,
+            BlockSide.TOP,
+            BlockSide.BOTTOM,
+            BlockSide.LEFT,
+            BlockSide.RIGHT
+        };
 
         public static readonly Vector3[] Vertices = new Vector3[8]
         {

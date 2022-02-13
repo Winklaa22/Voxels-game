@@ -74,8 +74,10 @@ namespace Management.ChunkManagement
             {
                 if (HasNeighbourVoxel(pos + VoxelData.FaceCheck[i])) 
                     continue;
+
+                byte voxelID = _voxelMap[(int) pos.x, (int) pos.y, (int) pos.z];
                 
-                AddTexture(textureID);
+                AddTexture(World.Instance.BlockTypes[voxelID].GetTextureIDFromSide(VoxelData.Sides[i]));
                 
                 for (int j = 0; j < 6; j++)
                 {

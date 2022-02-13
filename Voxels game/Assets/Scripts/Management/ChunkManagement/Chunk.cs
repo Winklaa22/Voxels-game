@@ -11,6 +11,7 @@ namespace Management.ChunkManagement
     {
         [SerializeField] private MeshRenderer _meshRenderer;
         [SerializeField] private MeshFilter _meshFilter;
+        [SerializeField] private MeshCollider _collider;
         [SerializeField] private int _texture;
 
         private int width = VoxelData.ChunkSize[0];
@@ -50,7 +51,9 @@ namespace Management.ChunkManagement
                 {
                     for (int z = 0; z < width; z++)
                     {
-                        _voxelMap[x, y, z] = 0;
+                        byte voxelIndex = (byte)(y <= 0 ? 0 : (y >= height -1  ? 2 : 1)); 
+
+                        _voxelMap[x, y, z] = voxelIndex;
                     }
                 }
             }
@@ -97,6 +100,8 @@ namespace Management.ChunkManagement
             mesh.uv = _uvs.ToArray();
             mesh.RecalculateNormals();
             _meshFilter.mesh = mesh;
+            _collider.sharedMesh = mesh;
+
         }
 
         private void AddTexture(int textureID)

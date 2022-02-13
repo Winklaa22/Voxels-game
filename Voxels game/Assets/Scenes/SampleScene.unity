@@ -282,6 +282,7 @@ GameObject:
   - component: {fileID: 869453274}
   - component: {fileID: 869453277}
   - component: {fileID: 869453276}
+  - component: {fileID: 869453278}
   m_Layer: 0
   m_Name: Chunk
   m_TagString: Untagged
@@ -303,6 +304,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _meshRenderer: {fileID: 869453277}
   _meshFilter: {fileID: 869453276}
+  _collider: {fileID: 869453278}
   _texture: 10
 --- !u!4 &869453275
 Transform:
@@ -367,6 +369,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &869453278
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 869453273}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1 &1667795877
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,21 +414,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _material: {fileID: 2100000, guid: c880b0437efde4e43b5f7be9b813c519, type: 2}
   _blockTypes:
-  - Name: Grass
+  - Name: Bedrock
     IsSolid: 1
     Textures:
     - BlockSide: 0
-      ID: 7
+      ID: 9
+    - BlockSide: 1
+      ID: 9
+    - BlockSide: 2
+      ID: 9
+    - BlockSide: 3
+      ID: 9
+    - BlockSide: 4
+      ID: 9
+    - BlockSide: 5
+      ID: 9
+  - Name: Dirt
+    IsSolid: 1
+    Textures:
+    - BlockSide: 0
+      ID: 1
     - BlockSide: 1
       ID: 1
     - BlockSide: 2
-      ID: 2
+      ID: 1
     - BlockSide: 3
-      ID: 2
+      ID: 1
     - BlockSide: 4
-      ID: 2
+      ID: 1
     - BlockSide: 5
-      ID: 2
+      ID: 1
   - Name: Grass
     IsSolid: 1
     Textures:
@@ -533,7 +564,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1687258581}
   m_LocalRotation: {x: -0.023649426, y: 0.9751184, z: -0.17861694, w: -0.12915422}
-  m_LocalPosition: {x: 2.32, y: 1.203, z: 2.378}
+  m_LocalPosition: {x: 3.27, y: 12.21, z: 17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -661,7 +692,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1800082448}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.62881, y: -2.456277, z: 0.4817915}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

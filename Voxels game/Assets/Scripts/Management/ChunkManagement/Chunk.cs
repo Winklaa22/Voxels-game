@@ -7,13 +7,13 @@ using Random = UnityEngine.Random;
 
 namespace Management.ChunkManagement
 {
-    public class Chunk : MonoBehaviour
+    public class Chunk
     {
-        [SerializeField] private MeshRenderer _meshRenderer;
-        [SerializeField] private MeshFilter _meshFilter;
-        [SerializeField] private MeshCollider _collider;
-        [SerializeField] private int _texture;
-
+        private ChunkCoord _coordinates;
+        private GameObject _chunkObject;
+        private MeshRenderer _meshRenderer;
+        private MeshFilter _meshFilter;
+        private int _texture;
         private int width = VoxelData.ChunkSize[0];
         private int height = VoxelData.ChunkSize[1];
         private int _vertexIndex = 0;
@@ -21,11 +21,53 @@ namespace Management.ChunkManagement
         private List<int> _triangles = new List<int>();
         private List<Vector2> _uvs = new List<Vector2>();
         private byte[,,] _voxelMap = new byte[VoxelData.ChunkSize[0], VoxelData.ChunkSize[1], VoxelData.ChunkSize[0]];
-        private void Start()
+        private World _world;
+        
+        public Vector3 Position
         {
+            get
+            {
+                return _chunkObject.transform.position;
+            }
+        }
+
+        public bool IsActive
+        {
+            get
+            {
+                return _chunkObject.activeSelf;
+            }
+            
+            set
+            {
+                _chunkObject.SetActive(value);
+            }
+        }
+        
+        
+
+        public Chunk(ChunkCoord coord, World world)
+        {
+            _chunkObject = new GameObject()
+            {
+                transform =
+                {
+                    name = "Chunk " + coord.X + ", " + coord.Z,
+                    parent = world.transform,
+                    position = new Vector3(coord.X * width, 0, coord.Z * width)
+                }
+            };
+
+            _world = world;
+            _meshFilter = _chunkObject.AddComponent<MeshFilter>();
+            _meshRenderer = _chunkObject.AddComponent<MeshRenderer>();
+            _meshRenderer.material = _world.WorldMaterial;
+
+
             PopulateVoxelMap();
             CreateChunk();
         }
+        
 
         private void CreateChunk()
         {
@@ -35,7 +77,7 @@ namespace Management.ChunkManagement
                 {
                     for (int z = 0; z < width; z++)
                     {
-                        AddVoxelData(new Vector3(x, y, z), _texture);
+                        AddVoxelData(new Vector3(x, y, z));
                         CreateMesh();
                     }
                 }
@@ -51,12 +93,17 @@ namespace Management.ChunkManagement
                 {
                     for (int z = 0; z < width; z++)
                     {
-                        byte voxelIndex = (byte)(y <= 0 ? 0 : (y >= height -1  ? 2 : 1)); 
+                        byte voxelIndex = _world.GetVoxel(new Vector3(x, y ,z) + Position); 
 
                         _voxelMap[x, y, z] = voxelIndex;
                     }
                 }
             }
+        }
+
+        private bool IsInsideChunk(int x, int y, int z)
+        {
+            return y < 0 || y > height - 1 || x < 0 || x > width - 1 || z < 0 || z > width - 1;
         }
 
         private bool HasNeighbourVoxel(Vector3 pos)
@@ -65,13 +112,13 @@ namespace Management.ChunkManagement
             int y = Mathf.FloorToInt(pos.y);
             int z = Mathf.FloorToInt(pos.z);
             
-            if (y < 0 || y > height - 1 || x < 0 || x > width - 1 || z < 0 || z > width - 1)
-                return false;
+            if (IsInsideChunk(x, y, z))
+                return _world.BlockTypes[_world.GetVoxel(pos + Position)].IsSolid;
 
-            return World.Instance.BlockTypes[_voxelMap[x, y, z]].IsSolid;
+            return _world.BlockTypes[_voxelMap[x, y, z]].IsSolid;
         }
 
-        private void AddVoxelData(Vector3 pos, int textureID)
+        private void AddVoxelData(Vector3 pos)
         {
             for (int i = 0; i < 6; i++)
             {
@@ -80,7 +127,7 @@ namespace Management.ChunkManagement
 
                 byte voxelID = _voxelMap[(int) pos.x, (int) pos.y, (int) pos.z];
                 
-                AddTexture(World.Instance.BlockTypes[voxelID].GetTextureIDFromSide(VoxelData.Sides[i]));
+                AddTexture(_world.BlockTypes[voxelID].GetTextureIDFromSide(VoxelData.Sides[i]));
                 
                 for (int j = 0; j < 6; j++)
                 {
@@ -100,9 +147,10 @@ namespace Management.ChunkManagement
             mesh.uv = _uvs.ToArray();
             mesh.RecalculateNormals();
             _meshFilter.mesh = mesh;
-            _collider.sharedMesh = mesh;
 
         }
+
+
 
         private void AddTexture(int textureID)
         {

@@ -67,8 +67,6 @@ namespace Management.ChunkManagement
             PopulateVoxelMap();
             CreateChunk();
         }
-        
-
         private void CreateChunk()
         {
             for (int y = 0; y < height; y++)

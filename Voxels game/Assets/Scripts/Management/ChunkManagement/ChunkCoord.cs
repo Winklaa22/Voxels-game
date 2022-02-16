@@ -11,5 +11,11 @@ namespace Management.ChunkManagement
             X = x;
             Z = z;
         }
+        
+        public bool Equals(ChunkCoord coord)
+        {
+            return coord == new ChunkCoord(X, Z);
+        }
+
     }
 }

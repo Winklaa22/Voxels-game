@@ -5,11 +5,13 @@ using Blocks.Type;
 using Management.ChunkManagement;
 using Management.VoxelManagement;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Management.WorldManagement
 {
     public class World : MonoBehaviour
     {
+        [SerializeField] private int _seed;
         [SerializeField] private int _worldSize = 25;
         [SerializeField] private int _viewDistance = 5;
         [SerializeField] private Transform _player;
@@ -57,6 +59,7 @@ namespace Management.WorldManagement
 
         private void Start()
         {
+            Random.InitState(_seed);
             GenerateWorld();
         }
 
@@ -128,14 +131,21 @@ namespace Management.WorldManagement
 
         public byte GetVoxel(Vector3 pos)
         {
+            var y = Mathf.FloorToInt(pos.y);
+
             if (!IsVoxelInTheWorld(pos))
                 return 0;
-            
-            return (byte) (pos.y < 1 
-                ? 1 
-                : pos.y.Equals(VoxelData.ChunkSize[1] - 1) 
-                    ? 3 
-                    : 2);
+
+            if (y.Equals(0))
+                return 1;
+
+            var terrainHeight = Mathf.FloorToInt(VoxelData.ChunkSize[1] * PerlinNoise.GetNoiseMap(new Vector3(pos.x, pos.z), .25f, 500));
+
+            if (y.Equals(terrainHeight))
+                return 3;
+
+            return y < terrainHeight ? (byte) 2 : (byte) 0;
+
         }
 
         private bool IsChunkInWorld(ChunkCoord coord)

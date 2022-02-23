@@ -16,7 +16,7 @@ namespace Management.VoxelManagement
             }
         }
 
-        public static readonly int[] ChunkSize = new int[2] {6, 12};
+        public static readonly int[] ChunkSize = new int[2] {16, 40};
 
         public static readonly BlockSide[] Sides = new BlockSide[6]
         {

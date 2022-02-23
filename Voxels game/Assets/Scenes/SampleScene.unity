@@ -403,7 +403,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05991713b343769499d0e87cd3d47ef4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _worldSize: 50
+  _seed: 2147483647
+  _worldSize: 100
   _viewDistance: 10
   _player: {fileID: 966503161}
   _material: {fileID: 2100000, guid: c880b0437efde4e43b5f7be9b813c519, type: 2}
@@ -468,6 +469,21 @@ MonoBehaviour:
       ID: 2
     - BlockSide: 5
       ID: 2
+  - Name: Sand
+    IsSolid: 1
+    Textures:
+    - BlockSide: 0
+      ID: 10
+    - BlockSide: 1
+      ID: 10
+    - BlockSide: 2
+      ID: 10
+    - BlockSide: 3
+      ID: 10
+    - BlockSide: 4
+      ID: 10
+    - BlockSide: 5
+      ID: 10
 --- !u!4 &1667795879
 Transform:
   m_ObjectHideFlags: 0

@@ -75,8 +75,12 @@ namespace Management.ChunkManagement
                 {
                     for (int z = 0; z < width; z++)
                     {
+                        if (!_world.BlockTypes[_voxelMap[x, y, z]].IsSolid) 
+                            continue;
+
                         AddVoxelData(new Vector3(x, y, z));
                         CreateMesh();
+
                     }
                 }
             }

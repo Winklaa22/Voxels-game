@@ -6,18 +6,6 @@ namespace Management.VoxelManagement
     public static class VoxelData
     {
 
-        public static readonly int TextureAtlasSize = 4;
-
-        public static float BlockTextureSize
-        {
-            get
-            {
-                return 1 / (float) TextureAtlasSize;
-            }
-        }
-
-        public static readonly int[] ChunkSize = new int[2] {16, 40};
-
         public static readonly BlockSide[] Sides = new BlockSide[6]
         {
             BlockSide.FRONT,

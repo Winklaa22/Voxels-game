@@ -9,19 +9,44 @@ using Random = UnityEngine.Random;
 
 namespace Management.WorldManagement
 {
-    public class World : MonoBehaviour
+    public class WorldManager : MonoBehaviour
     {
+        public static WorldManager Instance;
         [SerializeField] private int _seed;
         [SerializeField] private int _worldSize = 25;
         [SerializeField] private int _viewDistance = 5;
         [SerializeField] private Transform _player;
+        [SerializeField] private int _atlasSize = 4;
+        public int AtlasSize
+        {
+            get { return _atlasSize; }
+        }
+
+        public float BlockOnAtlasSize
+        {
+            get { return 1 / (float)_atlasSize; }
+        }
+
+        [Header("Chunk Size")]
+        [SerializeField] private int _chunkWidth = 6;
+        public int ChunkWidth
+        {
+            get { return _chunkWidth; }
+        }
+
+        [SerializeField] private int _chunkHeight = 40;
+        public int ChunkHeight
+        {
+            get { return _chunkHeight; }
+        }
+
         private List<ChunkCoord> _activeChunks = new List<ChunkCoord>();
 
         private int WorldSizeInVoxels
         {
             get
             {
-                return _worldSize * VoxelData.ChunkSize[0];
+                return _worldSize * _chunkWidth;
             }
         }
         
@@ -54,6 +79,7 @@ namespace Management.WorldManagement
 
         private void Init()
         {
+            Instance = this;
             _chunks = new Chunk[_worldSize, _worldSize];
         }
 
@@ -82,9 +108,19 @@ namespace Management.WorldManagement
 
         private ChunkCoord GetChunkCoords(Vector3 pos)
         {
-            var x = Mathf.FloorToInt(pos.x / VoxelData.ChunkSize[0]);
-            var z = Mathf.FloorToInt(pos.z / VoxelData.ChunkSize[0]);
+            var x = Mathf.FloorToInt(pos.x / _chunkWidth);
+            var z = Mathf.FloorToInt(pos.z / _chunkWidth);
             return new ChunkCoord(x, z);
+        }
+        
+        public Chunk GetChunkFromVector3 (Vector3 pos) {
+
+            int x = Mathf.FloorToInt(pos.x / _chunkHeight);
+            int z = Mathf.FloorToInt(pos.z / _chunkWidth);
+            
+            Debug.Log(_chunks[x, z]);
+            return _chunks[x, z];
+
         }
 
         private void CheckViewDistance()
@@ -93,14 +129,15 @@ namespace Management.WorldManagement
 
             var activeChunks = new List<ChunkCoord>(_activeChunks);
             
-            for (int x = coords.X - _viewDistance; x < coords.X + _viewDistance ; x++)
+            for (int x = coords.x - _viewDistance; x < coords.x + _viewDistance ; x++)
             {
-                for (int z = coords.Z - _viewDistance; z < coords.Z + _viewDistance; z++)
+                for (int z = coords.z - _viewDistance; z < coords.z + _viewDistance; z++)
                 {
                     if (IsChunkInWorld(new ChunkCoord(x, z)))
                     {
                         if (_chunks[x, z] is null)
                             CreateChunk(x, z);
+                        
                         else if (!_chunks[x, z].IsActive)
                         {
                             _chunks[x, z].IsActive = true;
@@ -110,16 +147,18 @@ namespace Management.WorldManagement
 
                     for (var i = 0; i < activeChunks.Count; i++)
                     {
-                        if (activeChunks[i].X == x && activeChunks[i].Z == z)
-                            activeChunks.RemoveAt(i);
+                        if (activeChunks[i].x == x && activeChunks[i].z == z)
+                            continue;
+                        
+                        activeChunks.RemoveAt(i);
                     }
                 }
             }
 
             foreach (var chunk in activeChunks)
             {
-                _chunks[chunk.X, chunk.Z].IsActive = false;
-                _activeChunks.Remove(new ChunkCoord(chunk.X, chunk.Z));
+                _chunks[chunk.x, chunk.z].IsActive = false;
+                _activeChunks.Remove(new ChunkCoord(chunk.x, chunk.z));
             }
         }
 
@@ -127,6 +166,20 @@ namespace Management.WorldManagement
         {
             _chunks[x, z] = new Chunk(new ChunkCoord(x, z), this);
             _activeChunks.Add(new ChunkCoord(x, z));
+        }
+
+        public bool CheckForVoxel (Vector3 pos) {
+
+            ChunkCoord thisChunk = new ChunkCoord(pos);
+
+            if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > _chunkHeight)
+                return false;
+
+            if (_chunks[thisChunk.x, thisChunk.z] != null && _chunks[thisChunk.x, thisChunk.z].IsVoxelMapPopulated)
+                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxelFromGlobalVector3(pos)].IsSolid;
+
+            return _blockTypes[GetVoxel(pos)].IsSolid;
+
         }
 
         public byte GetVoxel(Vector3 pos)
@@ -139,7 +192,7 @@ namespace Management.WorldManagement
             if (y.Equals(0))
                 return 1;
 
-            var terrainHeight = Mathf.FloorToInt(VoxelData.ChunkSize[1] * PerlinNoise.GetNoiseMap(new Vector3(pos.x, pos.z), .25f, 500));
+            var terrainHeight = Mathf.FloorToInt(_chunkHeight * PerlinNoise.GetNoiseMap(new Vector3(pos.x, pos.z), .25f, 0));
 
             if (y.Equals(terrainHeight))
                 return 3;
@@ -150,12 +203,12 @@ namespace Management.WorldManagement
 
         private bool IsChunkInWorld(ChunkCoord coord)
         {
-            return coord.X > 0 && coord.X < _worldSize - 1 && coord.Z > 0 && coord.Z < _worldSize - 1;
+            return coord.x > 0 && coord.x < _worldSize - 1 && coord.z > 0 && coord.z < _worldSize - 1;
         }
 
         private bool IsVoxelInTheWorld(Vector3 pos)
         {
-            return pos.x >= 0 && pos.x < WorldSizeInVoxels && pos.y >= 0 && pos.y < VoxelData.ChunkSize[1] && pos.z >= 0 && pos.z < WorldSizeInVoxels;
+            return pos.x >= 0 && pos.x < WorldSizeInVoxels - 1 && pos.y >= 0 && pos.y < _chunkHeight && pos.z >= 0 && pos.z < WorldSizeInVoxels - 1;
         }
     }
 }

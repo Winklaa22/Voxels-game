@@ -6,7 +6,19 @@ namespace Blocks.Textures
     [System.Serializable]
     public class BlockTexture
     {
-        public BlockSide BlockSide;
-        public int ID;
+        [SerializeField] private BlockSide _blockSide;
+        public BlockSide BlockSide => _blockSide;
+
+
+        [SerializeField] private int _id;
+
+        public int ID => _id;
+
+        public BlockTexture(BlockSide side, int id)
+        {
+            _blockSide = side;
+            _id = id;
+        }
+        
     }
 }

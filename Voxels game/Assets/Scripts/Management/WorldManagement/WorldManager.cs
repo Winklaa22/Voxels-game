@@ -60,9 +60,9 @@ namespace Management.WorldManagement
             }   
         }
 
-        [SerializeField] private BlockType[] _blockTypes;
+        [SerializeField] private TextureType[] _blockTypes;
 
-        public  BlockType[] BlockTypes
+        public  TextureType[] BlockTypes
         {
             get
             {
@@ -118,7 +118,6 @@ namespace Management.WorldManagement
             int x = Mathf.FloorToInt(pos.x / _chunkHeight);
             int z = Mathf.FloorToInt(pos.z / _chunkWidth);
             
-            Debug.Log(_chunks[x, z]);
             return _chunks[x, z];
 
         }
@@ -176,13 +175,13 @@ namespace Management.WorldManagement
                 return false;
 
             if (_chunks[thisChunk.x, thisChunk.z] != null && _chunks[thisChunk.x, thisChunk.z].IsVoxelMapPopulated)
-                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxelFromGlobalVector3(pos)].IsSolid;
+                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxel(pos)].IsSolid;
 
-            return _blockTypes[GetVoxel(pos)].IsSolid;
+            return _blockTypes[GetVoxelByPosition(pos)].IsSolid;
 
         }
 
-        public byte GetVoxel(Vector3 pos)
+        public byte GetVoxelByPosition(Vector3 pos)
         {
             var y = Mathf.FloorToInt(pos.y);
 
@@ -200,6 +199,8 @@ namespace Management.WorldManagement
             return y < terrainHeight ? (byte) 2 : (byte) 0;
 
         }
+
+
 
         private bool IsChunkInWorld(ChunkCoord coord)
         {

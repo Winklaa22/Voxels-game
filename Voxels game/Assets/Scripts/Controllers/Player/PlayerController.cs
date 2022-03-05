@@ -1,5 +1,6 @@
 using System;
 using Management.ChunkManagement;
+using Management.VoxelManagement;
 using Management.WorldManagement;
 using UnityEngine;
 
@@ -10,6 +11,11 @@ namespace Controllers.Player
         [SerializeField] private float _speed = 5;
         [SerializeField] private float _sensivity = 3;
         [SerializeField] private GameObject _block;
+        public float checkIncrement = 0.1f;
+        public float reach = 8f;
+        public GameObject _particlePrefab;
+        public Transform highlightBlock;
+        public Transform placeBlock;
         private Vector2 _mouseInput;
         private Rigidbody _rigidbody;
         private Transform _cam;
@@ -26,7 +32,6 @@ namespace Controllers.Player
 
         private void Update()
         {
-            CheckRaycast();
             SetMovement();
             SetJump();
             SetRotate();
@@ -44,7 +49,7 @@ namespace Controllers.Player
 
         private bool IsGrounded()
         {
-            return Physics.Raycast(transform.position, -transform.up, 1);
+            return Physics.Raycast(transform.position, -transform.up, 3);
         }
 
         private void SetJump()
@@ -63,34 +68,7 @@ namespace Controllers.Player
             _cam.localEulerAngles = new Vector3(_mouseInput.y, 0, 0);
         }
 
-
-        private void CheckRaycast()
-        {
-
-            var hit = new RaycastHit();
-            var pos = new Vector3();
-
-            if (Physics.Raycast(_cam.position, _cam.forward, out hit, 15))
-            {
-                pos =  new Vector3(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.y),
-                    Mathf.FloorToInt(hit.point.z));
-
-                var hitObject = hit.transform.gameObject;
-
-                if (WorldManager.Instance.CheckForVoxel(hit.point))
-                {
-                    _block.SetActive(true);
-                    _block.transform.position = pos;
-
-                    if (Input.GetMouseButtonDown(0))
-                        WorldManager.Instance.GetChunkFromVector3(pos).EditVoxel(Mathf.FloorToInt(hit.point.x), Mathf.FloorToInt(hit.point.y), Mathf.FloorToInt(hit.point.z), 1);
-
-                    if (Input.GetMouseButtonDown(1))
-                        Debug.Log("Create block");
-                }
-            }
-
-        }
+        
 
     }
 }

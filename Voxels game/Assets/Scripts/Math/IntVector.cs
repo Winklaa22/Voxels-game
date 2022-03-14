@@ -21,5 +21,10 @@ namespace Math
             x = Mathf.FloorToInt(vector2.x);
             y = Mathf.FloorToInt(vector2.y);
         }
+
+        public Vector3 ToVector3()
+        {
+            return new Vector3(x, y, z);
+        }
     }
 }

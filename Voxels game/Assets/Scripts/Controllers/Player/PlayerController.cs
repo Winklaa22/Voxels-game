@@ -1,7 +1,5 @@
-using System;
-using Management.ChunkManagement;
-using Management.VoxelManagement;
 using Management.WorldManagement;
+using Math;
 using UnityEngine;
 
 namespace Controllers.Player
@@ -11,17 +9,12 @@ namespace Controllers.Player
         [SerializeField] private float _speed = 5;
         [SerializeField] private float _sensivity = 3;
         [SerializeField] private GameObject _block;
-        public float checkIncrement = 0.1f;
-        public float reach = 8f;
-        public GameObject _particlePrefab;
-        public Transform highlightBlock;
-        public Transform placeBlock;
+
+        [SerializeField] private float _maxRaycastDistance = 3;
         private Vector2 _mouseInput;
         private Rigidbody _rigidbody;
         private Transform _cam;
-
-
-
+        
         private void Start()
         {
             _cam = Camera.main.transform;
@@ -35,6 +28,7 @@ namespace Controllers.Player
             SetMovement();
             SetJump();
             SetRotate();
+            UpdateRaycast();
         }
 
 
@@ -49,14 +43,14 @@ namespace Controllers.Player
 
         private bool IsGrounded()
         {
-            return Physics.Raycast(transform.position, -transform.up, 3);
+            return Physics.Raycast(transform.position, -transform.up, 2);
         }
 
         private void SetJump()
         {
             if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
             {
-                _rigidbody.AddForce(5f * Vector3.up, ForceMode.Impulse);
+                _rigidbody.AddForce(15f * Vector3.up, ForceMode.Impulse);
             }
         }
 
@@ -68,7 +62,30 @@ namespace Controllers.Player
             _cam.localEulerAngles = new Vector3(_mouseInput.y, 0, 0);
         }
 
-        
+
+        private void UpdateRaycast()
+        {
+            
+            var hit = new RaycastHit();
+            if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
+                return;
+            
+            var hitPoint = new IntVector(hit.point).ToVector3();
+            
+            if(!WorldManager.Instance.CheckForVoxel(hitPoint))
+                return;
+            
+            if (Input.GetMouseButtonDown(0))
+            {
+                WorldManager.Instance.SetVoxel(hitPoint);
+            }
+                
+            
+            
+            _block.transform.position = hitPoint;
+
+        }
+
 
     }
 }

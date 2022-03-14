@@ -1,0 +1,229 @@
+#include <iostream>
+
+using namespace std ;
+
+int wybor , poniedzialek , wtorek , sroda , czwartek , piatek ;
+string lekcja;
+int main (){
+	
+	cout << "Menu glowne - Wybierz dzien (Liczbe)" << endl ;
+	cout << "----------------------------------------" <<endl ;
+	cout << "1 . Poniedzialek " << endl ;
+	cout << "2 . Wtorek  " << endl ;
+	cout << "3 . Sroda " << endl ;
+	cout << "4 . Czwartek "<< endl ;
+	cout << "5 . Piatek"<< endl ;
+	cout << "6 . Sobota " << endl ;
+	cout << "7 . Niedziela  "<< endl ;
+	cin >> wybor ;
+	
+	switch (wybor){
+		case 1 :{
+			cout << "Ktora lekcje masz teraz?"<< " " ;
+			cin >> poniedzialek ;
+			switch (poniedzialek){
+				case 1 :{
+						lekcja="Okienko";
+					break;
+				    }
+					case 2 :{
+						cout << "Masz teraz Matematyke" ;
+						break;
+					}
+					case 3 : {
+						cout << "Masz teraz Podstawy Informatyki" ;
+						break;
+					}
+					case 4 : {
+						cout << "Masz teraz Podstawy Informatyki" ;
+						break;
+					}
+					case 5 :{
+						cout << "Masz teraz Pracownie Przygotowania Stanowiska Komputerowego do pracy" ;
+						break;
+					}
+					case 6 :{
+						cout << "Masz teraz Naprawe UTK" ;
+						break;
+					}
+					case 7:{
+						cout << "Masz teraz Polski" ;
+						break;
+					}
+					case 8:{
+						cout << "Masz teraz Przygotowanie Stanowiska Komputerowego do pracy" ;
+						break;
+					}
+					case 9:{
+						cout << "Masz teraz Informatyke" ;
+						break;
+					}
+			}
+			break;
+		}
+			case 2 :{
+			cout << "Ktora lekcje masz teraz?"<< " " ;
+			cin >> wtorek ;
+			switch (wtorek){
+				case 1 :{
+					cout << "Masz teraz Naprawe UTK" ;
+					break;
+				    }
+					case 2 :{
+						cout << "Masz teraz Geografie" ;
+						break;
+					}
+					case 3 : {
+						cout << "Masz teraz Polski" ;
+						break;
+					}
+					case 4 : {
+						cout << "Masz teraz Polski" ;
+						break;
+					}
+					case 5 :{
+						cout << "Masz teraz WF" ;
+						break;
+					}
+					case 6 :{
+						cout << "Masz teraz WF" ;
+						break;
+					}
+					case 7:{
+						cout << "Masz teraz dodatkowy Polski" ;
+						break;
+					}
+			}
+			break;
+		    }
+		case 3 :{
+			cout << "Ktora lekcje masz teraz?"<<" " ;
+			cin >> sroda ;
+			switch (sroda){
+				case 1 :{
+					cout << "Masz teraz okienko" ;
+					break;
+				    }
+					case 2 :{
+						cout << "Masz teraz Matematykę" ;
+						break;
+					}
+					case 3 : {
+						cout << "Masz teraz Pracownię Przygotowania Stanowiska Komputerowego do pracy" ;
+						break;
+					}
+					case 4 : {
+						cout << "Masz teraz Pracownię Przygotowania Stanowiska Komputerowego do pracy" ;
+						break;
+					}
+					case 5 :{
+						cout << "Masz teraz EDB" ;
+						break;
+					}
+					case 6 :{
+						cout << "Masz teraz Angielski" ;
+						break;
+					}
+					case 7:{
+						cout << "Masz teraz Matematyke" ;
+						break;
+					}
+					case 8:{
+						cout << "Masz teraz Historie" ;
+						break;
+					}
+					case 9:{
+						cout << "Masz teraz Urządzenia Techniki Komputerowej" ;
+						break;
+					}
+			}
+			break;
+		}
+		case 4 :{
+			cout << "Ktora lekcje masz teraz?"<< " " ;
+			cin >> czwartek ;
+			switch (czwartek){
+				case 1 :{
+					cout << "Masz teraz Przygotowanie Stanowiska do pracy " ;
+					break;
+				    }
+					case 2 :{
+						cout << "Masz teraz Historie" ;
+						break;
+					}
+					case 3 : {
+						cout << "Masz teraz Filozofie" ;
+						break;
+					}
+					case 4 : {
+						cout << "Masz teraz Biologie" ;
+						break;
+					}
+					case 5 :{
+						cout << "Masz teraz Urządzenia Techniki Komputerowej" ;
+						break;
+					}
+					case 6 :{
+						cout << "Masz teraz Niemiecki" ;
+						break;
+					}
+					case 7:{
+						cout << "Masz teraz Matematyke" ;
+						break;
+					}
+					case 8:{
+						cout << "Masz teraz Fizyke" ;
+						break;
+					}
+			}
+			break;
+		}
+		case 5 :{
+			cout << "Ktora lekcje masz teraz?"<<" " ;
+			cin >> piatek ;
+			switch (piatek){
+				case 1 :{
+					cout << "Masz teraz okienko" ;
+					break;
+				    }
+					case 2 :{
+						cout << "Masz teraz okienko" ;
+						break;
+					}
+					case 3 : {
+						cout << "Masz teraz WF" ;
+						break;
+					}
+					case 4 : {
+						cout << "Masz teraz WF" ;
+						break;
+					}
+					case 5 :{
+						cout << "Masz teraz Angielski" ;
+						break;
+					}
+					case 6 :{
+						cout << "Masz teraz Niemiecki" ;
+						break;
+					}
+					case 7:{
+						cout << "Masz teraz Geografie" ;
+						break;
+					}
+					case 8:{
+						cout << "Masz teraz godzine wychowawcza" ;
+						break;
+					}
+					case 9:{
+						cout << "Masz teraz Przygotowanie Stanowiska Komputerowego do pracy" ;
+						break;
+					}
+				}
+				break;
+			}
+			cout << "Masz teraz " + lekcja << endl;
+		}
+	}
+			
+		
+		

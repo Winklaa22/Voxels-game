@@ -115,8 +115,8 @@ namespace Management.WorldManagement
         
         public Chunk GetChunkFromVector3 (Vector3 pos) {
 
-            int x = Mathf.FloorToInt(pos.x / _chunkHeight);
-            int z = Mathf.FloorToInt(pos.z / _chunkWidth);
+            var x = Mathf.FloorToInt(pos.x / _chunkHeight);
+            var z = Mathf.FloorToInt(pos.z / _chunkWidth);
             
             return _chunks[x, z];
 
@@ -169,24 +169,40 @@ namespace Management.WorldManagement
 
         public bool CheckForVoxel (Vector3 pos) {
 
-            ChunkCoord thisChunk = new ChunkCoord(pos);
+            var thisChunk = new ChunkCoord(pos);
 
             if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > _chunkHeight)
                 return false;
 
             if (_chunks[thisChunk.x, thisChunk.z] != null && _chunks[thisChunk.x, thisChunk.z].IsVoxelMapPopulated)
-                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxel(pos)].IsSolid;
+                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxel(pos).ID].IsSolid;
 
             return _blockTypes[GetVoxelByPosition(pos)].IsSolid;
 
+        }
+
+        public void SetVoxel(Vector3 pos)
+        {
+            var thisChunk = new ChunkCoord(pos);
+
+            if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > _chunkHeight)
+                return;
+
+            var voxel = _chunks[thisChunk.x, thisChunk.z].GetVoxel(pos);
+            _chunks[thisChunk.x, thisChunk.z].SetVoxel(voxel, 0);
+            Debug.Log(voxel.ID);
         }
 
         public byte GetVoxelByPosition(Vector3 pos)
         {
             var y = Mathf.FloorToInt(pos.y);
 
-            if (!IsVoxelInTheWorld(pos))
-                return 0;
+            if(pos.x < (GetChunkCoords(_player.position).x + _viewDistance) - 1 && pos.x >  (GetChunkCoords(_player.position).x - _viewDistance) - 1 && pos.z < (GetChunkCoords(_player.position).z + _viewDistance) - 1 && pos.z >  (GetChunkCoords(_player.position).z - _viewDistance) - 1)
+            {
+                if (!IsVoxelInTheWorld(pos))
+                    return 0;
+            }
+
 
             if (y.Equals(0))
                 return 1;
@@ -196,7 +212,7 @@ namespace Management.WorldManagement
             if (y.Equals(terrainHeight))
                 return 3;
 
-            return y < terrainHeight ? (byte) 2 : (byte) 0;
+            return y <= terrainHeight ? (byte) 2 : (byte) 0;
 
         }
 
@@ -209,7 +225,7 @@ namespace Management.WorldManagement
 
         private bool IsVoxelInTheWorld(Vector3 pos)
         {
-            return pos.x >= 0 && pos.x < WorldSizeInVoxels - 1 && pos.y >= 0 && pos.y < _chunkHeight && pos.z >= 0 && pos.z < WorldSizeInVoxels - 1;
+            return pos.x >= 0 && pos.x < WorldSizeInVoxels - 1 && pos.y >= 0 && pos.y < _chunkHeight && pos.z >= 1 && pos.z < WorldSizeInVoxels - 1;
         }
     }
 }

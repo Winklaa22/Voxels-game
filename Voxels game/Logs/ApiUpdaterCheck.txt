@@ -918,3 +918,23 @@ C# parse time         : 161ms
 candidates check time : 32ms
 console write time    : 0ms
 
+[api-updater (non-obsolete-error-filter)] 16.03.2022 10:00:01 : Starting D:/My games/2020.3.20f1/Editor/Data/Tools/ScriptUpdater/APIUpdater.NonObsoleteApiUpdaterDetector.exe
+[api-updater (non-obsolete-error-filter)] 
+----------------------------------
+jit/startup time      : 2707,7285ms
+moved types parse time: 145ms
+candidates parse time : 1ms
+C# parse time         : 906ms
+candidates check time : 19ms
+console write time    : 0ms
+
+[api-updater (non-obsolete-error-filter)] 16.03.2022 10:02:26 : Starting D:/My games/2020.3.20f1/Editor/Data/Tools/ScriptUpdater/APIUpdater.NonObsoleteApiUpdaterDetector.exe
+[api-updater (non-obsolete-error-filter)] 
+----------------------------------
+jit/startup time      : 388,3532ms
+moved types parse time: 53ms
+candidates parse time : 1ms
+C# parse time         : 155ms
+candidates check time : 16ms
+console write time    : 0ms
+

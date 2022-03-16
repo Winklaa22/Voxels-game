@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Math
+namespace NewMathf
 {
     public class IntVector
     {

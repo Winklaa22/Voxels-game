@@ -4,7 +4,7 @@ using System.Xml;
 using Blocks.Type;
 using Management.ChunkManagement;
 using Management.VoxelManagement;
-using Math;
+using NewMathf;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -191,7 +191,11 @@ namespace Management.WorldManagement
                 return false;
 
             if (_chunks[thisChunk.x, thisChunk.z] != null && _chunks[thisChunk.x, thisChunk.z].IsVoxelMapPopulated)
-                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxel(pos).ID].IsSolid;
+            {
+                var voxelCoord = _chunks[thisChunk.x, thisChunk.z].GetVoxel(pos);
+                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxelType(voxelCoord)].IsSolid;
+            }
+                
 
             return _blockTypes[GetVoxelByPosition(pos)].IsSolid;
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Management.VoxelManagement;
 using Management.WorldManagement;
-using Math;
+using NewMathf;
 using Tools;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -24,7 +24,7 @@ namespace Management.ChunkManagement
         private List<Vector2> _uvs = new List<Vector2>();
         
         [Header("Map")]
-        private Voxel[,,] _voxelMap;
+        private byte[,,] _voxelMap;
 
         private WorldManager _worldManager;
         private bool _isVoxelMapPopulated = false;
@@ -69,7 +69,7 @@ namespace Management.ChunkManagement
 
         private void Init()
         {
-            _voxelMap = new Voxel[WorldManager.Instance.ChunkWidth, WorldManager.Instance.ChunkHeight, WorldManager.Instance.ChunkWidth];
+            _voxelMap = new byte[WorldManager.Instance.ChunkWidth, WorldManager.Instance.ChunkHeight, WorldManager.Instance.ChunkWidth];
             _collider = gameObject.AddComponent<MeshCollider>();
             _meshFilter = gameObject.AddComponent<MeshFilter>();
             _meshRenderer = gameObject.AddComponent<MeshRenderer>();
@@ -90,7 +90,7 @@ namespace Management.ChunkManagement
                 {
                     for (int z = 0; z < WorldManager.Instance.ChunkWidth; z++)
                     {
-                        if (!_worldManager.BlockTypes[_voxelMap[x, y, z].ID].IsSolid) 
+                        if (!_worldManager.BlockTypes[_voxelMap[x, y, z]].IsSolid) 
                             continue;
 
                         AddVoxelData(new Vector3(x, y, z));
@@ -107,7 +107,7 @@ namespace Management.ChunkManagement
             _collider.sharedMesh = active ? _meshFilter.mesh : null;
         }
         
-        public Voxel GetVoxel (Vector3 pos)
+        public VoxelCoord GetVoxel (Vector3 pos)
         {
             var checkVector = new IntVector(pos);
             var chunkPos = new IntVector(position);
@@ -115,14 +115,13 @@ namespace Management.ChunkManagement
             checkVector.x -= chunkPos.x;
             checkVector.z -= chunkPos.z;
 
-            return _voxelMap[checkVector.x, checkVector.y, checkVector.z];
-
+            return new VoxelCoord(checkVector.x, checkVector.y, checkVector.z);
         }
         
         
-        public void SetVoxel (Voxel voxel, byte id)
+        public void SetVoxel (VoxelCoord voxelCoordl, byte id)
         {
-            voxel.ID = id;
+            _voxelMap[voxelCoordl.x, voxelCoordl.y, voxelCoordl.z] = id;
             UpdateChunk();
             SetCollisionActive(true);
         }
@@ -135,7 +134,7 @@ namespace Management.ChunkManagement
                 for (int x = 0; x < WorldManager.Instance.ChunkWidth; x++) {
                     for (int z = 0; z < WorldManager.Instance.ChunkWidth; z++) {
 
-                        if (WorldManager.Instance.BlockTypes[_voxelMap[x,y,z].ID].IsSolid)
+                        if (WorldManager.Instance.BlockTypes[_voxelMap[x,y,z]].IsSolid)
                             AddVoxelData(new Vector3(x, y, z));
 
                     }
@@ -176,12 +175,17 @@ namespace Management.ChunkManagement
                         byte voxelIndex = _worldManager.GetVoxelByPosition(voxelPosition);
 
                         var intPos = new IntVector(voxelPosition);
-                        _voxelMap[x, y, z] = new Voxel(voxelIndex, new Vector3(intPos.x, intPos.y, intPos.z));
+                        _voxelMap[x, y, z] = voxelIndex;
                     }
                 }
             }
         }
 
+        public byte GetVoxelType(VoxelCoord coords)
+        {
+            return _voxelMap[coords.x, coords.y, coords.z];
+        }
+        
         private bool IsInsideChunk(int x, int y, int z)
         {
             return y < 0 || y > WorldManager.Instance.ChunkHeight - 1 || x < 0 || x > WorldManager.Instance.ChunkWidth - 1 || z < 0 || z > WorldManager.Instance.ChunkWidth - 1;
@@ -194,7 +198,7 @@ namespace Management.ChunkManagement
             if (IsInsideChunk(intPos.x, intPos.y, intPos.z))
                 return _worldManager.BlockTypes[_worldManager.GetVoxelByPosition(pos + position)].IsSolid;
 
-            return _worldManager.BlockTypes[_voxelMap[intPos.x, intPos.y, intPos.z].ID].IsSolid;
+            return _worldManager.BlockTypes[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid;
         }
 
         // public byte SetVoxel(Vector3 pos, byte id)
@@ -223,7 +227,7 @@ namespace Management.ChunkManagement
 
                 var voxelPos = new IntVector(pos);
 
-                var voxelID = _voxelMap[voxelPos.x, voxelPos.y, voxelPos.z].ID;
+                var voxelID = _voxelMap[voxelPos.x, voxelPos.y, voxelPos.z];
                 
                 AddTexture(_worldManager.BlockTypes[voxelID].GetTextureIDFromSide(VoxelData.Sides[i]));
                 

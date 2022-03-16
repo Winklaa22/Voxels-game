@@ -1,3 +1,4 @@
+using Management.ChunkManagement;
 using Management.WorldManagement;
 using Math;
 using UnityEngine;
@@ -9,6 +10,7 @@ namespace Controllers.Player
         [SerializeField] private float _speed = 5;
         [SerializeField] private float _sensivity = 3;
         [SerializeField] private GameObject _block;
+        [SerializeField] private float _jumpForce;
 
         [SerializeField] private float _maxRaycastDistance = 3;
         private Vector2 _mouseInput;
@@ -50,14 +52,15 @@ namespace Controllers.Player
         {
             if (Input.GetKeyDown(KeyCode.Space) && IsGrounded())
             {
-                _rigidbody.AddForce(15f * Vector3.up, ForceMode.Impulse);
+                _rigidbody.AddForce(_jumpForce * Vector3.up, ForceMode.Impulse);
             }
         }
 
         private void SetRotate()
         { 
             _mouseInput.x += Input.GetAxis("Mouse X") * _sensivity;
-            _mouseInput.y -= Mathf.Clamp(Input.GetAxis("Mouse Y") * _sensivity, -90, 90);
+            _mouseInput.y -= Input.GetAxis("Mouse Y") *  _sensivity;
+            _mouseInput.y = Mathf.Clamp(_mouseInput.y, -90, 90);
             transform.localEulerAngles = new Vector3(0, _mouseInput.x, 0);
             _cam.localEulerAngles = new Vector3(_mouseInput.y, 0, 0);
         }
@@ -70,14 +73,21 @@ namespace Controllers.Player
             if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
                 return;
             
-            var hitPoint = new IntVector(hit.point).ToVector3();
+            var hitPoint = new IntVector(hit.point - hit.normal * .5f).ToVector3() ;
             
-            if(!WorldManager.Instance.CheckForVoxel(hitPoint))
+            if(!WorldManager.Instance.CheckForVoxel(hitPoint) && !hit.transform.GetComponent<Chunk>())
                 return;
-            
+
+            var chunk = hit.transform.GetComponent<Chunk>();
+
             if (Input.GetMouseButtonDown(0))
             {
-                WorldManager.Instance.SetVoxel(hitPoint);
+                WorldManager.Instance.SetVoxel(chunk ,hitPoint, 0);
+            }
+            
+            if (Input.GetMouseButtonDown(1))
+            {
+                WorldManager.Instance.SetVoxel(chunk ,new IntVector(hit.point + hit.normal * .5f).ToVector3(), 1);
             }
                 
             

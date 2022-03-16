@@ -9,7 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace Management.ChunkManagement
 {
-    public class Chunk
+    public class Chunk : MonoBehaviour
     {
         private ChunkCoord _coordinates;
         private MeshRenderer _meshRenderer;
@@ -17,8 +17,7 @@ namespace Management.ChunkManagement
         private MeshCollider _collider;
         private int _texture;
         private int _vertexIndex = 0;
-        private GameObject _chunkObject;
-        
+
         [Header("Mesh")]
         private List<Vector3> _vertices = new List<Vector3>();
         private List<int> _triangles = new List<int>();
@@ -46,7 +45,7 @@ namespace Management.ChunkManagement
         {
             get
             {
-                return _chunkObject.transform.position;
+                return gameObject.transform.position;
             }
         }
 
@@ -54,35 +53,27 @@ namespace Management.ChunkManagement
         {
             get
             {
-                return _chunkObject.activeSelf;
+                return gameObject.activeSelf;
             }
             
             set
             {
-                _chunkObject.SetActive(value);
+                gameObject.SetActive(value);
             }
         }
 
-        public Chunk(ChunkCoord coord, WorldManager worldManager)
+        private void Start()
         {
+            Init();
+        }
 
+        private void Init()
+        {
             _voxelMap = new Voxel[WorldManager.Instance.ChunkWidth, WorldManager.Instance.ChunkHeight, WorldManager.Instance.ChunkWidth];
-            _chunkObject = new GameObject()
-            {
-                tag = "Chunk",
-                
-                transform =
-                {
-                    name = "Chunk " + coord.x + ", " + coord.z,
-                    parent = worldManager.transform,
-                    position = new Vector3(coord.x * WorldManager.Instance.ChunkWidth, 0, coord.z * WorldManager.Instance.ChunkWidth)
-                }
-            };
-
-            _worldManager = worldManager;
-            _collider = _chunkObject.AddComponent<MeshCollider>();
-            _meshFilter = _chunkObject.AddComponent<MeshFilter>();
-            _meshRenderer = _chunkObject.AddComponent<MeshRenderer>();
+            _collider = gameObject.AddComponent<MeshCollider>();
+            _meshFilter = gameObject.AddComponent<MeshFilter>();
+            _meshRenderer = gameObject.AddComponent<MeshRenderer>();
+            _worldManager = WorldManager.Instance;
             _meshRenderer.material = _worldManager.WorldMaterial;
 
             

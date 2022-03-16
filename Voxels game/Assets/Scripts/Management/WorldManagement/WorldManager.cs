@@ -4,6 +4,7 @@ using System.Xml;
 using Blocks.Type;
 using Management.ChunkManagement;
 using Management.VoxelManagement;
+using Math;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -163,8 +164,23 @@ namespace Management.WorldManagement
 
         private void CreateChunk(int x, int z)
         {
-            _chunks[x, z] = new Chunk(new ChunkCoord(x, z), this);
-            _activeChunks.Add(new ChunkCoord(x, z));
+            var coord = new ChunkCoord(x, z);
+            
+            var newChunk = new GameObject()
+            {
+                tag = "Chunk",
+
+                transform =
+                {
+                    name = "Chunk " + coord.x + ", " + coord.z,
+                    parent = transform,
+                    position = new Vector3(coord.x * ChunkWidth, 0,
+                        coord.z * ChunkWidth)
+                }
+            };
+            
+            _chunks[x, z] = newChunk.AddComponent<Chunk>();
+            _activeChunks.Add(coord);
         }
 
         public bool CheckForVoxel (Vector3 pos) {
@@ -181,16 +197,14 @@ namespace Management.WorldManagement
 
         }
 
-        public void SetVoxel(Vector3 pos)
+        public void SetVoxel(Chunk chunk ,Vector3 pos, byte type)
         {
-            var thisChunk = new ChunkCoord(pos);
 
-            if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > _chunkHeight)
+            if (pos.y < 0 || pos.y > _chunkHeight)
                 return;
 
-            var voxel = _chunks[thisChunk.x, thisChunk.z].GetVoxel(pos);
-            _chunks[thisChunk.x, thisChunk.z].SetVoxel(voxel, 0);
-            Debug.Log(voxel.ID);
+            var voxel = chunk.GetVoxel(pos);
+            chunk.SetVoxel(voxel, type);
         }
 
         public byte GetVoxelByPosition(Vector3 pos)

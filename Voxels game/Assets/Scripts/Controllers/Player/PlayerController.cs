@@ -69,30 +69,30 @@ namespace Controllers.Player
         private void UpdateRaycast()
         {
             
-            var hit = new RaycastHit();
-            if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
-                return;
-            
-            var hitPoint = new IntVector(hit.point - hit.normal * .5f).ToVector3() ;
-            
-            if(!WorldManager.Instance.CheckForVoxel(hitPoint) && !hit.transform.GetComponent<Chunk>())
-                return;
-
-            var chunk = hit.transform.GetComponent<Chunk>();
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                WorldManager.Instance.SetVoxel(chunk ,hitPoint, 0);
-            }
-            
-            if (Input.GetMouseButtonDown(1))
-            {
-                WorldManager.Instance.SetVoxel(chunk ,new IntVector(hit.point + hit.normal * .5f).ToVector3(), 1);
-            }
+            // var hit = new RaycastHit();
+            // if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
+            //     return;
+            //
+            // var hitPoint = new IntVector(hit.point - hit.normal * .5f).ToVector3() ;
+            //
+            // if(!WorldGeneration.Instance.CheckForVoxel(hitPoint) && !hit.transform.GetComponent<Chunk>())
+            //     return;
+            //
+            // var chunk = hit.transform.GetComponent<Chunk>();
+            //
+            // if (Input.GetMouseButtonDown(0))
+            // {
+            //     WorldGeneration.Instance.SetVoxel(chunk ,hitPoint, 0);
+            // }
+            //
+            // if (Input.GetMouseButtonDown(1))
+            // {
+            //     WorldGeneration.Instance.SetVoxel(chunk ,new IntVector(hit.point + hit.normal * .5f).ToVector3(), 1);
+            // }
                 
             
             
-            _block.transform.position = hitPoint;
+            // _block.transform.position = hitPoint;
 
         }
 

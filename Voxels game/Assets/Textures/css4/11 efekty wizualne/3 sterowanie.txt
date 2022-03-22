@@ -1,0 +1,103 @@
+p.jeden
+{
+position:absolute;
+top:50px;
+width:200px;
+height:200px;
+overflow:auto;
+}
+p.dwa
+{
+position:absolute;
+left:220px;
+top:50px;
+width:200px;
+height:200px;
+overflow:visible;
+}
+p.trzy
+{
+position:absolute;
+top:50px;
+left:440px;
+width:200px;
+height:200px;
+overflow:hidden;
+}
+p.cztery
+{
+position:absolute;
+top:50px;
+left:660px;
+width:200px;
+height:200px;
+overflow:scroll;
+}
+.................
+auto — tekst zosta³ obciêty i dopasowany do okreœlonych przeze mnie
+wymiarów, dodatkowo przegl¹darka doda³a pionowy pasek przewijania,
+dziêki czemu bez problemu mo¿emy odczytaæ resztê tekstu, który nie mieœci
+siê w wyznaczonym polu.
+? visible — tekst zosta³ wyœwietlony w ca³oœci i przegl¹darka nie zajmowa³a
+siê jego dopasowaniem do wyznaczonego obszaru, nie pojawi³y siê równie¿
+paski przewijania.
+? hidden — tekst zosta³ obciêty i dopasowany do wyznaczonego obszaru,
+nie pojawi³y siê paski przewijania, przez co nie mo¿emy zapoznaæ siê
+z reszt¹ tekstu.
+? scroll — tekst zosta³ obciêty i dopasowany do okreœlonych przeze mnie
+wymiarów, dodatkowo przegl¹darka doda³a pionowy i poziomy pasek
+przewijania, dziêki czemu bez problemu mo¿emy odczytaæ resztê tekstu,
+który nie mieœci siê w wyznaczonym polu.
+.......................
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+
+p.jeden
+{
+position:absolute;
+top:50px;
+width:200px;
+height:200px;
+overflow:auto;
+}
+p.dwa
+{
+position:absolute;
+left:220px;
+top:50px;
+width:200px;
+height:200px;
+overflow:visible;
+}
+p.trzy
+{
+position:absolute;
+top:50px;
+left:440px;
+width:200px;
+height:200px;
+overflow:hidden;
+}
+p.cztery
+{
+position:absolute;
+top:50px;
+left:660px;
+width:200px;
+height:200px;
+overflow:scroll;
+}
+</style>
+</head>
+<body>
+
+<p class=jeden> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+<p class=dwa> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+<p class=trzy> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.  </p>
+<p class=cztery> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. </p>
+
+</body>
+</html>

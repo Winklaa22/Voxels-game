@@ -1,0 +1,9 @@
+border-style:solid;
+.......................
+<h1 style="border-top-style:solid;">Nag³ówek z obramowaniem na górze.</h1>
+<h1 style="border-right-style:solid;">Nag³ówek z obramowaniem z prawej strony.</h1>
+<h1 style="border-bottom-style:solid;">Nag³ówek z obramowaniem na dole.</h1>
+<h1 style="border-left-style:solid;">Nag³ówek z obramowaniem z lewej strony.</h1>
+<h1 style="border-style:solid;">Nag³ówek z pe³nym obramowaniem.</h1>
+...............................................
+none, hidden, dotted, dashed, solid, double, groove, ridge, inset oraz outset.

@@ -1,3 +1,4 @@
+using NewMathf;
 using UnityEngine;
 
 namespace Management.VoxelManagement
@@ -13,6 +14,11 @@ namespace Management.VoxelManagement
             x = _x;
             y = _y;
             z = _z;
+        }
+
+        public IntVector ToIntVector()
+        {
+            return new IntVector(x, y, z);
         }
     }
 }

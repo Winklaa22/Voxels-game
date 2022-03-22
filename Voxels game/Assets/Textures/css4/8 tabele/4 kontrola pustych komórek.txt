@@ -1,0 +1,14 @@
+hide — ukrywa puste komórki;
+? show — pokazuje puste komórki.
+................
+table
+{
+border:solid black 1px;
+empty-cells:hide;
+}
+...................
+table
+{
+border:solid black 1px;
+empty-cells:show;
+}

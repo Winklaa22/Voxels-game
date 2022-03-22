@@ -1,0 +1,45 @@
+DIV
+
+{
+
+opacity:0.3;
+
+font-weight:bolder;
+
+color:blue;
+
+}
+
+.........................
+
+<div class="przyklad">
+
+<div style="background-color:rgb(255,0,0);opacity:0;width:50px;height:50px;font-weight:bolder;color:blue;">0</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.1;width:50px;height:50px;font-weight:bolder;color:blue;">0.1</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.2;width:50px;height:50px;font-weight:bolder;color:blue;">0.2</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.3;width:50px;height:50px;font-weight:bolder;color:blue;">0.3</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.4;width:50px;height:50px;font-weight:bolder;color:blue;">0.4</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.5;width:50px;height:50px;font-weight:bolder;color:blue;">0.5</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.6;width:50px;height:50px;font-weight:bolder;color:blue;">0.6</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.7;width:50px;height:50px;font-weight:bolder;color:blue;font-weight:bolder;color:blue;">0.7</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.8;width:50px;height:50px;font-weight:bolder;color:blue;">0.8</div>
+
+<div style="background-color:rgb(255,0,0);opacity:0.9;width:50px;height:50px;font-weight:bolder;color:blue;">0.9</div>
+
+<div style="background-color:rgb(255,0,0);opacity:1;width:50px;height:50px;font-weight:bolder;color:blue;">1</div>
+
+</div>
+
+.................
+<div>Lorem Ipsum jest tekstem stosowanym jako przyk³adowy wype³niacz w przemyœle poligraficznym. Zosta³ po raz pierwszy u¿yty w XV w. przez nieznanego drukarza
+ do wype³nienia tekstem próbnej ksi¹¿ki. Piêæ wieków póŸniej zacz¹³ byæ u¿ywany przemyœle elektronicznym, pozostaj¹c praktycznie 
+Spopularyzowa³ siê w latach 60. XX w. wraz z publikacj¹ arkuszy Letrasetu, zawieraj¹cych fragmenty Lorem Ipsum, 
+a ostatnio z zawieraj¹cym ró¿ne wersje Lorem Ipsum oprogramowaniem przeznaczonym do realizacji druków na komputerach osobistych, jak Aldus PageMaker</div>

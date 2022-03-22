@@ -1,0 +1,3 @@
+<p style="font-weight:normal;">Przyk³adowy tekst ze stylem normal</p>
+<p style="font-style:italic;">Przyk³adowy tekst ze stylem italic</p>
+<p style="font-style:oblique;">Przyk³adowy tekst ze stylem oblique</p>

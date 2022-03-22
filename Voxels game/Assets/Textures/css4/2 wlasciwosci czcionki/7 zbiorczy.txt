@@ -1,0 +1,9 @@
+p
+{
+font: <font-styl> <font-variant> <font-weight> <font-size> <line-hight> <font-family>
+}
+
+p
+{
+font:italic small-caps 600 14pt/2 arial;
+}

@@ -1,0 +1,25 @@
+<img src="kolo.jpg" style="float:left;" />
+<img src="kolo.jpg" style="float:right;" />
+<img src="kolo.jpg" style="float:none;" />
+..................
+<img src="kolo.jpg" style="float:XXX">
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean laoreet pharetra
+felis, quis aliquet odio auctor condimentum. Integer eleifend elit nec est
+dignissim nec gravida est varius. Morbi porttitor justo sit amet enim lacinia id
+accumsan ligula feugiat. Nam bibendum felis eu purus rutrum eleifend. Curabitur
+posuere nisl at tortor laoreet lobortis. Nulla facilisi. Aliquam erat volutpat.
+Curabitur eget lacus nunc. Integer tristique ullamcorper elit ac malesuada. Duis
+molestie magna fringilla lorem dictum vitae suscipit nibh aliquam. </p>
+....................
+p span
+{
+font-size:80pt;
+font-weight:bold;
+float:left;
+color:black;
+margin-top:-25px;
+margin-bottom:-25px;
+margin-right:10px;
+}
+.................
+<p><span>L</span>orem ipsum dolor sit amet...</p>

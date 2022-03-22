@@ -1,0 +1,29 @@
+<div style="background-color:black;">
+<p style="background-color:red;">Czarny blok tekstu z t³em w kolorze czerwonym.</p>
+<h1 style="background-color:#8080FF;">Czarny nag³ówek stopnia pierwszego z t³em
+w kolorze fioletowym.</h1>
+<ul style="background-color:rgb(255,255,255);">
+<li>Czarna lista z t³em w kolorze bia³ym</li>
+<li>Czarna lista z t³em w kolorze bia³ym</li>
+<li>Czarna lista z t³em w kolorze bia³ym</li>
+</ul>
+<a href="http://wp.pl" style="color:white;">Odsy³acz w kolorze bia³ym.</a>
+</div>
+
+............................
+<table width="200" height="200" style="background-color:black;">
+<tr>
+<td style="background-color:silver;">1</td>
+<td style="background-color:silver;">2</td>
+</tr>
+<tr>
+<td style="background-color:silver;">3</td>
+<td style="background-color:silver;">4</td>
+</tr>
+</table>
+...........................................
+<body style="background-image:url(tlo.jpg);">
+
+<body style="background-image:url(https://lh3.googleusercontent.com/proxy/PjNZEahcMISHAdBQvEgCpl_SMmeoaZAKVlUq_SVi4A9pbWkXn2GSVPJjZur6D9VoDTlkwY4lMxRZ-NW5ClL3PXg83dcNTcPZ98M9Wq2H9WL_j12da5VquA);">
+
+...................................

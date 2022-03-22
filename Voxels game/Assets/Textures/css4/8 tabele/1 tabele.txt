@@ -1,0 +1,57 @@
+<table>
+<CAPTION><span>Tabela 1</span> Sprzeda¿ pomidorów</CAPTION>
+<thead>
+<tr>
+<th>&nbsp;</th><th>2006</th><th>2007</th><th>2008</th><th>2009</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>Producent X</th><td>15</td><td>18</td><td>22</td><td>19</td>
+</tr>
+<tr>
+<th>Producent Y</th><td>10</td><td>11</td><td>13</td><td>14,5</td>
+</tr>
+<tr>
+<th>Producent Z</th><td>24</td><td>28</td><td>32</td><td>30</td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<td>Wszystkie wartoœci s¹ liczone w tys. kg.</td></td>
+</tr>
+</tfoot>
+</table>
+
+...............
+thead
+{
+background-color:#C0C0C0;
+}
+tbody{
+background-color:#C0FFC0;
+}
+tfoot
+{
+background-color:#FFFFC0;
+}
+..................
+caption
+{
+font-style:italic;
+text-align:left;
+}
+caption span
+{
+font-weight:bold;
+}
+td
+{
+font-style:italic;
+text-align:center;
+}
+..................
+table
+{
+border:solid 1px black;
+}

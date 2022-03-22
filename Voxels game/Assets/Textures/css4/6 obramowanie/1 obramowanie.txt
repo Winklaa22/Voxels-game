@@ -1,0 +1,9 @@
+Za pomoc¹ kaskadowych arkuszy stylów mo¿na kontrolowaæ nastêpuj¹ce w³aœciwo-
+œci obramowania:
+? styl,
+? kolor,
+? gruboœæ,
+? stopieñ zaokr¹glenia naro¿ników,
+? rozmiar,
+? miejsce wystêpowania
+..................................

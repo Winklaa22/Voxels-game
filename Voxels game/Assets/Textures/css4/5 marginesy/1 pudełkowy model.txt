@@ -1,0 +1,6 @@
+Marginesy — odstêpy dziel¹ce poszczególne elementy — pude³ka.
+? Obramowanie — linie rozdzielaj¹ce marginesy i dope³nienie.
+? Dope³nienia — odstêpy pomiêdzy elementem a otaczaj¹c¹ go ramk¹.
+Dope³nienia bardzo czêsto nazywane s¹ równie¿ marginesami wewnêtrznymi.
+? Szerokoœæ.
+? Wysokoœæ.

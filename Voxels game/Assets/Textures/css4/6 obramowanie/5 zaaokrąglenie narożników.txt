@@ -1,0 +1,50 @@
+(border-top-left-radius,
+border-top-right-radius, border-bottom-left-radius, border-bottom-right-radius)
+lub dla ca³ej ramki (border-radius).
+.........................................
+div
+{
+border-top-left-radius:50px 50px;
+width:250px;
+height:100px;
+background-color:#C0FFC0;
+border:solid 3px red;
+}
+........................
+div
+{
+border-top-right-radius:50px 50px;
+width:250px;
+height:100px;
+background-color:#C0FFC0;
+border:solid 3px red;
+}
+
+.........................
+div
+{
+border-bottom-left-radius:50px 50px;
+width:250px;
+height:100px;
+background-color:#C0FFC0;
+border:solid 3px red;
+}
+................
+div
+{
+border-bottom-right-radius:50px 50px;
+width:250px;
+height:100px;
+background-color:#C0FFC0;
+border:solid 3px red;
+}
+...................
+div
+{
+width:200px;
+height:200px;
+background-color:#C0FFC0;
+border-radius: 100px 100px;
+border:solid 3px red;
+}
+..................

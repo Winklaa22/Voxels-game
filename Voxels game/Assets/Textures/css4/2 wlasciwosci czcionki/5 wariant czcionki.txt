@@ -1,0 +1,2 @@
+<p style="font-variant:normal">Przyk³adowy tekst w wariancie - normal</p>
+<p style="font-variant:small-caps">Przyk³adowy tekst w wariancie - small-caps</p>

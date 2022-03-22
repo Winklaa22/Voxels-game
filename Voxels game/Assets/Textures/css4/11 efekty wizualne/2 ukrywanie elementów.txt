@@ -1,0 +1,13 @@
+p.jeden span
+{
+visibility:visible;
+}
+p.dwa span
+{
+visibility:hidden;
+}
+
+p.trzy span
+{
+visibility:collapse;
+}

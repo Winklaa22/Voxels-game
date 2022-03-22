@@ -1,0 +1,2 @@
+<h1 style="height:5cm;">Nag³ówek o wysokoœci pude³ka równej 5cm.</h1>
+<h1 style="width:30%;">Nag³ówek o szerokoœci pude³ka równej 30%.</h1>

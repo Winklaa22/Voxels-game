@@ -1,0 +1,94 @@
+p
+{
+text-align:left;
+}
+p
+{
+text-align:right;
+}
+p
+{
+text-align:center;
+}
+p
+{
+text-align:justify;
+}
+
+..........
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>The p element</h1>
+
+<p>This is a paragraph.</p>
+<p>This is a paragraph.</p>
+<p>This is a paragraph.</p>
+
+</body>
+</html>
+
+
+............................................................
+
+/*wyrównanie do góry*/
+td
+{
+vertical-align:top;
+}
+/* wyrównanie do œrodka*/
+td
+{
+vertical-align:middle;
+}
+/* wyrównanie do do³u*/
+td
+{
+vertical-align:bottom;
+}
+
+..........
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+</head>
+<body>
+
+<h1>The td element</h1>
+
+<p>The td element defines a cell in a table:</p>
+
+<table>
+  <tr>
+    <td>Cell A</td>
+    <td>Cell B</td>
+  </tr>
+  <tr>
+    <td>Cell C</td>
+    <td>Cell D</td>
+  </tr>
+</table>
+
+</body>
+</html>
+
+.............................................
+/*indeks dolny*/
+p span
+{
+vertical-align:sub;
+}
+/*indeks górny*/
+p.inny span
+{
+vertical-align:super;
+}
+..............
+p>Indeks <span>Dolny</span></p>
+<p class="inny">Indeks <span>Górny</span></p>

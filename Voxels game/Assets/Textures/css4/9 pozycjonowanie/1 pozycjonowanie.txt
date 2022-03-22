@@ -1,0 +1,84 @@
+statyczne — position:static;
+? bezwzglêdne — position:absolute;
+? wzglêdne — position:relative;
+? ustalone — position:fixed;
+.........................
+p, h1
+{
+position:static;
+}
+..................
+Pozycjonowanie bezwzglêdne polega na okreœlaniu dok³adnego po³o¿enia elementu
+wzglêdem lewego górnego naro¿nika okna przegl¹darki. 
+p
+{
+position:absolute;
+left:80px;
+top:80px;
+}
+h1
+{
+position:absolute;
+top:40px;
+}
+...................
+Punktem odniesienia do okreœlania po³o¿enia wzglêdnego elementu jest jego domyœlna
+lokalizacja na stronie. 
+<div>
+<h1>Nag³ówek w pozycji domyœlnej</h1>
+<p>Przyk³adowy blok tekstu w pozycji domyœlnej.</p>
+</div>
+
+div
+{
+position:absolute;
+top:1cm;
+left:1cm;
+}
+
+p
+{
+position:relative;
+top:1cm;
+left:1cm;
+}
+...........................
+Pozycjonowanie ustalone jest odmian¹ pozycjonowania bezwzglêdnego, jednak element, którego dotyczy, zawsze pozostaje w widocznej czêœci okna przegl¹darki. 
+div.lewa
+{
+position:fixed;
+top:10px;
+width:180px;
+height:100%;
+background-color:#C0FFC0;
+}
+div.prawa
+{
+position:absolute;
+top:10px;
+left:200px;
+width:500px;
+}
+
+<div class="lewa">
+<ul>
+<li><a href="http://onet.pl">Onet.pl</a></li>
+<li><a href="http://republika.pl">Republika.pl</a></li>
+</ul>
+<p>Lewa kolumna zawiera menu nawigacyjne i jest stale widoczna w oknie
+przegl¹darki.</p>
+</div>
+<div class="prawa">
+<h1>Przyk³ad nag³ówka H1</h1>
+<p>Przyk³adowy blok tekstu odsuniêty od lewej krawêdzi okna przegl¹darki o 200
+pikseli. Pozycja tekstu zosta³a ustalona w sposób bezwzglêdny. Przyk³adowy blok
+tekstu odsuniêty od lewej krawêdzi okna przegl¹darki o 200 pikseli.</p>
+</div>
+............................
+left, right, top oraz bottom
+div
+{
+position:absolute;
+left:5cm;
+top:10cm;
+}

@@ -1,0 +1,2 @@
+<img src="kolo.jpg" style="min-width:300px;" />
+<img src="kolo.jpg" style="min-height:100px;" />

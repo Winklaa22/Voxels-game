@@ -11,7 +11,7 @@ namespace Management.ChunkManagement
 {
     public class Chunk : MonoBehaviour
     {
-        private Coordinates _coordinates;
+        private ChunkCoord _coordinates;
         private MeshRenderer _meshRenderer;
         private MeshFilter _meshFilter;
         private MeshCollider _collider;
@@ -26,18 +26,18 @@ namespace Management.ChunkManagement
         [Header("Map")]
         private byte[,,] _voxelMap;
 
-        private WorldGeneration _worldGeneration;
-        private bool _isVoxelMapSetted = false;
+        private WorldManager _worldManager;
+        private bool _isVoxelMapPopulated = false;
 
-        public bool IsVoxelMapSetted
+        public bool IsVoxelMapPopulated
         {
             get
             {
-                return _isVoxelMapSetted;
+                return _isVoxelMapPopulated;
             }
             set
             {
-                _isVoxelMapSetted = value;
+                _isVoxelMapPopulated = value;
             }
         }
 
@@ -69,66 +69,42 @@ namespace Management.ChunkManagement
 
         private void Init()
         {
-            // _voxelMap = new byte[WorldGeneration.Instance.ChunkSize.x, WorldGeneration.Instance.ChunkSize.y, WorldGeneration.Instance.ChunkSize.x];
-            // _collider = gameObject.AddComponent<MeshCollider>();
-            // _meshFilter = gameObject.AddComponent<MeshFilter>();
-            // _meshRenderer = gameObject.AddComponent<MeshRenderer>();
-            // _worldGeneration = WorldGeneration.Instance;
-            // _meshRenderer.material = _worldGeneration.WorldMaterial;
+            _voxelMap = new byte[WorldManager.Instance.ChunkWidth, WorldManager.Instance.ChunkHeight, WorldManager.Instance.ChunkWidth];
+            _collider = gameObject.AddComponent<MeshCollider>();
+            _meshFilter = gameObject.AddComponent<MeshFilter>();
+            _meshRenderer = gameObject.AddComponent<MeshRenderer>();
+            _worldManager = WorldManager.Instance;
+            _meshRenderer.material = _worldManager.WorldMaterial;
 
             
-            SetVoxelMap();
+            PopulateVoxelMap();
             CreateChunk();
             SetCollisionActive(true);
         }
-
-        // private IntVector size
-        // {
-        //     get
-        //     {
-        //         // return WorldGeneration.Instance.ChunkSize;
-        //     }
-        // }
         
         private void CreateChunk()
         {
-            // for (int y = 0; y < WorldGeneration.Instance.ChunkSize.y; y++)
-            // {
-            //     for (int x = 0; x < WorldGeneration.Instance.ChunkSize.x; x++)
-            //     {
-            //         for (int z = 0; z < WorldGeneration.Instance.ChunkSize.x; z++)
-            //         {
-            //             if (!_worldGeneration.BlockTypes[_voxelMap[x, y, z]].IsSolid) 
-            //                 continue;
-            //
-            //             AddVoxelData(new Vector3(x, y, z));
-            //             CreateMesh();
-            //
-            //         }
-            //     }
-            // }
+            for (int y = 0; y < WorldManager.Instance.ChunkHeight; y++)
+            {
+                for (int x = 0; x < WorldManager.Instance.ChunkWidth; x++)
+                {
+                    for (int z = 0; z < WorldManager.Instance.ChunkWidth; z++)
+                    {
+                        if (!_worldManager.BlockTypes[_voxelMap[x, y, z]].IsSolid) 
+                            continue;
+
+                        AddVoxelData(new Vector3(x, y, z));
+                        CreateMesh();
+
+                    }
+                }
+            }
 
         }
 
-        protected virtual void SetCollisionActive(bool active)
+        public void SetCollisionActive(bool active)
         {
             _collider.sharedMesh = active ? _meshFilter.mesh : null;
-        }
-
-        protected virtual void UpdateVoxelsInNearby(IntVector pos)
-        {
-            var voxelPos = pos.ToVector3();
-
-            for (int i = 0; i < 6; i++)
-            {
-                var currentVoxel = new IntVector(voxelPos + VoxelData.FaceCheck[i]);
-                    
-                // if (!Math3D.IsInsideObject(currentVoxel, size)) {
-                //
-                //     // WorldGeneration.Instance.GetChunkFromVector3(currentVoxel.ToVector3() + position).UpdateChunk();
-                //
-                // }
-            }
         }
         
         public VoxelCoord GetVoxel (Vector3 pos)
@@ -143,11 +119,10 @@ namespace Management.ChunkManagement
         }
         
         
-        public void SetVoxel (VoxelCoord voxelCoord, byte id)
+        public void SetVoxel (VoxelCoord voxelCoordl, byte id)
         {
-            _voxelMap[voxelCoord.x, voxelCoord.y, voxelCoord.z] = id;
+            _voxelMap[voxelCoordl.x, voxelCoordl.y, voxelCoordl.z] = id;
             UpdateChunk();
-            UpdateVoxelsInNearby(voxelCoord.ToIntVector());
             SetCollisionActive(true);
         }
 
@@ -155,11 +130,11 @@ namespace Management.ChunkManagement
 
             ClearMesh();
 
-            for (int y = 0; y < 2; y++) {
-                for (int x = 0; x < 2; x++) {
-                    for (int z = 0; z < 2; z++) {
+            for (int y = 0; y < WorldManager.Instance.ChunkHeight; y++) {
+                for (int x = 0; x < WorldManager.Instance.ChunkWidth; x++) {
+                    for (int z = 0; z < WorldManager.Instance.ChunkWidth; z++) {
 
-                        if (true)
+                        if (WorldManager.Instance.BlockTypes[_voxelMap[x,y,z]].IsSolid)
                             AddVoxelData(new Vector3(x, y, z));
 
                     }
@@ -170,48 +145,80 @@ namespace Management.ChunkManagement
 
         }
 
+        private void UpdateAmbientVoxels()
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                
+            }
+        }
+        
         private void ClearMesh () 
         {
+
             _vertexIndex = 0;
             _vertices.Clear();
             _triangles.Clear();
             _uvs.Clear();
 
         }
-        
-        protected virtual void SetVoxelMap()
+
+        private void PopulateVoxelMap()
         {
-            // for (int y = 0; y < size.y; y++)
-            // {
-            //     for (int x = 0; x < size.x; x++)
-            //     {
-            //         for (int z = 0; z < size.z; z++)
-            //         {
-            //             var voxelPosition = new Vector3(x, y, z) + position;
-            //             var voxelIndex = _worldGeneration.GetVoxelByPosition(voxelPosition);
-            //             _voxelMap[x, y, z] = voxelIndex;
-            //         }
-            //     }
-            // }
+            for (int y = 0; y < WorldManager.Instance.ChunkHeight; y++)
+            {
+                for (int x = 0; x < WorldManager.Instance.ChunkWidth; x++)
+                {
+                    for (int z = 0; z < WorldManager.Instance.ChunkWidth; z++)
+                    {
+                        var voxelPosition = new Vector3(x, y, z) + position;
+                        byte voxelIndex = _worldManager.GetVoxelByPosition(voxelPosition);
+
+                        var intPos = new IntVector(voxelPosition);
+                        _voxelMap[x, y, z] = voxelIndex;
+                    }
+                }
+            }
         }
 
         public byte GetVoxelType(VoxelCoord coords)
         {
             return _voxelMap[coords.x, coords.y, coords.z];
         }
+        
+        private bool IsInsideChunk(int x, int y, int z)
+        {
+            return y < 0 || y > WorldManager.Instance.ChunkHeight - 1 || x < 0 || x > WorldManager.Instance.ChunkWidth - 1 || z < 0 || z > WorldManager.Instance.ChunkWidth - 1;
+        }
 
-        protected virtual bool HasNeighbourVoxel(Vector3 pos)
+        private bool HasNeighbourVoxel(Vector3 pos)
         {
             var intPos = new IntVector(pos);
             
-            // return Math3D.IsInsideObject(intPos, size) 
-            //     ? _worldGeneration.BlockTypes[_worldGeneration.GetVoxelByPosition(pos + position)].IsSolid 
-            //     : _worldGeneration.BlockTypes[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid;
+            if (IsInsideChunk(intPos.x, intPos.y, intPos.z))
+                return _worldManager.BlockTypes[_worldManager.GetVoxelByPosition(pos + position)].IsSolid;
 
-            return true;
+            return _worldManager.BlockTypes[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid;
         }
 
-        protected virtual void AddVoxelData(Vector3 pos)
+        // public byte SetVoxel(Vector3 pos, byte id)
+        // {
+        //     var voxelPos = new IntVector(pos);
+        //     var chunkPos = new IntVector(_chunkObject.transform.position);
+        //
+        //     voxelPos.x -= voxelPos.x / chunkPos.x;
+        //     voxelPos.z -= voxelPos.z / chunkPos.z;
+        //
+        //     return ;
+        // }
+        
+        bool IsVoxelInChunk (int x, int y, int z)
+        {
+            return !(x < 0 || x > WorldManager.Instance.ChunkWidth - 1 || y < 0 ||
+                     y > WorldManager.Instance.ChunkHeight - 1 || z < 0 || z > WorldManager.Instance.ChunkWidth - 1);
+        }
+
+        public void AddVoxelData(Vector3 pos)
         {
             for (int i = 0; i < 6; i++)
             {
@@ -221,12 +228,12 @@ namespace Management.ChunkManagement
                 var voxelPos = new IntVector(pos);
 
                 var voxelID = _voxelMap[voxelPos.x, voxelPos.y, voxelPos.z];
-                //
-                // AddTexture(_worldGeneration.BlockTypes[voxelID].GetTextureIDFromSide(VoxelData.Sides[i]));
+                
+                AddTexture(_worldManager.BlockTypes[voxelID].GetTextureIDFromSide(VoxelData.Sides[i]));
                 
                 for (int j = 0; j < 6; j++)
                 {
-                    var trisIndex = VoxelData.Triangles[i, j];
+                    int trisIndex = VoxelData.Triangles[i, j];
                     _vertices.Add(VoxelData.Vertices[trisIndex] + pos);
                     _triangles.Add(_vertexIndex);
                     _vertexIndex++;
@@ -236,13 +243,10 @@ namespace Management.ChunkManagement
 
         private void CreateMesh()
         {
-            var mesh = new Mesh
-            {
-                vertices = _vertices.ToArray(),
-                triangles = _triangles.ToArray(),
-                uv = _uvs.ToArray()
-            };
-            
+            Mesh mesh = new Mesh();
+            mesh.vertices = _vertices.ToArray();
+            mesh.triangles = _triangles.ToArray();
+            mesh.uv = _uvs.ToArray();
             mesh.RecalculateNormals();
             _meshFilter.mesh = mesh;
 
@@ -252,25 +256,23 @@ namespace Management.ChunkManagement
 
         private void AddTexture(int textureID)
         {
-            // var textureSize = WorldGeneration.Instance.BlockOnAtlasSize;
-            // float y = textureID / WorldGeneration.Instance.AtlasSize;
-            // var x = textureID - (y * WorldGeneration.Instance.AtlasSize);
-            //
-            // x *= textureSize;
-            // y *= textureSize;
-            //
-            // y = 1f - y - textureSize;
-            //
-            // for (int i = 0; i < VoxelData.UVs.Length; i++)
-            // {
-            //     var xOffset = VoxelData.UVs[i].x.Equals(1) ? textureSize : 0;
-            //     var yOffset = VoxelData.UVs[i].y.Equals(1) ? textureSize : 0;
-            //     
-            //     _uvs.Add(new Vector2(x + xOffset, y + yOffset));
-            // }
+            var textureSize = WorldManager.Instance.BlockOnAtlasSize;
+            float y = textureID / WorldManager.Instance.AtlasSize;
+            var x = textureID - (y * WorldManager.Instance.AtlasSize);
+            
+            x *= textureSize;
+            y *= textureSize;
+
+            y = 1f - y - textureSize;
+
+            for (int i = 0; i < VoxelData.UVs.Length; i++)
+            {
+                float xOffset = VoxelData.UVs[i].x.Equals(1) ? textureSize : 0;
+                float yOffset = VoxelData.UVs[i].y.Equals(1) ? textureSize : 0;
+                
+                _uvs.Add(new Vector2(x + xOffset, y + yOffset));
+            }
         }
-
-
 
     }
 

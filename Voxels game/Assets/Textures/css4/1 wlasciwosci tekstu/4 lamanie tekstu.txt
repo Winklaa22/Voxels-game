@@ -1,9 +1,0 @@
-<p style="width:200px;border:solid 1px black;">Lorem ipsum dolor sit amet,
-consectetur adipiscing elit.
-Praesent.non.turpis.at.leo.tempus.consectetur.vitae.non.mi.</p>
-
-p
-{
-word-wrap:break-word;
-}
-........................................

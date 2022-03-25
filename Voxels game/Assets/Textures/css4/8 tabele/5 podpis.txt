@@ -1,4 +1,0 @@
-<table style="caption-side:top;">
-<table style="caption-side:bottom;">
-<table style="caption-side:left;">
-<table style="caption-side:right;">

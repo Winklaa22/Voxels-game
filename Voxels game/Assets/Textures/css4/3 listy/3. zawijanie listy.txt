@@ -1,8 +1,0 @@
-<ul style="list-style-position:outsite;">
-<li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempus
-convallis malesuada. </li>
-</ul>
-<ul style="list-style-position:inside;">
-<li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempus
-convallis malesuada. </li>
-</ul>

@@ -1,7 +1,0 @@
-<ul style="list-style-image:url(punktor.gif);">
-<li>Pierwsza pozycja listy z w³asnym punktorem.</li>
-<li>Druga pozycja listy z w³asnym punktorem.</li>
-<li>Trzecia pozycja listy z w³asnym punktorem.</li>
-</ul>
-................
-

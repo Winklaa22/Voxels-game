@@ -1,7 +1,0 @@
-<p style="color:red;">Blok tekstu w kolorze czerwonym.</p>
-<h1 style="color:#FF0000;">Nag³ówek stopnia pierwszego równie¿ w kolorze
-czerwonym.</h1>
-<ul style="color:rgb(255,0,0);">
-<li>Lista równie¿ w kolorze czerwonym</li>
-<li>Lista równie¿ w kolorze czerwonym</li>
-<li>Lista równie¿ w kolorze czerwonym</li>

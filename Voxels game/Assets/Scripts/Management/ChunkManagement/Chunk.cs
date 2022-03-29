@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
+using _3D.Mathf2;
 using Management.VoxelManagement;
 using Management.WorldManagement;
-using NewMathf;
-using Tools;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -69,7 +68,7 @@ namespace Management.ChunkManagement
 
         private void Init()
         {
-            _voxelMap = new byte[WorldManager.Instance.ChunkWidth, WorldManager.Instance.ChunkHeight, WorldManager.Instance.ChunkWidth];
+            _voxelMap = new byte[WorldManager.Instance.ChunkSize.x, WorldManager.Instance.ChunkSize.y, WorldManager.Instance.ChunkSize.z];
             _collider = gameObject.AddComponent<MeshCollider>();
             _meshFilter = gameObject.AddComponent<MeshFilter>();
             _meshRenderer = gameObject.AddComponent<MeshRenderer>();
@@ -84,12 +83,10 @@ namespace Management.ChunkManagement
         
         private void CreateChunk()
         {
-            for (int y = 0; y < WorldManager.Instance.ChunkHeight; y++)
-            {
-                for (int x = 0; x < WorldManager.Instance.ChunkWidth; x++)
-                {
-                    for (int z = 0; z < WorldManager.Instance.ChunkWidth; z++)
-                    {
+            for (int y = 0; y < WorldManager.Instance.ChunkSize.y; y++) {
+                for (int x = 0; x < WorldManager.Instance.ChunkSize.x; x++) {
+                    for (int z = 0; z < WorldManager.Instance.ChunkSize.z; z++) {
+
                         if (!_worldManager.BlockTypes[_voxelMap[x, y, z]].IsSolid) 
                             continue;
 
@@ -124,15 +121,33 @@ namespace Management.ChunkManagement
             _voxelMap[voxelCoordl.x, voxelCoordl.y, voxelCoordl.z] = id;
             UpdateChunk();
             SetCollisionActive(true);
+            UpdateNearestVoxel(new IntVector(voxelCoordl.x, voxelCoordl.y, voxelCoordl.z));
+        }
+
+        private void UpdateNearestVoxel(IntVector coord)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                var nearestVoxelPosition = new IntVector(coord.ToVector3() + VoxelData.FaceCheck[i]);
+                if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldManager.Instance.ChunkSize))
+                {
+                    WorldManager.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position).UpdateChunk();
+                    
+                    
+                }
+            }
         }
 
         void UpdateChunk () {
 
             ClearMesh();
 
-            for (int y = 0; y < WorldManager.Instance.ChunkHeight; y++) {
-                for (int x = 0; x < WorldManager.Instance.ChunkWidth; x++) {
-                    for (int z = 0; z < WorldManager.Instance.ChunkWidth; z++) {
+            for (int y = 0; y < WorldManager.Instance.ChunkSize.y; y++) 
+            {
+                for (int x = 0; x < WorldManager.Instance.ChunkSize.x; x++) 
+                {
+                    for (int z = 0; z < WorldManager.Instance.ChunkSize.z; z++) 
+                    {
 
                         if (WorldManager.Instance.BlockTypes[_voxelMap[x,y,z]].IsSolid)
                             AddVoxelData(new Vector3(x, y, z));
@@ -145,14 +160,6 @@ namespace Management.ChunkManagement
 
         }
 
-        private void UpdateAmbientVoxels()
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                
-            }
-        }
-        
         private void ClearMesh () 
         {
 
@@ -165,11 +172,11 @@ namespace Management.ChunkManagement
 
         private void PopulateVoxelMap()
         {
-            for (int y = 0; y < WorldManager.Instance.ChunkHeight; y++)
+            for (int y = 0; y < WorldManager.Instance.ChunkSize.y; y++)
             {
-                for (int x = 0; x < WorldManager.Instance.ChunkWidth; x++)
+                for (int x = 0; x < WorldManager.Instance.ChunkSize.x; x++)
                 {
-                    for (int z = 0; z < WorldManager.Instance.ChunkWidth; z++)
+                    for (int z = 0; z < WorldManager.Instance.ChunkSize.z; z++)
                     {
                         var voxelPosition = new Vector3(x, y, z) + position;
                         byte voxelIndex = _worldManager.GetVoxelByPosition(voxelPosition);
@@ -188,7 +195,7 @@ namespace Management.ChunkManagement
         
         private bool IsInsideChunk(int x, int y, int z)
         {
-            return y < 0 || y > WorldManager.Instance.ChunkHeight - 1 || x < 0 || x > WorldManager.Instance.ChunkWidth - 1 || z < 0 || z > WorldManager.Instance.ChunkWidth - 1;
+            return y < 0 || y > WorldManager.Instance.ChunkSize.y - 1 || x < 0 || x > WorldManager.Instance.ChunkSize.x - 1 || z < 0 || z > WorldManager.Instance.ChunkSize.z - 1;
         }
 
         private bool HasNeighbourVoxel(Vector3 pos)
@@ -212,11 +219,11 @@ namespace Management.ChunkManagement
         //     return ;
         // }
         
-        bool IsVoxelInChunk (int x, int y, int z)
-        {
-            return !(x < 0 || x > WorldManager.Instance.ChunkWidth - 1 || y < 0 ||
-                     y > WorldManager.Instance.ChunkHeight - 1 || z < 0 || z > WorldManager.Instance.ChunkWidth - 1);
-        }
+        // bool IsVoxelInChunk (int x, int y, int z)
+        // {
+        //     return !(x < 0 || x > WorldManager.Instance.ChunkSize.x - 1 || y < 0 ||
+        //              y > WorldManager.Instance.ChunkHeight - 1 || z < 0 || z > WorldManager.Instance.ChunkWidth - 1);
+        // }
 
         public void AddVoxelData(Vector3 pos)
         {
@@ -252,7 +259,7 @@ namespace Management.ChunkManagement
 
         }
 
-
+    
 
         private void AddTexture(int textureID)
         {

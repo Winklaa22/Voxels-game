@@ -15,11 +15,11 @@ namespace Management.ChunkManagement
         
         public ChunkCoord (Vector3 pos) {
 
-            int xCheck = Mathf.FloorToInt(pos.x);
-            int zCheck = Mathf.FloorToInt(pos.z);
+            var xCheck = Mathf.FloorToInt(pos.x);
+            var zCheck = Mathf.FloorToInt(pos.z);
 
-            x = xCheck / WorldManager.Instance.ChunkWidth;
-            z = zCheck / WorldManager.Instance.ChunkWidth;
+            x = xCheck / WorldManager.Instance.ChunkSize.x;
+            z = zCheck / WorldManager.Instance.ChunkSize.x;
 
         }
         

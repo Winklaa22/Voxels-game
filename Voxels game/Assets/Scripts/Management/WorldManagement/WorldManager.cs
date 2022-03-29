@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using _3D.Mathf2;
 using Blocks.Type;
 using Management.ChunkManagement;
 using Management.VoxelManagement;
-using NewMathf;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Management.WorldManagement
 {
-    public class WorldManager : MonoBehaviour
+    public sealed class WorldManager : MonoBehaviour
     {
         public static WorldManager Instance;
         [SerializeField] private int _seed;
@@ -28,26 +28,24 @@ namespace Management.WorldManagement
             get { return 1 / (float)_atlasSize; }
         }
 
-        [Header("Chunk Size")]
-        [SerializeField] private int _chunkWidth = 6;
-        public int ChunkWidth
-        {
-            get { return _chunkWidth; }
-        }
-
-        [SerializeField] private int _chunkHeight = 40;
-        public int ChunkHeight
-        {
-            get { return _chunkHeight; }
-        }
-
         private List<ChunkCoord> _activeChunks = new List<ChunkCoord>();
+
+        [SerializeField] private IntVector _chunkSize;
+
+        public IntVector ChunkSize
+        {
+            get
+            {
+                return _chunkSize;
+            }
+        }
+        
 
         private int WorldSizeInVoxels
         {
             get
             {
-                return _worldSize * _chunkWidth;
+                return _worldSize * _chunkSize.x;
             }
         }
         
@@ -61,9 +59,9 @@ namespace Management.WorldManagement
             }   
         }
 
-        [SerializeField] private TextureType[] _blockTypes;
+        [SerializeField] private VoxelType[] _blockTypes;
 
-        public  TextureType[] BlockTypes
+        public VoxelType[] BlockTypes
         {
             get
             {
@@ -81,6 +79,7 @@ namespace Management.WorldManagement
         private void Init()
         {
             Instance = this;
+            _blockTypes = Resources.LoadAll<VoxelType>("TextureTypes");
             _chunks = new Chunk[_worldSize, _worldSize];
         }
 
@@ -109,19 +108,21 @@ namespace Management.WorldManagement
 
         private ChunkCoord GetChunkCoords(Vector3 pos)
         {
-            var x = Mathf.FloorToInt(pos.x / _chunkWidth);
-            var z = Mathf.FloorToInt(pos.z / _chunkWidth);
+            var x = Mathf.FloorToInt(pos.x / _chunkSize.x);
+            var z = Mathf.FloorToInt(pos.z / _chunkSize.x);
             return new ChunkCoord(x, z);
         }
         
         public Chunk GetChunkFromVector3 (Vector3 pos) {
 
-            var x = Mathf.FloorToInt(pos.x / _chunkHeight);
-            var z = Mathf.FloorToInt(pos.z / _chunkWidth);
+            var x = Mathf.FloorToInt(pos.x / _chunkSize.x);
+            var z = Mathf.FloorToInt(pos.z / _chunkSize.x);
             
             return _chunks[x, z];
 
         }
+        
+        
 
         private void CheckViewDistance()
         {
@@ -174,8 +175,8 @@ namespace Management.WorldManagement
                 {
                     name = "Chunk " + coord.x + ", " + coord.z,
                     parent = transform,
-                    position = new Vector3(coord.x * ChunkWidth, 0,
-                        coord.z * ChunkWidth)
+                    position = new Vector3(coord.x * _chunkSize.x, 0,
+                        coord.z * _chunkSize.x)
                 }
             };
             
@@ -187,7 +188,7 @@ namespace Management.WorldManagement
 
             var thisChunk = new ChunkCoord(pos);
 
-            if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > _chunkHeight)
+            if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > _chunkSize.y)
                 return false;
 
             if (_chunks[thisChunk.x, thisChunk.z] != null && _chunks[thisChunk.x, thisChunk.z].IsVoxelMapPopulated)
@@ -204,7 +205,7 @@ namespace Management.WorldManagement
         public void SetVoxel(Chunk chunk ,Vector3 pos, byte type)
         {
 
-            if (pos.y < 0 || pos.y > _chunkHeight)
+            if (pos.y < 0 || pos.y > _chunkSize.y)
                 return;
 
             var voxel = chunk.GetVoxel(pos);
@@ -225,7 +226,7 @@ namespace Management.WorldManagement
             if (y.Equals(0))
                 return 1;
 
-            var terrainHeight = Mathf.FloorToInt(_chunkHeight * PerlinNoise.GetNoiseMap(new Vector3(pos.x, pos.z), .25f, 0));
+            var terrainHeight = Mathf.FloorToInt(_chunkSize.y * GetNoiseMap(new Vector3(pos.x, pos.z), .25f, 0));
 
             if (y.Equals(terrainHeight))
                 return 3;
@@ -234,7 +235,11 @@ namespace Management.WorldManagement
 
         }
 
-
+        private float GetNoiseMap(Vector3 pos, float scale, float offset)
+        {
+            var noise = Mathf.PerlinNoise(((pos.x + .1f) / _chunkSize.x * scale + offset), (pos.y + .1f) / _chunkSize.x * scale + offset);
+            return noise;
+        }
 
         private bool IsChunkInWorld(ChunkCoord coord)
         {
@@ -243,7 +248,7 @@ namespace Management.WorldManagement
 
         private bool IsVoxelInTheWorld(Vector3 pos)
         {
-            return pos.x >= 0 && pos.x < WorldSizeInVoxels - 1 && pos.y >= 0 && pos.y < _chunkHeight && pos.z >= 1 && pos.z < WorldSizeInVoxels - 1;
+            return pos.x >= 0 && pos.x < WorldSizeInVoxels - 1 && pos.y >= 0 && pos.y < _chunkSize.y && pos.z >= 1 && pos.z < WorldSizeInVoxels - 1;
         }
     }
 }

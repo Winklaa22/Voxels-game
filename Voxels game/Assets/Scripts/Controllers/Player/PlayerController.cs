@@ -1,6 +1,6 @@
+using _3D.Mathf2;
 using Management.ChunkManagement;
 using Management.WorldManagement;
-using NewMathf;
 using UnityEngine;
 
 namespace Controllers.Player

@@ -86,12 +86,19 @@ namespace Management.WorldManagement
         private void Start()
         {
             Random.InitState(_seed);
+            SpawnPlayer();
             GenerateWorld();
         }
 
         private void Update()
         {
             CheckViewDistance();
+        }
+
+        private void SpawnPlayer()
+        {
+            var spawnPos = new Vector3(_worldSize * .5f, 40, _worldSize * .5f);
+            _player.transform.position = spawnPos;
         }
 
         private void GenerateWorld()

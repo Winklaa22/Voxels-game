@@ -71,13 +71,19 @@ namespace Controllers.Player
             
             var hit = new RaycastHit();
             if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
+            {
+                _block.SetActive(false);
                 return;
+            }
             
-            var hitPoint = new IntVector(hit.point - hit.normal * .5f).ToVector3() ;
-            
-            if(!WorldManager.Instance.CheckForVoxel(hitPoint) && !hit.transform.GetComponent<Chunk>())
-                return;
+            var hitPoint = RoundToInt(hit.point - hit.normal * .5f);
 
+            if (!WorldManager.Instance.CheckForVoxel(hitPoint) && !hit.transform.GetComponent<Chunk>())
+                return;
+            
+            _block.SetActive(true);
+            
+                
             var chunk = hit.transform.GetComponent<Chunk>();
 
             if (Input.GetMouseButtonDown(0))
@@ -87,13 +93,23 @@ namespace Controllers.Player
             
             if (Input.GetMouseButtonDown(1))
             {
-                WorldManager.Instance.SetVoxel(chunk ,new IntVector(hit.point + hit.normal * .5f).ToVector3(), 1);
+                WorldManager.Instance.SetVoxel(chunk ,RoundToInt(hit.point + hit.normal * .5f), 1);
             }
                 
             
             
             _block.transform.position = hitPoint;
 
+        }
+
+
+        private Vector3 RoundToInt(Vector3 vector)
+        {
+            var x = Mathf.RoundToInt(vector.x);
+            var y = Mathf.RoundToInt(vector.y);
+            var z = Mathf.RoundToInt(vector.z);
+            
+            return new Vector3(x, y, z);
         }
 
 

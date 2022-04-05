@@ -16,14 +16,14 @@ MonoBehaviour:
   _isSolid: 1
   _textures:
   - _blockSide: 0
-    _id: 8
+    _id: 1
   - _blockSide: 1
-    _id: 8
+    _id: 1
   - _blockSide: 2
-    _id: 8
+    _id: 1
   - _blockSide: 3
-    _id: 8
+    _id: 1
   - _blockSide: 4
-    _id: 8
+    _id: 1
   - _blockSide: 5
-    _id: 8
+    _id: 1

@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a9bdc134e1033614b8713c206f60a23e, type: 3}
-  m_Name: Bedrock
+  m_Name: Bricks
   m_EditorClassIdentifier: 
-  _type: 3
+  _type: 6
   _isSolid: 1
   _textures:
   - _blockSide: 0
-    _id: 0
+    _id: 9
   - _blockSide: 1
-    _id: 0
+    _id: 9
   - _blockSide: 2
-    _id: 0
+    _id: 9
   - _blockSide: 3
-    _id: 0
+    _id: 9
   - _blockSide: 4
-    _id: 0
+    _id: 9
   - _blockSide: 5
-    _id: 0
+    _id: 9

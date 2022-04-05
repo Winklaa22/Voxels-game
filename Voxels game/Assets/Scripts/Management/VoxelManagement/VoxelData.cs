@@ -1,5 +1,8 @@
 using Blocks;
+using Management.WorldManagement;
+using UnityEditor.Rendering.Universal.ShaderGraph;
 using UnityEngine;
+using MaterialType = Blocks.Type.MaterialType;
 
 namespace Management.VoxelManagement
 {
@@ -58,6 +61,21 @@ namespace Management.VoxelManagement
             new Vector2(0, 1),
             new Vector2(1, 0),
         };
-        
+
+
+        public static byte GetMaterialIndexFromType(MaterialType type)
+        {
+            var types = WorldManager.Instance.BlockTypes;
+            
+            for (byte i = 0; i < types.Length; i++)
+            {
+                if(!type.Equals(types[i].Type))
+                    continue;
+
+                return i;
+            }
+            
+            return 0;
+        }
     }
 }

@@ -1,4 +1,5 @@
 using _3D.Mathf2;
+using Inventory;
 using Management.ChunkManagement;
 using Management.WorldManagement;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Controllers.Player
 
         [SerializeField] private float _maxRaycastDistance = 3;
         private Vector2 _mouseInput;
+        private int _scrollIndex;
         private Rigidbody _rigidbody;
         private Transform _cam;
         
@@ -31,6 +33,7 @@ namespace Controllers.Player
             SetJump();
             SetRotate();
             UpdateRaycast();
+            CheckScrolling();
         }
 
 
@@ -68,7 +71,6 @@ namespace Controllers.Player
 
         private void UpdateRaycast()
         {
-            
             var hit = new RaycastHit();
             if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
             {
@@ -93,13 +95,26 @@ namespace Controllers.Player
             
             if (Input.GetMouseButtonDown(1))
             {
-                WorldManager.Instance.SetVoxel(chunk ,RoundToInt(hit.point + hit.normal * .5f), 1);
+                WorldManager.Instance.SetVoxel(chunk ,RoundToInt(hit.point + hit.normal * .5f), InventoryManager.Instance.GetBlockIndex());
             }
                 
             
             
             _block.transform.position = hitPoint;
 
+        }
+        
+        private void CheckScrolling()
+        {
+            if(Input.GetAxis("Mouse ScrollWheel") > 0f && _scrollIndex < 6)
+            {
+                _scrollIndex++;
+            }
+
+            if (Input.GetAxis("Mouse ScrollWheel") < 0f && _scrollIndex > 0)
+            {
+                _scrollIndex--;
+            }
         }
 
 

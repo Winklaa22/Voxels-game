@@ -9,21 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9bdc134e1033614b8713c206f60a23e, type: 3}
-  m_Name: Grass
+  m_Script: {fileID: 11500000, guid: ec968df0054f3b14093c306adc5f5fff, type: 3}
+  m_Name: WoodBlock
   m_EditorClassIdentifier: 
+  Name: Wood
+  ItemImage: {fileID: 2800000, guid: b7c7db0e7154914488f35905ec2e069f, type: 3}
   _type: 1
-  _isSolid: 1
-  _textures:
-  - _blockSide: 0
-    _id: 6
-  - _blockSide: 1
-    _id: 1
-  - _blockSide: 2
-    _id: 7
-  - _blockSide: 3
-    _id: 7
-  - _blockSide: 4
-    _id: 7
-  - _blockSide: 5
-    _id: 7
+  _blockProperties:
+    Type: 5

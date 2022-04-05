@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using _3D.Mathf2;
 using Management.VoxelManagement;
@@ -82,17 +83,23 @@ namespace Management.ChunkManagement
                 {
                     for (int z = 0; z < WorldManager.Instance.ChunkSize.z; z++)
                     {
-
                         if (!_worldManager.BlockTypes[_voxelMap[x, y, z]].IsSolid)
                             continue;
 
-                        AddVoxelData(new Vector3(x, y, z));
-                        CreateMesh();
+                        StartCoroutine(CreateVoxel(new Vector3(x, y, z)));
 
                     }
                 }
             }
 
+        }
+
+
+        private IEnumerator CreateVoxel(Vector3 pos)
+        {
+            AddVoxelData(pos);
+            CreateMesh();
+            yield return null;
         }
 
         private void SetCollisionActive(bool active)
@@ -125,7 +132,6 @@ namespace Management.ChunkManagement
             {
                 var chunk = WorldManager.Instance.GetChunkFromVector3(voxelCoord.ToVector3() + position);
                 var voxelPosition = chunk.GetVoxel(voxelCoord.ToVector3() + position);
-                Debug.Log("voxel position: " + voxelPosition);
                 chunk.SetVoxel(voxelPosition , id);
                 
             }
@@ -147,7 +153,6 @@ namespace Management.ChunkManagement
 
         private void UpdateChunk()
         {
-
             ClearMesh();
 
             for (int y = 0; y < WorldManager.Instance.ChunkSize.y; y++)

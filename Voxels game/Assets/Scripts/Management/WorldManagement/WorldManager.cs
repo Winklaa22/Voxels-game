@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using _3D.Mathf2;
@@ -87,7 +88,7 @@ namespace Management.WorldManagement
         {
             Random.InitState(_seed);
             SpawnPlayer();
-            GenerateWorld();
+            StartCoroutine(GenerateWorld());
         }
 
         private void Update()
@@ -101,7 +102,7 @@ namespace Management.WorldManagement
             _player.transform.position = spawnPos;
         }
 
-        private void GenerateWorld()
+        private IEnumerator GenerateWorld()
         {
             var halfSize = (int)(_worldSize * .5f);
             for (int x = halfSize - _viewDistance; x < halfSize + _viewDistance; x++)
@@ -111,6 +112,8 @@ namespace Management.WorldManagement
                     CreateChunk(x, z);
                 }
             }
+
+            yield return null;
         }
 
         private ChunkCoord GetChunkCoords(Vector3 pos)
@@ -226,19 +229,18 @@ namespace Management.WorldManagement
             if(pos.x < (GetChunkCoords(_player.position).x + _viewDistance) - 1 && pos.x >  (GetChunkCoords(_player.position).x - _viewDistance) - 1 && pos.z < (GetChunkCoords(_player.position).z + _viewDistance) - 1 && pos.z >  (GetChunkCoords(_player.position).z - _viewDistance) - 1)
             {
                 if (!IsVoxelInTheWorld(pos))
-                    return 0;
+                    return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
             }
-
-
+            
             if (y.Equals(0))
-                return 1;
+                return VoxelData.GetMaterialIndexFromType(MaterialType.BEDROCK);
 
             var terrainHeight = Mathf.FloorToInt(_chunkSize.y * GetNoiseMap(new Vector3(pos.x, pos.z), .25f, 0));
 
             if (y.Equals(terrainHeight))
-                return 3;
+                return VoxelData.GetMaterialIndexFromType(MaterialType.GRASS);
 
-            return y <= terrainHeight ? (byte) 2 : (byte) 0;
+            return y <= terrainHeight ? VoxelData.GetMaterialIndexFromType(MaterialType.DIRT) : VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
 
         }
 

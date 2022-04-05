@@ -9,7 +9,6 @@ namespace Blocks.Textures
         [SerializeField] private BlockSide _blockSide;
         public BlockSide BlockSide => _blockSide;
 
-
         [SerializeField] private int _id;
 
         public int ID => _id;

@@ -19,6 +19,8 @@ namespace Management.WorldManagement
         [SerializeField] private int _viewDistance = 5;
         [SerializeField] private Transform _player;
         [SerializeField] private int _atlasSize = 4;
+        private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
+        private float chunksToRender;
         public int AtlasSize
         {
             get { return _atlasSize; }
@@ -89,11 +91,7 @@ namespace Management.WorldManagement
             Random.InitState(_seed);
             SpawnPlayer();
             StartCoroutine(GenerateWorld());
-        }
-
-        private void Update()
-        {
-            CheckViewDistance();
+            chunksToRender = Mathf.Pow(_viewDistance * 2, 2);
         }
 
         private void SpawnPlayer()
@@ -104,13 +102,27 @@ namespace Management.WorldManagement
 
         private IEnumerator GenerateWorld()
         {
-            var halfSize = (int)(_worldSize * .5f);
-            for (int x = halfSize - _viewDistance; x < halfSize + _viewDistance; x++)
+            var coords = GetChunkCoords(_player.position);
+
+            for (int x = coords.x - _viewDistance; x < coords.x + _viewDistance; x++)
             {
-                for (int z = halfSize - _viewDistance; z < halfSize + _viewDistance; z++)
+                for (int z = coords.z - _viewDistance; z < coords.z + _viewDistance; z++)
                 {
                     CreateChunk(x, z);
+                    _chunksToGenerate.Add(new ChunkCoord(x, z));
+                    chunksToRender--;
+                    Debug.Log(chunksToRender);
+                    yield return TryToGenerate();
                 }
+            }
+        }
+
+        private IEnumerator TryToGenerate()
+        {
+            while (_chunksToGenerate.Count > 0)
+            {
+                _chunks[_chunksToGenerate[0].x, _chunksToGenerate[0].z].IsGenerated = true;
+                _chunksToGenerate.RemoveAt(0);
             }
 
             yield return null;
@@ -134,44 +146,48 @@ namespace Management.WorldManagement
         
         
 
-        private void CheckViewDistance()
-        {
-            var coords = GetChunkCoords(_player.position);
-
-            var activeChunks = new List<ChunkCoord>(_activeChunks);
-            
-            for (int x = coords.x - _viewDistance; x < coords.x + _viewDistance ; x++)
-            {
-                for (int z = coords.z - _viewDistance; z < coords.z + _viewDistance; z++)
-                {
-                    if (IsChunkInWorld(new ChunkCoord(x, z)))
-                    {
-                        if (_chunks[x, z] is null)
-                            CreateChunk(x, z);
-                        
-                        else if (!_chunks[x, z].IsActive)
-                        {
-                            _chunks[x, z].IsActive = true;
-                            _activeChunks.Add(new ChunkCoord(x, z));
-                        }
-                    }
-
-                    for (var i = 0; i < activeChunks.Count; i++)
-                    {
-                        if (activeChunks[i].x == x && activeChunks[i].z == z)
-                            continue;
-                        
-                        activeChunks.RemoveAt(i);
-                    }
-                }
-            }
-
-            foreach (var chunk in activeChunks)
-            {
-                _chunks[chunk.x, chunk.z].IsActive = false;
-                _activeChunks.Remove(new ChunkCoord(chunk.x, chunk.z));
-            }
-        }
+        // private IEnumerator CheckViewDistance()
+        // {
+        //     var coords = GetChunkCoords(_player.position);
+        //
+        //     var activeChunks = new List<ChunkCoord>(_activeChunks);
+        //     
+        //     for (int x = coords.x - _viewDistance; x < coords.x + _viewDistance ; x++)
+        //     {
+        //         for (int z = coords.z - _viewDistance; z < coords.z + _viewDistance; z++)
+        //         {
+        //             if (IsChunkInWorld(new ChunkCoord(x, z)))
+        //             {
+        //                 if (_chunks[x, z] is null)
+        //                 {
+        //                     CreateChunk(x, z);
+        //                     _chunksToGenerate.Add(new ChunkCoord(x, z));
+        //                     yield return TryToGenerate();
+        //                 }
+        //
+        //                 else if (!_chunks[x, z].IsActive)
+        //                 {
+        //                     _chunks[x, z].IsActive = true;
+        //                     _activeChunks.Add(new ChunkCoord(x, z));
+        //                 }
+        //             }
+        //
+        //             for (var i = 0; i < activeChunks.Count; i++)
+        //             {
+        //                 if (activeChunks[i].x == x && activeChunks[i].z == z)
+        //                     continue;
+        //                 
+        //                 activeChunks.RemoveAt(i);
+        //             }
+        //         }
+        //     }
+        //
+        //     foreach (var chunk in activeChunks)
+        //     {
+        //         _chunks[chunk.x, chunk.z].IsActive = false;
+        //         _activeChunks.Remove(new ChunkCoord(chunk.x, chunk.z));
+        //     }
+        // }
 
         private void CreateChunk(int x, int z)
         {

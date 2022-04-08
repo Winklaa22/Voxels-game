@@ -44,12 +44,12 @@ namespace Management.VoxelManagement
 
         public static readonly Vector3[] FaceCheck = new Vector3[6]
         {
-            new Vector3(0, 0, 1),
-            new Vector3(0, 0, -1),
-            new Vector3(0, 1, 0),
-            new Vector3(0, -1, 0),
-            new Vector3(-1, 0, 0),
-            new Vector3(1, 0, 0)
+            Vector3.forward,
+            Vector3.back, 
+            Vector3.up, 
+            Vector3.down, 
+            Vector3.left, 
+            Vector3.right
         };
         
         public static readonly Vector2[] UVs = new Vector2[6]

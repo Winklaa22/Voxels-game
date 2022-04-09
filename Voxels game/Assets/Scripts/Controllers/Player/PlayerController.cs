@@ -1,6 +1,8 @@
+using System;
 using _3D.Mathf2;
 using Inventory;
 using Management.ChunkManagement;
+using Management.UI;
 using Management.WorldManagement;
 using UnityEngine;
 
@@ -18,13 +20,25 @@ namespace Controllers.Player
         private int _scrollIndex;
         private Rigidbody _rigidbody;
         private Transform _cam;
-        
+
+        private void Awake()
+        {
+            WorldGenerator.Instance.OnWorldIsGenerated += OnWorldGenerated;
+        }
+
         private void Start()
         {
             _cam = Camera.main.transform;
             _rigidbody = GetComponent<Rigidbody>();
             Cursor.lockState = CursorLockMode.Locked;
 
+            _rigidbody.isKinematic = true;
+        }
+
+        private void OnWorldGenerated()
+        {
+            _rigidbody.isKinematic = false;
+            UIManager.Instance.SetScreen(ScreenType.HUD);
         }
 
         private void Update()
@@ -80,7 +94,7 @@ namespace Controllers.Player
             
             var hitPoint = RoundToInt(hit.point - hit.normal * .5f);
 
-            if (!WorldManager.Instance.CheckForVoxel(hitPoint) && !hit.transform.GetComponent<Chunk>())
+            if (!WorldGenerator.Instance.CheckForVoxel(hitPoint) && !hit.transform.GetComponent<Chunk>())
                 return;
             
             _block.SetActive(true);
@@ -90,12 +104,12 @@ namespace Controllers.Player
 
             if (Input.GetMouseButtonDown(0))
             {
-                WorldManager.Instance.SetVoxel(chunk ,hitPoint, 0);
+                WorldGenerator.Instance.SetVoxel(chunk ,hitPoint, 0);
             }
             
             if (Input.GetMouseButtonDown(1))
             {
-                WorldManager.Instance.SetVoxel(chunk ,RoundToInt(hit.point + hit.normal * .5f), InventoryManager.Instance.GetBlockIndex());
+                WorldGenerator.Instance.SetVoxel(chunk ,RoundToInt(hit.point + hit.normal * .5f), InventoryManager.Instance.GetBlockIndex());
             }
                 
             

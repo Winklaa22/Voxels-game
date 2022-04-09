@@ -18,8 +18,8 @@ namespace Management.ChunkManagement
             var xCheck = Mathf.FloorToInt(pos.x);
             var zCheck = Mathf.FloorToInt(pos.z);
 
-            x = xCheck / WorldManager.Instance.ChunkSize.x;
-            z = zCheck / WorldManager.Instance.ChunkSize.x;
+            x = xCheck / WorldGenerator.Instance.ChunkSize.x;
+            z = zCheck / WorldGenerator.Instance.ChunkSize.x;
 
         }
         

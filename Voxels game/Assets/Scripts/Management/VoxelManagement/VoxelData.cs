@@ -65,7 +65,7 @@ namespace Management.VoxelManagement
 
         public static byte GetMaterialIndexFromType(MaterialType type)
         {
-            var types = WorldManager.Instance.BlockTypes;
+            var types = WorldGenerator.Instance.BlockTypes;
             
             for (byte i = 0; i < types.Length; i++)
             {

@@ -25,7 +25,7 @@ namespace Management.ChunkManagement
 
         [Header("Map")] private byte[,,] _voxelMap;
 
-        private WorldManager _worldManager;
+        private WorldGenerator _worldGenerator;
         private bool _isVoxelMapPopulated = false;
         [SerializeField] private bool _isGenerated;
 
@@ -41,7 +41,7 @@ namespace Management.ChunkManagement
         {
             get
             {
-                return WorldManager.Instance.ChunkSize;
+                return WorldGenerator.Instance.ChunkSize;
             }
         }
 
@@ -78,13 +78,13 @@ namespace Management.ChunkManagement
 
         private IEnumerator Initialize()
         {
-            _voxelMap = new byte[WorldManager.Instance.ChunkSize.x, WorldManager.Instance.ChunkSize.y,
-                WorldManager.Instance.ChunkSize.z];
+            _voxelMap = new byte[WorldGenerator.Instance.ChunkSize.x, WorldGenerator.Instance.ChunkSize.y,
+                WorldGenerator.Instance.ChunkSize.z];
             _collider = gameObject.AddComponent<MeshCollider>();
             _meshFilter = gameObject.AddComponent<MeshFilter>();
             _meshRenderer = gameObject.AddComponent<MeshRenderer>();
-            _worldManager = WorldManager.Instance;
-            _meshRenderer.material = _worldManager.WorldMaterial;
+            _worldGenerator = WorldGenerator.Instance;
+            _meshRenderer.material = _worldGenerator.WorldMaterial;
 
 
             PopulateVoxelMap();
@@ -96,13 +96,13 @@ namespace Management.ChunkManagement
 
         private void CreateChunk()
         {
-            for (int y = 0; y < WorldManager.Instance.ChunkSize.y; y++)
+            for (int y = 0; y < WorldGenerator.Instance.ChunkSize.y; y++)
             {
-                for (int x = 0; x < WorldManager.Instance.ChunkSize.x; x++)
+                for (int x = 0; x < WorldGenerator.Instance.ChunkSize.x; x++)
                 {
-                    for (int z = 0; z < WorldManager.Instance.ChunkSize.z; z++)
+                    for (int z = 0; z < WorldGenerator.Instance.ChunkSize.z; z++)
                     {
-                        if (!_worldManager.BlockTypes[_voxelMap[x, y, z]].IsSolid)
+                        if (!_worldGenerator.BlockTypes[_voxelMap[x, y, z]].IsSolid)
                             continue;
 
                         AddVoxelData(new Vector3(x, y, z));
@@ -133,7 +133,7 @@ namespace Management.ChunkManagement
 
         public void SetVoxel(IntVector voxelCoord, byte id)
         {
-            if (!Math3D.IsInsideTheObject(voxelCoord, WorldManager.Instance.ChunkSize))
+            if (!Math3D.IsInsideTheObject(voxelCoord, WorldGenerator.Instance.ChunkSize))
             {
                 _voxelMap[voxelCoord.x, voxelCoord.y, voxelCoord.z] = id;
                 UpdateChunk();
@@ -142,7 +142,7 @@ namespace Management.ChunkManagement
             }
             else
             {
-                var chunk = WorldManager.Instance.GetChunkFromVector3(voxelCoord.ToVector3() + position);
+                var chunk = WorldGenerator.Instance.GetChunkFromVector3(voxelCoord.ToVector3() + position);
                 var voxelPosition = chunk.GetVoxel(voxelCoord.ToVector3() + position);
                 chunk.SetVoxel(voxelPosition , id);
                 
@@ -154,11 +154,11 @@ namespace Management.ChunkManagement
             for (int i = 0; i < 6; i++)
             {
                 var nearestVoxelPosition = new IntVector(coord.ToVector3() + VoxelData.FaceCheck[i]);
-                if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldManager.Instance.ChunkSize))
+                if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldGenerator.Instance.ChunkSize))
                     continue;
 
 
-                var chunk = WorldManager.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position);
+                var chunk = WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position);
                 chunk.UpdateChunk();
             }
         }
@@ -167,13 +167,13 @@ namespace Management.ChunkManagement
         {
             ClearMesh();
 
-            for (int y = 0; y < WorldManager.Instance.ChunkSize.y; y++)
+            for (int y = 0; y < WorldGenerator.Instance.ChunkSize.y; y++)
             {
-                for (int x = 0; x < WorldManager.Instance.ChunkSize.x; x++)
+                for (int x = 0; x < WorldGenerator.Instance.ChunkSize.x; x++)
                 {
-                    for (int z = 0; z < WorldManager.Instance.ChunkSize.z; z++)
+                    for (int z = 0; z < WorldGenerator.Instance.ChunkSize.z; z++)
                     {
-                        if (WorldManager.Instance.BlockTypes[_voxelMap[x, y, z]].IsSolid)
+                        if (WorldGenerator.Instance.BlockTypes[_voxelMap[x, y, z]].IsSolid)
                             AddVoxelData(new Vector3(x, y, z));
                     }
                 }
@@ -193,14 +193,14 @@ namespace Management.ChunkManagement
 
         private void PopulateVoxelMap()
         {
-            for (int y = 0; y < WorldManager.Instance.ChunkSize.y; y++)
+            for (int y = 0; y < WorldGenerator.Instance.ChunkSize.y; y++)
             {
-                for (int x = 0; x < WorldManager.Instance.ChunkSize.x; x++)
+                for (int x = 0; x < WorldGenerator.Instance.ChunkSize.x; x++)
                 {
-                    for (int z = 0; z < WorldManager.Instance.ChunkSize.z; z++)
+                    for (int z = 0; z < WorldGenerator.Instance.ChunkSize.z; z++)
                     {
                         var voxelPosition = new Vector3(x, y, z) + position;
-                        var voxelIndex = _worldManager.GetVoxelByPosition(voxelPosition);
+                        var voxelIndex = _worldGenerator.GetVoxelByPosition(voxelPosition);
 
                         _voxelMap[x, y, z] = voxelIndex;
                     }
@@ -215,8 +215,8 @@ namespace Management.ChunkManagement
 
         private bool IsInsideChunk(int x, int y, int z)
         {
-            return y < 0 || y > WorldManager.Instance.ChunkSize.y - 1 || x < 0 ||
-                   x > WorldManager.Instance.ChunkSize.x - 1 || z < 0 || z > WorldManager.Instance.ChunkSize.z - 1;
+            return y < 0 || y > WorldGenerator.Instance.ChunkSize.y - 1 || x < 0 ||
+                   x > WorldGenerator.Instance.ChunkSize.x - 1 || z < 0 || z > WorldGenerator.Instance.ChunkSize.z - 1;
         }
 
         private bool CanRenderSide(Vector3 pos)
@@ -224,8 +224,8 @@ namespace Management.ChunkManagement
             var intPos = new IntVector(pos);
 
             return !IsInsideChunk(intPos.x, intPos.y, intPos.z)
-                ? _worldManager.BlockTypes[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid
-                : _worldManager.BlockTypes[_worldManager.GetVoxelByPosition(pos + position)].IsSolid;
+                ? _worldGenerator.BlockTypes[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid
+                : _worldGenerator.BlockTypes[_worldGenerator.GetVoxelByPosition(pos + position)].IsSolid;
         }
 
         public void AddVoxelData(Vector3 pos)
@@ -237,7 +237,7 @@ namespace Management.ChunkManagement
     
                 var voxelPos = new IntVector(pos);
 
-                AddTexture(_worldManager.BlockTypes[_voxelMap[voxelPos.x, voxelPos.y, voxelPos.z]].GetTextureIDFromSide(VoxelData.Sides[i]), ref _uvs);
+                AddTexture(_worldGenerator.BlockTypes[_voxelMap[voxelPos.x, voxelPos.y, voxelPos.z]].GetTextureIDFromSide(VoxelData.Sides[i]), ref _uvs);
 
                 for (int j = 0; j < 6; j++)
                 {
@@ -262,9 +262,9 @@ namespace Management.ChunkManagement
         
         public static void AddTexture(int textureID, ref List<Vector2> uvs)
         {
-            var textureSize = WorldManager.Instance.BlockOnAtlasSize;
-            float y = textureID / WorldManager.Instance.AtlasSize;
-            var x = textureID - (y * WorldManager.Instance.AtlasSize);
+            var textureSize = WorldGenerator.Instance.BlockOnAtlasSize;
+            float y = textureID / WorldGenerator.Instance.AtlasSize;
+            var x = textureID - (y * WorldGenerator.Instance.AtlasSize);
 
             x *= textureSize;
             y *= textureSize;

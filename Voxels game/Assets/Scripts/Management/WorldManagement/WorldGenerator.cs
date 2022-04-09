@@ -5,22 +5,23 @@ using System.Xml;
 using _3D.Mathf2;
 using Blocks.Type;
 using Management.ChunkManagement;
+using Management.UI;
 using Management.VoxelManagement;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Management.WorldManagement
 {
-    public sealed class WorldManager : MonoBehaviour
+    public sealed class WorldGenerator : MonoBehaviour
     {
-        public static WorldManager Instance;
+        public static WorldGenerator Instance;
         [SerializeField] private int _seed;
         [SerializeField] private int _worldSize = 25;
         [SerializeField] private int _viewDistance = 5;
         [SerializeField] private Transform _player;
         [SerializeField] private int _atlasSize = 4;
         private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
-        private float chunksToRender;
+        private int chunksToRender;
         public int AtlasSize
         {
             get { return _atlasSize; }
@@ -74,6 +75,9 @@ namespace Management.WorldManagement
 
         private Chunk[,] _chunks;
 
+        public delegate void WorldIsGenerated();
+        public event WorldIsGenerated OnWorldIsGenerated;
+        
         private void Awake()
         {
             Init();
@@ -91,7 +95,7 @@ namespace Management.WorldManagement
             Random.InitState(_seed);
             SpawnPlayer();
             StartCoroutine(GenerateWorld());
-            chunksToRender = Mathf.Pow(_viewDistance * 2, 2);
+            chunksToRender = (int) Mathf.Pow(_viewDistance * 2, 2);
         }
 
         private void SpawnPlayer()
@@ -103,7 +107,7 @@ namespace Management.WorldManagement
         private IEnumerator GenerateWorld()
         {
             var coords = GetChunkCoords(_player.position);
-
+            
             for (int x = coords.x - _viewDistance; x < coords.x + _viewDistance; x++)
             {
                 for (int z = coords.z - _viewDistance; z < coords.z + _viewDistance; z++)
@@ -111,10 +115,13 @@ namespace Management.WorldManagement
                     CreateChunk(x, z);
                     _chunksToGenerate.Add(new ChunkCoord(x, z));
                     chunksToRender--;
-                    Debug.Log(chunksToRender);
+                    UIManager.Instance.SetRenderBarValue(chunksToRender);
                     yield return TryToGenerate();
                 }
             }
+            
+            OnWorldIsGenerated?.Invoke();
+            
         }
 
         private IEnumerator TryToGenerate()

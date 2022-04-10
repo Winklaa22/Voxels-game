@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +13,8 @@ namespace Management.UI
         [SerializeField] private ScreenUI[] _screens;
 
         [Header("Rendering chunks")] 
-        [SerializeField] private Slider _renderingBar;
+        [SerializeField] private TextMeshProUGUI _generationCounter;
+        [SerializeField] private Image _generationBar;
 
         [Header("Inventory")]
         [SerializeField] private RawImage[] _inventoryImages = new RawImage[6];
@@ -27,13 +29,6 @@ namespace Management.UI
             SetScreen(ScreenType.RENDER);
         }
 
-
-        public void SetRenderBarRange(int min, int max)
-        {
-            _renderingBar.minValue = min;
-            _renderingBar.maxValue = max;
-        }
-
         public void SetScreen(ScreenType type)
         {
             foreach (var screen in _screens)
@@ -44,7 +39,11 @@ namespace Management.UI
             }
         }
 
-        public void SetRenderBarValue(int value) => _renderingBar.value = value;
+        public void SetRenderBarValue(float value)
+        {
+            _generationCounter.text = Mathf.FloorToInt(value * 100) + "%";
+            _generationBar.fillAmount = value;
+        }
 
 
         public void SetInventoryImageActive(int index, bool active, Texture2D image)

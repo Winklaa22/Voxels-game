@@ -21,7 +21,6 @@ namespace Management.WorldManagement
         [SerializeField] private Transform _player;
         [SerializeField] private int _atlasSize = 4;
         private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
-        private int chunksToRender;
         public int AtlasSize
         {
             get { return _atlasSize; }
@@ -95,7 +94,6 @@ namespace Management.WorldManagement
             Random.InitState(_seed);
             SpawnPlayer();
             StartCoroutine(GenerateWorld());
-            chunksToRender = (int) Mathf.Pow(_viewDistance * 2, 2);
         }
 
         private void SpawnPlayer()
@@ -107,15 +105,17 @@ namespace Management.WorldManagement
         private IEnumerator GenerateWorld()
         {
             var coords = GetChunkCoords(_player.position);
-            
+
+            var chunksToRenderCount = Mathf.Pow(_viewDistance * 2, 2);;
+            var generatedChunks = 0.0f;
             for (int x = coords.x - _viewDistance; x < coords.x + _viewDistance; x++)
             {
                 for (int z = coords.z - _viewDistance; z < coords.z + _viewDistance; z++)
                 {
                     CreateChunk(x, z);
                     _chunksToGenerate.Add(new ChunkCoord(x, z));
-                    chunksToRender--;
-                    UIManager.Instance.SetRenderBarValue(chunksToRender);
+                    generatedChunks++;
+                    UIManager.Instance.SetRenderBarValue(generatedChunks/chunksToRenderCount);
                     yield return TryToGenerate();
                 }
             }

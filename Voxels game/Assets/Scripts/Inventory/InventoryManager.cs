@@ -35,7 +35,7 @@ namespace Inventory
         {
             for (int i = 0; i < _slots.Length; i++)
             {
-                if(_slots[i] is null || !i.Equals(CurrentSlot) || !_slots[i].Type.Equals(ItemType.Block))
+                if(_slots[i] is null || !i.Equals(CurrentSlot))
                     continue;
 
                 return VoxelData.GetMaterialIndexFromType(_slots[i].BlockProperties.Type);

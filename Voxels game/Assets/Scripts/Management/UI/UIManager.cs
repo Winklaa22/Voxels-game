@@ -18,6 +18,7 @@ namespace Management.UI
 
         [Header("Inventory")]
         [SerializeField] private RawImage[] _inventoryImages = new RawImage[6];
+        [SerializeField] private RectTransform _slotFrame;
 
         private void Awake()
         {
@@ -39,6 +40,8 @@ namespace Management.UI
             }
         }
 
+        public void SetSlot(int value) => _slotFrame.position = _inventoryImages[value].rectTransform.position; 
+
         public void SetRenderBarValue(float value)
         {
             _generationCounter.text = Mathf.FloorToInt(value * 100) + "%";
@@ -46,12 +49,10 @@ namespace Management.UI
         }
 
 
-        public void SetInventoryImageActive(int index, bool active, Texture2D image)
+        public void SetInventoryImageActive(int index, Texture2D image)
         {
-            _inventoryImages[index].enabled = active;
-            
-            if(active)
-                _inventoryImages[index].texture = image;
+            _inventoryImages[index].gameObject.SetActive(image != null);
+            _inventoryImages[index].texture = image;
         }
     }
 }

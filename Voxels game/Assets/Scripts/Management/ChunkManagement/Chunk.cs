@@ -145,7 +145,6 @@ namespace Management.ChunkManagement
                 var chunk = WorldGenerator.Instance.GetChunkFromVector3(voxelCoord.ToVector3() + position);
                 var voxelPosition = chunk.GetVoxel(voxelCoord.ToVector3() + position);
                 chunk.SetVoxel(voxelPosition , id);
-                
             }
         }
 
@@ -156,10 +155,8 @@ namespace Management.ChunkManagement
                 var nearestVoxelPosition = new IntVector(coord.ToVector3() + VoxelData.FaceCheck[i]);
                 if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldGenerator.Instance.ChunkSize))
                     continue;
-
-
-                var chunk = WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position);
-                chunk.UpdateChunk();
+                
+                WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position).UpdateChunk();
             }
         }
 
@@ -222,26 +219,27 @@ namespace Management.ChunkManagement
         private bool CanRenderSide(Vector3 pos)
         {
             var intPos = new IntVector(pos);
+            var blocks = _worldGenerator.BlockTypes;
 
             return !IsInsideChunk(intPos.x, intPos.y, intPos.z)
-                ? _worldGenerator.BlockTypes[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid
-                : _worldGenerator.BlockTypes[_worldGenerator.GetVoxelByPosition(pos + position)].IsSolid;
+                ? blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid && !blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsTransparent
+                : blocks[_worldGenerator.GetVoxelByPosition(pos + position)].IsSolid && !blocks[_worldGenerator.GetVoxelByPosition(pos + position)].IsTransparent;
         }
 
-        public void AddVoxelData(Vector3 pos)
+        private void AddVoxelData(Vector3 pos)
         {
+            var voxelPos = new IntVector(pos);
+            
             for (int i = 0; i < 6; i++)
             {
-                if (CanRenderSide(pos + VoxelData.FaceCheck[i]))
+                if (CanRenderSide(pos + VoxelData.FaceCheck[i]) )
                     continue;
-    
-                var voxelPos = new IntVector(pos);
-
+                
                 AddTexture(_worldGenerator.BlockTypes[_voxelMap[voxelPos.x, voxelPos.y, voxelPos.z]].GetTextureIDFromSide(VoxelData.Sides[i]), ref _uvs);
 
                 for (int j = 0; j < 6; j++)
                 {
-                    int trisIndex = VoxelData.Triangles[i, j];
+                    var trisIndex = VoxelData.Triangles[i, j];
                     _vertices.Add(VoxelData.Vertices[trisIndex] + pos);
                     _triangles.Add(_vertexIndex);
                     _vertexIndex++;

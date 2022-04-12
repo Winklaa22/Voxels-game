@@ -11,10 +11,11 @@ namespace Controllers
 
         private void Start()
         {
+            UIManager.Instance.SetSlot(InventoryManager.Instance.CurrentSlot);
             var slots = InventoryManager.Instance.Slots;
             for (int i = 0; i < slots.Length; i++)
             {
-                UIManager.Instance.SetInventoryImageActive(i, true, slots[i].ItemImage);
+                UIManager.Instance.SetInventoryImageActive(i, slots[i].ItemImage);
             }
         }
 
@@ -36,6 +37,7 @@ namespace Controllers
         private void SetSlot(int slot)
         {
             InventoryManager.Instance.CurrentSlot = slot;
+            UIManager.Instance.SetSlot(slot);
         }
     }
 }

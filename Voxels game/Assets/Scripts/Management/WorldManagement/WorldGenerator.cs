@@ -225,11 +225,8 @@ namespace Management.WorldManagement
                 return false;
 
             if (_chunks[thisChunk.x, thisChunk.z] != null && _chunks[thisChunk.x, thisChunk.z].IsVoxelMapPopulated)
-            {
-                var voxelCoord = _chunks[thisChunk.x, thisChunk.z].GetVoxel(pos);
-                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxelType(voxelCoord)].IsSolid;
-            }
-                
+                return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxelType(_chunks[thisChunk.x, thisChunk.z].GetVoxel(pos))].IsSolid;
+
 
             return _blockTypes[GetVoxelByPosition(pos)].IsSolid;
 

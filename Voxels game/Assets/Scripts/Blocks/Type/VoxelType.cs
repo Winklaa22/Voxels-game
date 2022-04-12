@@ -8,7 +8,7 @@ namespace Blocks.Type
     {
         [SerializeField] private MaterialType _type;
         [SerializeField] private bool _isSolid;
-
+        [SerializeField] private bool _isTransparent;
         [SerializeField] private TextureType[] _textures = new TextureType[6];
 
         public MaterialType Type
@@ -24,6 +24,14 @@ namespace Blocks.Type
             get
             {
                 return _isSolid;
+            }
+        }
+
+        public bool IsTransparent
+        {
+            get
+            {
+                return _isTransparent;
             }
         }
 

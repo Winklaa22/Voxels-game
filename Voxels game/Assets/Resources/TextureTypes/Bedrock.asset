@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _type: 3
   _isSolid: 1
+  _isTransparent: 0
   _textures:
   - _blockSide: 0
-    _id: 0
+    _id: 12
   - _blockSide: 1
-    _id: 0
+    _id: 12
   - _blockSide: 2
-    _id: 0
+    _id: 12
   - _blockSide: 3
-    _id: 0
+    _id: 12
   - _blockSide: 4
-    _id: 0
+    _id: 12
   - _blockSide: 5
-    _id: 0
+    _id: 12

@@ -65,19 +65,6 @@ namespace Management.ChunkManagement
 
         private void Start()
         {
-            StartCoroutine(TryToCreate());
-        }
-
-        private IEnumerator TryToCreate()
-        {
-            if(_isGenerated)
-            {
-                yield return Initialize();
-            }
-        }
-
-        private IEnumerator Initialize()
-        {
             _voxelMap = new byte[WorldGenerator.Instance.ChunkSize.x, WorldGenerator.Instance.ChunkSize.y,
                 WorldGenerator.Instance.ChunkSize.z];
             _collider = gameObject.AddComponent<MeshCollider>();
@@ -85,13 +72,24 @@ namespace Management.ChunkManagement
             _meshRenderer = gameObject.AddComponent<MeshRenderer>();
             _worldGenerator = WorldGenerator.Instance;
             _meshRenderer.material = _worldGenerator.WorldMaterial;
+            
+            StartCoroutine(TryToCreate());
+        }
 
+        private IEnumerator TryToCreate()
+        {
+            if (!_isGenerated) 
+                yield break;
+            
+            Initialize();
+            yield return null;
+        }
 
+        private void Initialize()
+        {
             PopulateVoxelMap();
             CreateChunk();
             SetCollisionActive(true);
-
-            yield return null;
         }
 
         private void CreateChunk()
@@ -114,7 +112,7 @@ namespace Management.ChunkManagement
 
         }
 
-        private void SetCollisionActive(bool active)
+        public void SetCollisionActive(bool active)
         {
             _collider.sharedMesh = active ? _meshFilter.mesh : null;
         }

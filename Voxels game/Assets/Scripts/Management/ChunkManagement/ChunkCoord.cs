@@ -25,7 +25,12 @@ namespace Management.ChunkManagement
         
         public bool Equals(ChunkCoord coord)
         {
-            return coord == new ChunkCoord(x, z);
+            return coord.x == x && coord.z == z;
+        }
+
+        public string ToString()
+        {
+            return "(" + x + ", " + z + ")";
         }
 
     }

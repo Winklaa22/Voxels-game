@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Xml;
 using _3D.Mathf2;
 using Blocks.Type;
+using Controllers.Player;
 using Management.ChunkManagement;
 using Management.UI;
 using Management.VoxelManagement;
@@ -17,10 +18,11 @@ namespace Management.WorldManagement
         public static WorldGenerator Instance;
         [SerializeField] private int _seed;
         [SerializeField] private int _worldSize = 25;
-        [SerializeField] private int _viewDistance = 5;
-        [SerializeField] private Transform _player;
+        [SerializeField] private int _renderDistance = 5;
+        [SerializeField] private PlayerController _player;
         [SerializeField] private int _atlasSize = 4;
         private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
+        private ChunkCoord _previousPlayerCoords = new ChunkCoord(0, 0);
         public int AtlasSize
         {
             get { return _atlasSize; }
@@ -92,6 +94,8 @@ namespace Management.WorldManagement
         private void Start()
         {
             Random.InitState(_seed);
+
+            _previousPlayerCoords = PlayerCoords();
             SpawnPlayer();
             StartCoroutine(GenerateWorld());
         }
@@ -102,18 +106,23 @@ namespace Management.WorldManagement
             _player.transform.position = spawnPos;
         }
 
+        private void CreateEmptyChunk(int x, int z)
+        {
+            CreateChunk(x, z);
+            _chunksToGenerate.Add(new ChunkCoord(x, z));
+        }
+        
+        private ChunkCoord PlayerCoords() => GetChunkCoords(_player.transform.position);
+        
         private IEnumerator GenerateWorld()
         {
-            var coords = GetChunkCoords(_player.position);
-
-            var chunksToRenderCount = Mathf.Pow(_viewDistance * 2, 2);;
+            var chunksToRenderCount = Mathf.Pow(_renderDistance * 2, 2);;
             var generatedChunks = 0.0f;
-            for (int x = coords.x - _viewDistance; x < coords.x + _viewDistance; x++)
+            for (int x = PlayerCoords().x - _renderDistance; x < PlayerCoords().x + _renderDistance; x++)
             {
-                for (int z = coords.z - _viewDistance; z < coords.z + _viewDistance; z++)
+                for (int z = PlayerCoords().z - _renderDistance; z < PlayerCoords().z + _renderDistance; z++)
                 {
-                    CreateChunk(x, z);
-                    _chunksToGenerate.Add(new ChunkCoord(x, z));
+                    CreateEmptyChunk(x, z);
                     generatedChunks++;
                     UIManager.Instance.SetRenderBarValue(generatedChunks/chunksToRenderCount);
                     yield return TryToGenerate();
@@ -121,8 +130,10 @@ namespace Management.WorldManagement
             }
             
             OnWorldIsGenerated?.Invoke();
-            
+            yield return null;
         }
+        
+
 
         private IEnumerator TryToGenerate()
         {
@@ -150,51 +161,46 @@ namespace Management.WorldManagement
             return _chunks[x, z];
 
         }
-        
-        
 
-        // private IEnumerator CheckViewDistance()
-        // {
-        //     var coords = GetChunkCoords(_player.position);
-        //
-        //     var activeChunks = new List<ChunkCoord>(_activeChunks);
-        //     
-        //     for (int x = coords.x - _viewDistance; x < coords.x + _viewDistance ; x++)
-        //     {
-        //         for (int z = coords.z - _viewDistance; z < coords.z + _viewDistance; z++)
-        //         {
-        //             if (IsChunkInWorld(new ChunkCoord(x, z)))
-        //             {
-        //                 if (_chunks[x, z] is null)
-        //                 {
-        //                     CreateChunk(x, z);
-        //                     _chunksToGenerate.Add(new ChunkCoord(x, z));
-        //                     yield return TryToGenerate();
-        //                 }
-        //
-        //                 else if (!_chunks[x, z].IsActive)
-        //                 {
-        //                     _chunks[x, z].IsActive = true;
-        //                     _activeChunks.Add(new ChunkCoord(x, z));
-        //                 }
-        //             }
-        //
-        //             for (var i = 0; i < activeChunks.Count; i++)
-        //             {
-        //                 if (activeChunks[i].x == x && activeChunks[i].z == z)
-        //                     continue;
-        //                 
-        //                 activeChunks.RemoveAt(i);
-        //             }
-        //         }
-        //     }
-        //
-        //     foreach (var chunk in activeChunks)
-        //     {
-        //         _chunks[chunk.x, chunk.z].IsActive = false;
-        //         _activeChunks.Remove(new ChunkCoord(chunk.x, chunk.z));
-        //     }
-        // }
+
+        public IEnumerator UpdateRenderChunks()
+        {
+            if (PlayerCoords().Equals(_previousPlayerCoords)) 
+                yield break;
+
+            _previousPlayerCoords = PlayerCoords();
+            var previouslyActiveChunks = new List<ChunkCoord>(_activeChunks);
+
+            for (int x = PlayerCoords().x - _renderDistance; x < PlayerCoords().x + _renderDistance; x++)
+            {
+                for (int z = PlayerCoords().z - _renderDistance; z < PlayerCoords().z + _renderDistance; z++)
+                {
+                    if (_chunks[x, z] is null)
+                    {
+                        CreateEmptyChunk(x, z);
+                        StartCoroutine(TryToGenerate());
+                        yield return null;
+                    }
+
+
+                    _chunks[x, z].IsActive = true;
+
+                    for (int i = 0; i < previouslyActiveChunks.Count; i++) {
+
+                        if (previouslyActiveChunks[i].Equals(new ChunkCoord(x, z)))
+                            previouslyActiveChunks.RemoveAt(i);
+                       
+                    }
+
+                }
+            }
+
+            foreach (var chunk in previouslyActiveChunks)
+            {
+                _chunks[chunk.x, chunk.z].IsActive = false;
+                yield return null;
+            }
+        }
 
         private void CreateChunk(int x, int z)
         {
@@ -246,7 +252,7 @@ namespace Management.WorldManagement
         {
             var y = Mathf.FloorToInt(pos.y);
 
-            if(pos.x < (GetChunkCoords(_player.position).x + _viewDistance) - 1 && pos.x >  (GetChunkCoords(_player.position).x - _viewDistance) - 1 && pos.z < (GetChunkCoords(_player.position).z + _viewDistance) - 1 && pos.z >  (GetChunkCoords(_player.position).z - _viewDistance) - 1)
+            if(pos.x < (PlayerCoords().x + _renderDistance) - 1 && pos.x >  (PlayerCoords().x - _renderDistance) - 1 && pos.z < (PlayerCoords().z + _renderDistance) - 1 && pos.z >  (PlayerCoords().z - _renderDistance) - 1)
             {
                 if (!IsVoxelInTheWorld(pos))
                     return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);

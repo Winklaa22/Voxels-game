@@ -148,16 +148,19 @@ namespace Controllers.Player
 
         }
 
-        public void DestroyBlock()
+        private void DestroyBlock()
         {
             if(_canModify)
                 WorldGenerator.Instance.SetVoxel(_detectedChunk, _voxelPos, 0);
         }
 
-        public void Build()
+        private void Build()
         {
-            Debug.Log("Build");
+            var playersBlock = RoundToInt(transform.position);
             
+            if(_buildPos.Equals(playersBlock) || _buildPos.Equals(new Vector3(playersBlock.x, playersBlock.y + 1, playersBlock.z)))
+                return;
+
             if(_canModify)
                 WorldGenerator.Instance.SetVoxel(_detectedChunk, _buildPos, InventoryManager.Instance.GetBlockIndex());
         }

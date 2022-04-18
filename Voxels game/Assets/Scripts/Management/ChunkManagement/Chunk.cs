@@ -255,8 +255,8 @@ namespace Management.ChunkManagement
             _meshFilter.mesh = _mesh;
 
         }
-        
-        public static void AddTexture(int textureID, ref List<Vector2> uvs)
+
+        private static void AddTexture(int textureID, ref List<Vector2> uvs)
         {
             var textureSize = WorldGenerator.Instance.BlockOnAtlasSize;
             float y = textureID / WorldGenerator.Instance.AtlasSize;

@@ -2,7 +2,6 @@ using System;
 using Inventory;
 using Management.UI;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Controllers
 {

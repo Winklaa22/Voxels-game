@@ -21,6 +21,7 @@ namespace Management.WorldManagement
         [SerializeField] private int _renderDistance = 5;
         [SerializeField] private PlayerController _player;
         [SerializeField] private int _atlasSize = 4;
+        [SerializeField] private float _terrain;
         private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
         private ChunkCoord _previousPlayerCoords = new ChunkCoord(0, 0);
         public int AtlasSize
@@ -93,7 +94,7 @@ namespace Management.WorldManagement
 
         private void Start()
         {
-            Random.InitState(_seed);
+            _seed = Random.Range(0, 1000);
 
             _previousPlayerCoords = PlayerCoords();
             SpawnPlayer();
@@ -102,7 +103,7 @@ namespace Management.WorldManagement
 
         private void SpawnPlayer()
         {
-            var spawnPos = new Vector3(_worldSize * .5f, 40, _worldSize * .5f);
+            var spawnPos = new Vector3(_worldSize * .5f, _chunkSize.y, _worldSize * .5f);
             _player.transform.position = spawnPos;
         }
 
@@ -251,29 +252,88 @@ namespace Management.WorldManagement
         public byte GetVoxelByPosition(Vector3 pos)
         {
             var y = Mathf.FloorToInt(pos.y);
+            var terrainHeight = Mathf.FloorToInt(_chunkSize.y * .25f) +  Mathf.FloorToInt(_terrain * GetNoiseMap(new Vector3(pos.x, pos.z), .25f, _seed));
 
-            if(pos.x < (PlayerCoords().x + _renderDistance) - 1 && pos.x >  (PlayerCoords().x - _renderDistance) - 1 && pos.z < (PlayerCoords().z + _renderDistance) - 1 && pos.z >  (PlayerCoords().z - _renderDistance) - 1)
-            {
-                if (!IsVoxelInTheWorld(pos))
-                    return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
-            }
+            if(AxisFitsToRenderDistance(pos.x) && AxisFitsToRenderDistance(pos.z) && !IsVoxelInTheWorld(pos))
+                return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
+            
             
             if (y.Equals(0))
                 return VoxelData.GetMaterialIndexFromType(MaterialType.BEDROCK);
 
-            var terrainHeight = Mathf.FloorToInt(_chunkSize.y * GetNoiseMap(new Vector3(pos.x, pos.z), .25f, 0));
+            if (y == terrainHeight + 1)
+            {
+                if (GetNoiseMap(new Vector2(pos.x, pos.z), .25f, _seed) < .5f)
+                {
+                    var randomValue = Random.Range(0, 15);
+                    
+                    if(randomValue.Equals(8))
+                        return VoxelData.GetMaterialIndexFromType(MaterialType.WOOD);
+                }
+            }
 
-            if (y.Equals(terrainHeight))
+            if (y == terrainHeight)
+            {
+                if (GetNoiseMap(new Vector2(pos.x, pos.z), .25f, _seed) > .5f)
+                {
+                    return VoxelData.GetMaterialIndexFromType(MaterialType.STONE);
+                }
+                
+                
+
                 return VoxelData.GetMaterialIndexFromType(MaterialType.GRASS);
+            }
+            
+            if (y < terrainHeight)
+            {
+                if (y < terrainHeight - terrainHeight * 0.05f)
+                {
+                    if (Get3DNoiseMap(pos, 500, .2f, .6f))
+                    {
+                        return VoxelData.GetMaterialIndexFromType(MaterialType.SAND);
+                    }
+                    
+                    return VoxelData.GetMaterialIndexFromType(MaterialType.STONE);
+                }
+                    
+                
+                return VoxelData.GetMaterialIndexFromType(MaterialType.DIRT);
+            }
+                
 
-            return y <= terrainHeight ? VoxelData.GetMaterialIndexFromType(MaterialType.DIRT) : VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
+            return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
 
         }
 
-        private float GetNoiseMap(Vector3 pos, float scale, float offset)
+        private bool AxisFitsToRenderDistance(float value)
         {
-            var noise = Mathf.PerlinNoise(((pos.x + .1f) / _chunkSize.x * scale + offset), (pos.y + .1f) / _chunkSize.x * scale + offset);
+            return value < (PlayerCoords().x + _renderDistance) - 1 && value > (PlayerCoords().x - _renderDistance) - 1;;
+        }
+
+        private float GetNoiseMap(Vector3 pos, float increment, float offset)
+        {
+            var noise = Mathf.PerlinNoise(((pos.x + .1f) / _chunkSize.x * increment + offset), (pos.y + .1f) / _chunkSize.x * increment + offset);
             return noise;
+        }
+
+        private bool Get3DNoiseMap(Vector3 position, float offset, float scale, float threshold)
+        {
+            float x = (position.x + offset + 0.1f) * scale;
+            float y = (position.y + offset + 0.1f) * scale;
+            float z = (position.z + offset + 0.1f) * scale;
+
+            float AB = Mathf.PerlinNoise(x, y);
+            float BC = Mathf.PerlinNoise(y, z);
+            float AC = Mathf.PerlinNoise(x, z);
+            float BA = Mathf.PerlinNoise(y, x);
+            float CB = Mathf.PerlinNoise(z, y);
+            float CA = Mathf.PerlinNoise(z, x);
+
+            if ((AB + BC + AC + BA + CB + CA) / 6f > threshold)
+                return true;
+            else
+                return false;
+
         }
 
         private bool IsChunkInWorld(ChunkCoord coord)

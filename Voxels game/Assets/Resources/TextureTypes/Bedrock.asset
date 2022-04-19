@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Bedrock
   m_EditorClassIdentifier: 
   _type: 3
-  _isSolid: 1
   _isTransparent: 0
   _textures:
   - _blockSide: 0
@@ -28,3 +27,4 @@ MonoBehaviour:
     _id: 12
   - _blockSide: 5
     _id: 12
+  _meshData: {fileID: 11400000, guid: 8a214d9d8c3a320459a29cc6c3bcfb35, type: 2}

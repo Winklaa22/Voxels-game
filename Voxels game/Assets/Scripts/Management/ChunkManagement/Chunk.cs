@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using _3D.Mathf2;
+using Blocks.Type;
 using Management.VoxelManagement;
 using Management.WorldManagement;
 using UnityEngine;
@@ -18,12 +19,14 @@ namespace Management.ChunkManagement
         private int _texture;
         private int _vertexIndex = 0;
 
-        [Header("Mesh")] private Mesh _mesh;
+        [Header("Mesh")] 
+        private Mesh _mesh;
         private List<Vector3> _vertices = new List<Vector3>();
         private List<int> _triangles = new List<int>();
         private List<Vector2> _uvs = new List<Vector2>();
 
-        [Header("Map")] private byte[,,] _voxelMap;
+        [Header("Map")] 
+        private byte[,,] _voxelMap;
 
         private WorldGenerator _worldGenerator;
         private bool _isVoxelMapPopulated = false;
@@ -105,7 +108,6 @@ namespace Management.ChunkManagement
 
                         AddVoxelData(new Vector3(x, y, z));
                         CreateMesh();
-
                     }
                 }
             }
@@ -136,7 +138,7 @@ namespace Management.ChunkManagement
                 _voxelMap[voxelCoord.x, voxelCoord.y, voxelCoord.z] = id;
                 UpdateChunk();
                 SetCollisionActive(true);
-                UpdateNearestVoxel(voxelCoord);
+                // UpdateNearestVoxel(voxelCoord);
             }
             else
             {
@@ -146,17 +148,17 @@ namespace Management.ChunkManagement
             }
         }
 
-        private void UpdateNearestVoxel(IntVector coord)
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                var nearestVoxelPosition = new IntVector(coord.ToVector3() + VoxelData.FaceCheck[i]);
-                if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldGenerator.Instance.ChunkSize))
-                    continue;
-                
-                WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position).UpdateChunk();
-            }
-        }
+        // private void UpdateNearestVoxel(IntVector coord)
+        // {
+        //     for (int i = 0; i < 6; i++)
+        //     {
+        //         var nearestVoxelPosition = new IntVector(coord.ToVector3() + _worldGenerator.BlockTypes[i]);
+        //         if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldGenerator.Instance.ChunkSize))
+        //             continue;
+        //         
+        //         WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position).UpdateChunk();
+        //     }
+        // }
 
         private void UpdateChunk()
         {
@@ -168,8 +170,11 @@ namespace Management.ChunkManagement
                 {
                     for (int z = 0; z < WorldGenerator.Instance.ChunkSize.z; z++)
                     {
-                        if (WorldGenerator.Instance.BlockTypes[_voxelMap[x, y, z]].IsSolid)
-                            AddVoxelData(new Vector3(x, y, z));
+                        if (!WorldGenerator.Instance.BlockTypes[_voxelMap[x, y, z]].IsSolid)
+                            continue;
+
+                        AddVoxelData(new Vector3(x, y, z));
+                        
                     }
                 }
             }
@@ -227,18 +232,20 @@ namespace Management.ChunkManagement
         private void AddVoxelData(Vector3 pos)
         {
             var voxelPos = new IntVector(pos);
-            
-            for (int i = 0; i < 6; i++)
+            var id = _voxelMap[voxelPos.x, voxelPos.y, voxelPos.z];
+            var type = _worldGenerator.BlockTypes[id];
+
+            for (int i = 0; i < type.MeshData.Faces.Length; i++)
             {
-                if (CanRenderSide(pos + VoxelData.FaceCheck[i]) )
+                if (CanRenderSide(pos + type.MeshData.Faces[i].Value) )
                     continue;
                 
-                AddTexture(_worldGenerator.BlockTypes[_voxelMap[voxelPos.x, voxelPos.y, voxelPos.z]].GetTextureIDFromSide(VoxelData.Sides[i]), ref _uvs);
+                AddTexture(type, type.GetTextureIDFromSide(VoxelData.Sides[i]), ref _uvs);
 
-                for (int j = 0; j < 6; j++)
+                for (int j = 0; j < type.MeshData.Faces.Length; j++)
                 {
-                    var trisIndex = VoxelData.Triangles[i, j];
-                    _vertices.Add(VoxelData.Vertices[trisIndex] + pos);
+                    var trisIndex = type.MeshData.Faces[i].Triangles[j];
+                    _vertices.Add(type.MeshData.Vertices[trisIndex] + pos);
                     _triangles.Add(_vertexIndex);
                     _vertexIndex++;
                 }
@@ -247,16 +254,18 @@ namespace Management.ChunkManagement
 
         private void CreateMesh()
         {
-            _mesh = new Mesh();
-            _mesh.vertices = _vertices.ToArray();
-            _mesh.triangles = _triangles.ToArray();
-            _mesh.uv = _uvs.ToArray();
+            _mesh = new Mesh
+            {
+                vertices = _vertices.ToArray(),
+                triangles = _triangles.ToArray(),
+                uv = _uvs.ToArray()
+            };
+            
             _mesh.RecalculateNormals();
             _meshFilter.mesh = _mesh;
-
         }
 
-        private static void AddTexture(int textureID, ref List<Vector2> uvs)
+        private static void AddTexture(Block type, int textureID, ref List<Vector2> uvs)
         {
             var textureSize = WorldGenerator.Instance.BlockOnAtlasSize;
             float y = textureID / WorldGenerator.Instance.AtlasSize;
@@ -267,10 +276,10 @@ namespace Management.ChunkManagement
 
             y = 1f - y - textureSize;
 
-            for (int i = 0; i < VoxelData.UVs.Length; i++)
+            for (int i = 0; i < type.MeshData.Faces.Length; i++)
             {
-                float xOffset = VoxelData.UVs[i].x.Equals(1) ? textureSize : 0;
-                float yOffset = VoxelData.UVs[i].y.Equals(1) ? textureSize : 0;
+                float xOffset = type.MeshData.Faces[i].UV.x.Equals(1) ? textureSize : 0;
+                float yOffset = type.MeshData.Faces[i].UV.y.Equals(1) ? textureSize : 0;
 
                 uvs.Add(new Vector2(x + xOffset, y + yOffset));
             }

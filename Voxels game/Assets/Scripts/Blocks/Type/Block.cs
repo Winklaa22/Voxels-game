@@ -4,12 +4,13 @@ using UnityEngine;
 namespace Blocks.Type
 {
     [CreateAssetMenu(menuName = "Voxel type", fileName = "newVoxelType")]
-    public class VoxelType : ScriptableObject
+    public class Block : ScriptableObject
     {
         [SerializeField] private MaterialType _type;
-        [SerializeField] private bool _isSolid;
         [SerializeField] private bool _isTransparent;
         [SerializeField] private TextureType[] _textures = new TextureType[6];
+        [SerializeField] private MeshData _meshData;
+
 
         public MaterialType Type
         {
@@ -19,11 +20,19 @@ namespace Blocks.Type
             }
         }
 
+        public MeshData MeshData
+        {
+            get
+            {
+                return _meshData;
+            }
+        }
+
         public bool IsSolid
         {
             get
             {
-                return _isSolid;
+                return _type != MaterialType.AIR;
             }
         }
 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WoodenDesk
   m_EditorClassIdentifier: 
   _type: 8
-  _isSolid: 1
+  _structureType: 0
   _isTransparent: 0
   _textures:
   - _blockSide: 0
@@ -28,3 +28,5 @@ MonoBehaviour:
     _id: 7
   - _blockSide: 5
     _id: 7
+  _meshData: {fileID: 11400000, guid: d59063bc97cbae342b5e21aa0c61ded5, type: 2}
+  _mesh: {fileID: 0}

@@ -65,9 +65,9 @@ namespace Management.WorldManagement
             }   
         }
 
-        [SerializeField] private VoxelType[] _blockTypes;
+        [SerializeField] private Block[] _blockTypes;
 
-        public VoxelType[] BlockTypes
+        public Block[] BlockTypes
         {
             get
             {
@@ -88,7 +88,7 @@ namespace Management.WorldManagement
         private void Init()
         {
             Instance = this;
-            _blockTypes = Resources.LoadAll<VoxelType>("TextureTypes");
+            _blockTypes = Resources.LoadAll<Block>("TextureTypes");
             _chunks = new Chunk[_worldSize, _worldSize];
         }
 

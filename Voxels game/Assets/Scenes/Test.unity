@@ -1006,16 +1006,14 @@ MonoBehaviour:
   _player: {fileID: 1581987199}
   _atlasSize: 4
   _terrain: 25
+  _destroyParticle: {fileID: 4735923875754825219, guid: 558c291d63c1edf48b1648153137c8d2, type: 3}
+  _destroyParticleMaterial: {fileID: 2100000, guid: deaffc9ee43eff340a41fb0d4ccadc95, type: 2}
   _chunkSize:
     x: 16
     y: 100
     z: 16
   _material: {fileID: 2100000, guid: c880b0437efde4e43b5f7be9b813c519, type: 2}
-  _blockTypes:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  _blockTypes: []
 --- !u!1 &729841981
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,7 @@ using Controllers.Player;
 using Management.ChunkManagement;
 using Management.UI;
 using Management.VoxelManagement;
+using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -22,6 +23,8 @@ namespace Management.WorldManagement
         [SerializeField] private PlayerController _player;
         [SerializeField] private int _atlasSize = 4;
         [SerializeField] private float _terrain;
+        [SerializeField] private GameObject _destroyParticle;
+        [SerializeField] private Material _destroyParticleMaterial;
         private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
         private ChunkCoord _previousPlayerCoords = new ChunkCoord(0, 0);
         public int AtlasSize
@@ -237,6 +240,13 @@ namespace Management.WorldManagement
 
             return _blockTypes[GetVoxelByPosition(pos)].IsSolid;
 
+        }
+
+        public void CreateDestroyParticle(Vector3 pos)
+        {
+            var id = GetChunkFromVector3(pos).GetVoxelID(pos);
+            _destroyParticleMaterial.mainTexture = _blockTypes[id].BlockProfile;
+            Instantiate(_destroyParticle, pos, quaternion.identity);
         }
 
         public void SetVoxel(Chunk chunk ,Vector3 pos, byte type)

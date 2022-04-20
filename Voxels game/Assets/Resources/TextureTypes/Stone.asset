@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Stone
   m_EditorClassIdentifier: 
   _type: 7
-  _structureType: 0
   _isTransparent: 0
   _textures:
   - _blockSide: 0
@@ -29,4 +28,4 @@ MonoBehaviour:
   - _blockSide: 5
     _id: 4
   _meshData: {fileID: 11400000, guid: d59063bc97cbae342b5e21aa0c61ded5, type: 2}
-  _mesh: {fileID: 0}
+  _blockProfile: {fileID: 2800000, guid: ab8a279da05c04740b88f15e1d2408e8, type: 3}

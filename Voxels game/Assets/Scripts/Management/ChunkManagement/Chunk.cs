@@ -119,6 +119,12 @@ namespace Management.ChunkManagement
             _collider.sharedMesh = active ? _meshFilter.mesh : null;
         }
 
+        public byte GetVoxelID(Vector3 pos)
+        {
+            var coords = GetVoxel(pos);
+            return _voxelMap[coords.x, coords.y, coords.z];
+        }
+
         public IntVector GetVoxel(Vector3 pos)
         {
             var checkVector = new IntVector(pos);

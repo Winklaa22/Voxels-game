@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Air
   m_EditorClassIdentifier: 
   _type: 0
-  _structureType: 0
   _isTransparent: 0
   _textures:
   - _blockSide: 0
@@ -29,4 +28,4 @@ MonoBehaviour:
   - _blockSide: 0
     _id: 0
   _meshData: {fileID: 11400000, guid: d59063bc97cbae342b5e21aa0c61ded5, type: 2}
-  _mesh: {fileID: 0}
+  _destroyParticle: {fileID: 4735923875754825219, guid: 558c291d63c1edf48b1648153137c8d2, type: 3}

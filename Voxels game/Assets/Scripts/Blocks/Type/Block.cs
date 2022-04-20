@@ -10,7 +10,14 @@ namespace Blocks.Type
         [SerializeField] private bool _isTransparent;
         [SerializeField] private TextureType[] _textures = new TextureType[6];
         [SerializeField] private MeshData _meshData;
-
+        [SerializeField] private Texture2D _blockProfile;
+        public Texture2D BlockProfile
+        {
+            get
+            {
+                return _blockProfile;
+            }
+        }
 
         public MaterialType Type
         {

@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: Wood
   m_EditorClassIdentifier: 
   _type: 5
-  _structureType: 1
   _isTransparent: 0
   _textures:
   - _blockSide: 0
@@ -29,4 +28,4 @@ MonoBehaviour:
   - _blockSide: 5
     _id: 6
   _meshData: {fileID: 11400000, guid: d59063bc97cbae342b5e21aa0c61ded5, type: 2}
-  _mesh: {fileID: 0}
+  _blockProfile: {fileID: 2800000, guid: b7c7db0e7154914488f35905ec2e069f, type: 3}

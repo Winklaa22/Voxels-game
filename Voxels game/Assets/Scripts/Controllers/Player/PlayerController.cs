@@ -150,8 +150,11 @@ namespace Controllers.Player
 
         private void DestroyBlock()
         {
-            if(_canModify)
-                WorldGenerator.Instance.SetVoxel(_detectedChunk, _voxelPos, 0);
+            if(!_canModify)
+                return;
+            
+            WorldGenerator.Instance.CreateDestroyParticle(_voxelPos);
+            WorldGenerator.Instance.SetVoxel(_detectedChunk, _voxelPos, 0);
         }
 
         private void Build()

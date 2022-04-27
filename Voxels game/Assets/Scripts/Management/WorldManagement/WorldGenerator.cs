@@ -227,6 +227,14 @@ namespace Management.WorldManagement
             _activeChunks.Add(coord);
         }
 
+        public bool IsVoxelExist(Vector3 pos)
+        {
+            if (GetChunkFromVector3(pos) is null)
+                return false;
+            
+            return _blockTypes[GetChunkFromVector3(pos).GetVoxelType((GetChunkFromVector3(pos).GetVoxel(pos)))].IsSolid;
+        }
+
         public bool CheckForVoxel (Vector3 pos) {
 
             var thisChunk = new ChunkCoord(pos);
@@ -270,17 +278,8 @@ namespace Management.WorldManagement
             
             if (y.Equals(0))
                 return VoxelData.GetMaterialIndexFromType(MaterialType.BEDROCK);
+            
 
-            if (y == terrainHeight + 1)
-            {
-                if (GetNoiseMap(new Vector2(pos.x, pos.z), .25f, _seed) < .5f)
-                {
-                    var randomValue = Random.Range(0, 15);
-                    
-                    if(randomValue.Equals(8))
-                        return VoxelData.GetMaterialIndexFromType(MaterialType.WOOD);
-                }
-            }
 
             if (y == terrainHeight)
             {
@@ -293,14 +292,22 @@ namespace Management.WorldManagement
 
                 return VoxelData.GetMaterialIndexFromType(MaterialType.GRASS);
             }
+
+            if (y > terrainHeight && y < Mathf.FloorToInt(_chunkSize.y * .32f))
+            {
+                if (GetNoiseMap(new Vector2(pos.x, pos.z), .25f, _seed) < .2)
+                {
+                    return VoxelData.GetMaterialIndexFromType(MaterialType.WATER);
+                }
+            }
             
             if (y < terrainHeight)
             {
                 if (y < terrainHeight - terrainHeight * 0.05f)
                 {
-                    if (Get3DNoiseMap(pos, 500, .2f, .6f))
+                    if (Get3DNoiseMap(pos, 100, .2f, .6f))
                     {
-                        return VoxelData.GetMaterialIndexFromType(MaterialType.SAND);
+                        return VoxelData.GetMaterialIndexFromType(MaterialType.WOODEN_DESK);
                     }
                     
                     return VoxelData.GetMaterialIndexFromType(MaterialType.STONE);

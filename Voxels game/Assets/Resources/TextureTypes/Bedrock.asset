@@ -27,5 +27,5 @@ MonoBehaviour:
     _id: 12
   - _blockSide: 5
     _id: 12
-  _meshData: {fileID: 11400000, guid: 8a214d9d8c3a320459a29cc6c3bcfb35, type: 2}
+  _meshData: {fileID: 11400000, guid: d59063bc97cbae342b5e21aa0c61ded5, type: 2}
   _blockProfile: {fileID: 2800000, guid: c1833d4b4254d874a97812111e46f797, type: 3}

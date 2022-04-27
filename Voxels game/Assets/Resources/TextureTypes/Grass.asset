@@ -16,16 +16,16 @@ MonoBehaviour:
   _isTransparent: 0
   _textures:
   - _blockSide: 0
-    _id: 8
+    _id: 9
   - _blockSide: 1
     _id: 15
   - _blockSide: 2
-    _id: 9
+    _id: 8
   - _blockSide: 3
-    _id: 9
+    _id: 8
   - _blockSide: 4
-    _id: 9
+    _id: 8
   - _blockSide: 5
-    _id: 9
+    _id: 8
   _meshData: {fileID: 11400000, guid: d59063bc97cbae342b5e21aa0c61ded5, type: 2}
   _blockProfile: {fileID: 2800000, guid: 2bdfcd36632843c49a487d56d1f64bf8, type: 3}

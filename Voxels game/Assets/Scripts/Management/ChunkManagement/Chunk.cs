@@ -32,6 +32,14 @@ namespace Management.ChunkManagement
         private bool _isVoxelMapPopulated = false;
         [SerializeField] private bool _isGenerated;
 
+        public byte[,,] VoxelMap
+        {
+            get
+            {
+                return _voxelMap;
+            }
+        }
+        
         public bool IsGenerated
         {
             set
@@ -132,7 +140,7 @@ namespace Management.ChunkManagement
 
             checkVector.x -= chunkPos.x;
             checkVector.z -= chunkPos.z;
-
+            checkVector.y = checkVector.y < 0 ? 0 : checkVector.y;
             return new IntVector(checkVector.x, checkVector.y, checkVector.z);
         }
 
@@ -230,9 +238,15 @@ namespace Management.ChunkManagement
             var intPos = new IntVector(pos);
             var blocks = _worldGenerator.BlockTypes;
 
-            return !IsInsideChunk(intPos.x, intPos.y, intPos.z)
-                ? blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid && !blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsTransparent
-                : blocks[_worldGenerator.GetVoxelByPosition(pos + position)].IsSolid && !blocks[_worldGenerator.GetVoxelByPosition(pos + position)].IsTransparent;
+            if (blocks[_worldGenerator.GetVoxelByPosition(pos + position)].IsTransparent)
+                return true;
+
+            if (IsInsideChunk(intPos.x, intPos.y, intPos.z))
+            {
+                return !_worldGenerator.IsVoxelExist(pos + position);
+            }
+
+            return blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid;
         }
 
         private void AddVoxelData(Vector3 pos)

@@ -1002,10 +1002,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _seed: 732563171
   _worldSize: 1000
-  _renderDistance: 5
+  _renderDistance: 1
   _player: {fileID: 1581987199}
   _atlasSize: 4
-  _terrain: 25
+  _terrain: 40
   _destroyParticle: {fileID: 4735923875754825219, guid: 558c291d63c1edf48b1648153137c8d2, type: 3}
   _destroyParticleMaterial: {fileID: 2100000, guid: deaffc9ee43eff340a41fb0d4ccadc95, type: 2}
   _chunkSize:
@@ -2428,7 +2428,7 @@ CapsuleCollider:
   m_Material: {fileID: 13400000, guid: 15f34e93634d72248889bab63e36bb02, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.38
+  m_Radius: 0.5
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

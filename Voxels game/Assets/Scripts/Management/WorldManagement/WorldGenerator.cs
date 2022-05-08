@@ -17,6 +17,7 @@ namespace Management.WorldManagement
     public sealed class WorldGenerator : MonoBehaviour
     {
         public static WorldGenerator Instance;
+        [SerializeField] private float _noiseIncent;
         [SerializeField] private int _seed;
         [SerializeField] private int _worldSize = 25;
         [SerializeField] private int _renderDistance = 5;
@@ -25,6 +26,13 @@ namespace Management.WorldManagement
         [SerializeField] private float _terrain;
         [SerializeField] private GameObject _destroyParticle;
         [SerializeField] private Material _destroyParticleMaterial;
+
+        [Header("Caves")] 
+        [SerializeField] private float _cavesNoiseScale = .2f;
+
+        [SerializeField] private float _thresholdNoiseCaves = .5f;
+        
+        
         private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
         private ChunkCoord _previousPlayerCoords = new ChunkCoord(0, 0);
         public int AtlasSize
@@ -68,7 +76,7 @@ namespace Management.WorldManagement
             }   
         }
 
-        [SerializeField] private Block[] _blockTypes;
+        private Block[] _blockTypes;
 
         public Block[] BlockTypes
         {
@@ -185,15 +193,13 @@ namespace Management.WorldManagement
                         StartCoroutine(TryToGenerate());
                         yield return null;
                     }
-
-
+                    
                     _chunks[x, z].IsActive = true;
 
                     for (int i = 0; i < previouslyActiveChunks.Count; i++) {
 
                         if (previouslyActiveChunks[i].Equals(new ChunkCoord(x, z)))
                             previouslyActiveChunks.RemoveAt(i);
-                       
                     }
 
                 }
@@ -208,6 +214,7 @@ namespace Management.WorldManagement
 
         private void CreateChunk(int x, int z)
         {
+
             var coord = new ChunkCoord(x, z);
             
             var newChunk = new GameObject()
@@ -229,10 +236,7 @@ namespace Management.WorldManagement
 
         public bool IsVoxelExist(Vector3 pos)
         {
-            if (GetChunkFromVector3(pos) is null)
-                return false;
-            
-            return _blockTypes[GetChunkFromVector3(pos).GetVoxelType((GetChunkFromVector3(pos).GetVoxel(pos)))].IsSolid;
+            return CheckForVoxel(pos);
         }
 
         public bool CheckForVoxel (Vector3 pos) {
@@ -252,14 +256,12 @@ namespace Management.WorldManagement
 
         public void CreateDestroyParticle(Vector3 pos)
         {
-            var id = GetChunkFromVector3(pos).GetVoxelID(pos);
-            _destroyParticleMaterial.mainTexture = _blockTypes[id].BlockProfile;
+            _destroyParticleMaterial.mainTexture = _blockTypes[GetChunkFromVector3(pos).GetVoxelID(pos)].BlockProfile;
             Instantiate(_destroyParticle, pos, quaternion.identity);
         }
 
         public void SetVoxel(Chunk chunk ,Vector3 pos, byte type)
         {
-
             if (pos.y < 0 || pos.y > _chunkSize.y)
                 return;
 
@@ -270,7 +272,7 @@ namespace Management.WorldManagement
         public byte GetVoxelByPosition(Vector3 pos)
         {
             var y = Mathf.FloorToInt(pos.y);
-            var terrainHeight = Mathf.FloorToInt(_chunkSize.y * .25f) +  Mathf.FloorToInt(_terrain * GetNoiseMap(new Vector3(pos.x, pos.z), .25f, _seed));
+            var terrainHeight = Mathf.FloorToInt(_chunkSize.y * .25f) +  Mathf.FloorToInt(_terrain * GetNoiseMap(new Vector3(pos.x, pos.z), _noiseIncent, _seed));
 
             if(AxisFitsToRenderDistance(pos.x) && AxisFitsToRenderDistance(pos.z) && !IsVoxelInTheWorld(pos))
                 return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
@@ -279,35 +281,33 @@ namespace Management.WorldManagement
             if (y.Equals(0))
                 return VoxelData.GetMaterialIndexFromType(MaterialType.BEDROCK);
             
-
+            
 
             if (y == terrainHeight)
             {
-                if (GetNoiseMap(new Vector2(pos.x, pos.z), .25f, _seed) > .5f)
+                if (GetNoiseMap(new Vector2(pos.x, pos.z), _noiseIncent, _seed) > .5f)
                 {
                     return VoxelData.GetMaterialIndexFromType(MaterialType.STONE);
                 }
                 
-                
-
                 return VoxelData.GetMaterialIndexFromType(MaterialType.GRASS);
             }
 
             if (y > terrainHeight && y < Mathf.FloorToInt(_chunkSize.y * .32f))
             {
-                if (GetNoiseMap(new Vector2(pos.x, pos.z), .25f, _seed) < .2)
+                if (GetNoiseMap(new Vector2(pos.x, pos.z), _noiseIncent, _seed) < .2)
                 {
                     return VoxelData.GetMaterialIndexFromType(MaterialType.WATER);
                 }
             }
-            
+
             if (y < terrainHeight)
             {
                 if (y < terrainHeight - terrainHeight * 0.05f)
                 {
-                    if (Get3DNoiseMap(pos, 100, .2f, .6f))
+                    if (Get3DNoiseMap(pos, 100, _cavesNoiseScale,  _thresholdNoiseCaves))
                     {
-                        return VoxelData.GetMaterialIndexFromType(MaterialType.WOODEN_DESK);
+                        return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
                     }
                     
                     return VoxelData.GetMaterialIndexFromType(MaterialType.STONE);
@@ -346,10 +346,7 @@ namespace Management.WorldManagement
             float CB = Mathf.PerlinNoise(z, y);
             float CA = Mathf.PerlinNoise(z, x);
 
-            if ((AB + BC + AC + BA + CB + CA) / 6f > threshold)
-                return true;
-            else
-                return false;
+            return (AB + BC + AC + BA + CB + CA) / 6f > threshold;
 
         }
 

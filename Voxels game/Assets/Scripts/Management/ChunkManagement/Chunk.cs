@@ -162,17 +162,17 @@ namespace Management.ChunkManagement
             }
         }
 
-        // private void UpdateNearestVoxel(IntVector coord)
-        // {
-        //     for (int i = 0; i < 6; i++)
-        //     {
-        //         var nearestVoxelPosition = new IntVector(coord.ToVector3() + _worldGenerator.BlockTypes[i]);
-        //         if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldGenerator.Instance.ChunkSize))
-        //             continue;
-        //         
-        //         WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position).UpdateChunk();
-        //     }
-        // }
+        private void UpdateNearestVoxel(IntVector coord)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                var nearestVoxelPosition = new IntVector(coord.ToVector3() + VoxelData.FaceCheck[i]);
+                if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldGenerator.Instance.ChunkSize))
+                    continue;
+                
+                WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position).UpdateChunk();
+            }
+        }
 
         private void UpdateChunk()
         {
@@ -238,15 +238,9 @@ namespace Management.ChunkManagement
             var intPos = new IntVector(pos);
             var blocks = _worldGenerator.BlockTypes;
 
-            if (blocks[_worldGenerator.GetVoxelByPosition(pos + position)].IsTransparent)
-                return true;
-
-            if (IsInsideChunk(intPos.x, intPos.y, intPos.z))
-            {
-                return !_worldGenerator.IsVoxelExist(pos + position);
-            }
-
-            return blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid;
+            return IsInsideChunk(intPos.x, intPos.y, intPos.z) 
+                ? _worldGenerator.IsVoxelExist(pos + position) && !blocks[_worldGenerator.GetVoxelByPosition(pos + position)].IsTransparent
+                : blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid && !blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsTransparent;
         }
 
         private void AddVoxelData(Vector3 pos)

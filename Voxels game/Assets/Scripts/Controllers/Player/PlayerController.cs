@@ -4,6 +4,7 @@ using System.Threading;
 using _3D.Mathf2;
 using Inventory;
 using Management.ChunkManagement;
+using Management.Cursor;
 using Management.UI;
 using Management.WorldManagement;
 using UnityEngine;
@@ -13,14 +14,17 @@ namespace Controllers.Player
 {
     public class PlayerController : MonoBehaviour
     {
+        private bool _isActive = true;
+
         [Header("Movement")]
         [SerializeField] private float _speed = 5;
         private Vector2 _movementInputs;
         [SerializeField]private bool _isMoving;
         public bool IsMoving => _isMoving;
-        
-        
-        [Header("Looking")]
+
+        [Header("Looking")] 
+        private bool _canLooking;
+        public bool CanLooking => _canLooking;
         [SerializeField] private float _sensivity = 3;
         private Vector2 _mouseInput;
         
@@ -33,12 +37,13 @@ namespace Controllers.Player
         private int _scrollIndex;
         private Rigidbody _rigidbody;
         private Transform _cam;
-        
-        [Header("Building Raycast")]
+
+        [Header("Building Raycast")] [SerializeField]
+        private GameObject _buildparticle;
         [SerializeField] private float _maxRaycastDistance = 3;
         private bool _canModify;
         private Chunk _detectedChunk;
-        private Vector3 _voxelPos, _buildPos;
+        private Vector3 _hitPoint, _hitNormal, _voxelPos, _buildPos;
 
         private void Awake()
         {
@@ -54,6 +59,7 @@ namespace Controllers.Player
 
         private void Start()
         {
+            _isActive = true;
             _cam = Camera.main.transform;
             _rigidbody = GetComponent<Rigidbody>();
             Cursor.lockState = CursorLockMode.Locked;
@@ -63,6 +69,7 @@ namespace Controllers.Player
 
         private void OnWorldGenerated()
         {
+            _canLooking = true;
             _rigidbody.isKinematic = false;
             UIManager.Instance.SetScreen(ScreenType.HUD);
         }
@@ -82,9 +89,23 @@ namespace Controllers.Player
             UpdateRaycast();
         }
 
+        public void SetActive(bool active)
+        {
+            _isActive = active;
+            
+            if(!active)
+                return;
+            
+            _movementInputs = Vector2.zero;
+            _rigidbody.velocity = Vector3.zero;
+            _isMoving = false;
+        }
 
         public void SetMove(InputAction.CallbackContext ctx)
         {
+            if(!_isActive)
+                return;
+            
             _movementInputs = ctx.ReadValue<Vector2>();
             _isMoving = _movementInputs.magnitude > 0;
             StartCoroutine(Movement());
@@ -104,6 +125,9 @@ namespace Controllers.Player
 
         public void SetJump()
         {
+            if(!_isActive)
+                return;
+            
             if (IsGrounded())
             {
                 _rigidbody.AddForce(_jumpForce * Vector3.up, ForceMode.Impulse);
@@ -112,6 +136,9 @@ namespace Controllers.Player
 
         public void SetRotate(InputAction.CallbackContext ctx)
         {
+            if(!_isActive)
+                return;
+            
             var inputs = ctx.ReadValue<Vector2>();
             _mouseInput.x += inputs.x * _sensivity;
             _mouseInput.y -= inputs.y *  _sensivity;
@@ -124,6 +151,7 @@ namespace Controllers.Player
         private void UpdateRaycast()
         {
             var hit = new RaycastHit();
+            var selectHit = new RaycastHit();
             if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
             {
                 _canModify = false;
@@ -131,15 +159,16 @@ namespace Controllers.Player
                 return;
             }
             
+            _hitPoint = hit.point;
+            
             _voxelPos = RoundToInt(hit.point - hit.normal * .5f);
             _buildPos = RoundToInt(hit.point + hit.normal * .5f);
-
+            
             if (!WorldGenerator.Instance.CheckForVoxel(_voxelPos) && !hit.transform.GetComponent<Chunk>())
             {
                 _canModify = false;
                 return;
             }
-                
 
             _canModify = true;
             _block.SetActive(true);
@@ -150,7 +179,7 @@ namespace Controllers.Player
 
         private void DestroyBlock()
         {
-            if(!_canModify)
+            if(!_canModify || !_isActive)
                 return;
             
             WorldGenerator.Instance.CreateDestroyParticle(_voxelPos);
@@ -159,17 +188,27 @@ namespace Controllers.Player
 
         private void Build()
         {
+            if(!_isActive)
+                return;
+            
             var playersBlock = RoundToInt(transform.position);
             
             if(_buildPos.Equals(playersBlock) || _buildPos.Equals(new Vector3(playersBlock.x, playersBlock.y + 1, playersBlock.z)))
                 return;
 
-            if(_canModify)
+            if (_canModify)
+            {
                 WorldGenerator.Instance.SetVoxel(_detectedChunk, _buildPos, InventoryManager.Instance.GetBlockIndex());
+                Instantiate(_buildparticle, _buildPos - new Vector3(0, .5f, 0), Quaternion.identity);
+            }
+                
         }
         
         private void SetScrolling(InputAction.CallbackContext ctx)
         {
+            if(!_isActive)
+                return;
+            
             var scrollValue = ctx.ReadValue<float>();
             
             if(scrollValue > 0f && _scrollIndex < 6)

@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,9 @@ namespace Management.UI
     {
         public static UIManager Instance;
 
+        [SerializeField] private RectTransform _mainCanvas;
+        public RectTransform MainCanvas => _mainCanvas;
+
         [Header("Screens")] 
         [SerializeField] private ScreenUI[] _screens;
 
@@ -17,8 +21,8 @@ namespace Management.UI
         [SerializeField] private Image _generationBar;
 
         [Header("Inventory")]
-        [SerializeField] private RawImage[] _inventoryImages = new RawImage[6];
-        [SerializeField] private RectTransform _slotFrame;
+        [SerializeField] private RectTransform[] _rectSlots;
+        [SerializeField] private RawImage[] _slotsImages = new RawImage[6];
 
         private void Awake()
         {
@@ -40,7 +44,16 @@ namespace Management.UI
             }
         }
 
-        public void SetSlot(int value) => _slotFrame.position = _inventoryImages[value].rectTransform.position; 
+        public void SetSlot(int value)
+        {
+            for (var i = 0; i < _rectSlots.Length; i++)
+            {
+                var sequence = DOTween.Sequence();
+                var scaleValue = i != value ? 1 : 1.5f;
+
+                sequence.Append(_rectSlots[i].DOScale(scaleValue, .4f));
+            }
+        }
 
         public void SetRenderBarValue(float value)
         {
@@ -51,8 +64,8 @@ namespace Management.UI
 
         public void SetInventoryImageActive(int index, Texture2D image)
         {
-            _inventoryImages[index].gameObject.SetActive(image != null);
-            _inventoryImages[index].texture = image;
+            _slotsImages[index].gameObject.SetActive(image != null);
+            _slotsImages[index].texture = image;
         }
     }
 }

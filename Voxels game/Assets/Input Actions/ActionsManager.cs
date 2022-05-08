@@ -74,9 +74,27 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Scrolling"",
-                    ""type"": ""Value"",
-                    ""id"": ""8380c846-2659-4f6a-97b3-57564c32f187"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""55914ab7-7535-4439-8dde-72c052c84e8c"",
                     ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""InventoryActive"",
+                    ""type"": ""Button"",
+                    ""id"": ""4d93264e-a098-44ac-9768-1ffe6df21a45"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MousePosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""8a921142-dd35-4408-a6f4-d0c4ba4080c3"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -184,7 +202,7 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""4047c416-78da-424e-9209-f38c212446a7"",
+                    ""id"": ""5ab610fa-1497-4059-931a-30715ae99dcb"",
                     ""path"": ""<Mouse>/scroll/y"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -192,8 +210,36 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                     ""action"": ""Scrolling"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""23a22ddf-4325-4f3e-ab56-a6c93e2ca171"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""InventoryActive"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cd6e4cf9-023f-4fc8-a0ee-d5ccb4952acf"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Inventory"",
+            ""id"": ""a5e45fbf-08bd-4d70-b5c0-9254afe3713a"",
+            ""actions"": [],
+            ""bindings"": []
         }
     ],
     ""controlSchemes"": []
@@ -206,6 +252,10 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         m_Player_Build = m_Player.FindAction("Build", throwIfNotFound: true);
         m_Player_Destroy = m_Player.FindAction("Destroy", throwIfNotFound: true);
         m_Player_Scrolling = m_Player.FindAction("Scrolling", throwIfNotFound: true);
+        m_Player_InventoryActive = m_Player.FindAction("InventoryActive", throwIfNotFound: true);
+        m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
+        // Inventory
+        m_Inventory = asset.FindActionMap("Inventory", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -271,6 +321,8 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Build;
     private readonly InputAction m_Player_Destroy;
     private readonly InputAction m_Player_Scrolling;
+    private readonly InputAction m_Player_InventoryActive;
+    private readonly InputAction m_Player_MousePosition;
     public struct PlayerActions
     {
         private @ActionsManager m_Wrapper;
@@ -281,6 +333,8 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         public InputAction @Build => m_Wrapper.m_Player_Build;
         public InputAction @Destroy => m_Wrapper.m_Player_Destroy;
         public InputAction @Scrolling => m_Wrapper.m_Player_Scrolling;
+        public InputAction @InventoryActive => m_Wrapper.m_Player_InventoryActive;
+        public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -308,6 +362,12 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                 @Scrolling.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnScrolling;
                 @Scrolling.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnScrolling;
                 @Scrolling.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnScrolling;
+                @InventoryActive.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInventoryActive;
+                @InventoryActive.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInventoryActive;
+                @InventoryActive.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnInventoryActive;
+                @MousePosition.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
+                @MousePosition.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
+                @MousePosition.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -330,10 +390,41 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                 @Scrolling.started += instance.OnScrolling;
                 @Scrolling.performed += instance.OnScrolling;
                 @Scrolling.canceled += instance.OnScrolling;
+                @InventoryActive.started += instance.OnInventoryActive;
+                @InventoryActive.performed += instance.OnInventoryActive;
+                @InventoryActive.canceled += instance.OnInventoryActive;
+                @MousePosition.started += instance.OnMousePosition;
+                @MousePosition.performed += instance.OnMousePosition;
+                @MousePosition.canceled += instance.OnMousePosition;
             }
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Inventory
+    private readonly InputActionMap m_Inventory;
+    private IInventoryActions m_InventoryActionsCallbackInterface;
+    public struct InventoryActions
+    {
+        private @ActionsManager m_Wrapper;
+        public InventoryActions(@ActionsManager wrapper) { m_Wrapper = wrapper; }
+        public InputActionMap Get() { return m_Wrapper.m_Inventory; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(InventoryActions set) { return set.Get(); }
+        public void SetCallbacks(IInventoryActions instance)
+        {
+            if (m_Wrapper.m_InventoryActionsCallbackInterface != null)
+            {
+            }
+            m_Wrapper.m_InventoryActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+            }
+        }
+    }
+    public InventoryActions @Inventory => new InventoryActions(this);
     public interface IPlayerActions
     {
         void OnMovement(InputAction.CallbackContext context);
@@ -342,5 +433,10 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         void OnBuild(InputAction.CallbackContext context);
         void OnDestroy(InputAction.CallbackContext context);
         void OnScrolling(InputAction.CallbackContext context);
+        void OnInventoryActive(InputAction.CallbackContext context);
+        void OnMousePosition(InputAction.CallbackContext context);
+    }
+    public interface IInventoryActions
+    {
     }
 }

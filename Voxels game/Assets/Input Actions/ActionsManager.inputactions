@@ -52,9 +52,27 @@
                 },
                 {
                     "name": "Scrolling",
-                    "type": "Value",
-                    "id": "8380c846-2659-4f6a-97b3-57564c32f187",
+                    "type": "PassThrough",
+                    "id": "55914ab7-7535-4439-8dde-72c052c84e8c",
                     "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "InventoryActive",
+                    "type": "Button",
+                    "id": "4d93264e-a098-44ac-9768-1ffe6df21a45",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MousePosition",
+                    "type": "Value",
+                    "id": "8a921142-dd35-4408-a6f4-d0c4ba4080c3",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -162,7 +180,7 @@
                 },
                 {
                     "name": "",
-                    "id": "4047c416-78da-424e-9209-f38c212446a7",
+                    "id": "5ab610fa-1497-4059-931a-30715ae99dcb",
                     "path": "<Mouse>/scroll/y",
                     "interactions": "",
                     "processors": "",
@@ -170,8 +188,36 @@
                     "action": "Scrolling",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "23a22ddf-4325-4f3e-ab56-a6c93e2ca171",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InventoryActive",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cd6e4cf9-023f-4fc8-a0ee-d5ccb4952acf",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MousePosition",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Inventory",
+            "id": "a5e45fbf-08bd-4d70-b5c0-9254afe3713a",
+            "actions": [],
+            "bindings": []
         }
     ],
     "controlSchemes": []

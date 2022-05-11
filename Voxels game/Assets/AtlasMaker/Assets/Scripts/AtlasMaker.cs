@@ -215,7 +215,7 @@ public class AtlasMaker : Editor
                     }
                 }
 
-                tmpTex.Resize(cellSize, cellSize);
+                tmpTex.Reinitialize(cellSize, cellSize);
                 tmpTex.SetPixels32(newColors);
                 tmpTex.Apply();
                 #endregion

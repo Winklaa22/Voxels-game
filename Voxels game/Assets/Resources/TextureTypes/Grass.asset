@@ -29,3 +29,4 @@ MonoBehaviour:
     _id: 8
   _meshData: {fileID: 11400000, guid: d59063bc97cbae342b5e21aa0c61ded5, type: 2}
   _blockProfile: {fileID: 2800000, guid: 2bdfcd36632843c49a487d56d1f64bf8, type: 3}
+  _destroyParticles: 1

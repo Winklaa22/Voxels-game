@@ -28,7 +28,7 @@ namespace Controllers.Player
         [SerializeField] private float _sensivity = 3;
         private Vector2 _mouseInput;
         
-        [SerializeField] private GameObject _block;
+        [SerializeField] private MeshFilter _block;
         [SerializeField] private float _jumpForce;
         
         private ActionsManager _inputs;
@@ -50,7 +50,7 @@ namespace Controllers.Player
             _inputs = new ActionsManager();
             _inputs.Enable();
 
-            _inputs.Player.Build.started += ctx => Build();
+            _inputs.Player.Build.started += ctx => TryBuild();
             _inputs.Player.Destroy.started += ctx => DestroyBlock();
             _inputs.Player.Jump.started += ctx => SetJump();
 
@@ -155,7 +155,7 @@ namespace Controllers.Player
             if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
             {
                 _canModify = false;
-                _block.SetActive(false);
+                _block.gameObject.SetActive(false);
                 return;
             }
             
@@ -171,10 +171,10 @@ namespace Controllers.Player
             }
 
             _canModify = true;
-            _block.SetActive(true);
+            _block.mesh = WorldGenerator.Instance.GetVoxelType(_voxelPos).GetVoxelMesh();
+            _block.gameObject.SetActive(true);
             _detectedChunk = hit.transform.GetComponent<Chunk>();
             _block.transform.position = _voxelPos;
-
         }
 
         private void DestroyBlock()
@@ -186,40 +186,16 @@ namespace Controllers.Player
             WorldGenerator.Instance.SetVoxel(_detectedChunk, _voxelPos, 0);
         }
 
-        private void Build()
+        private void TryBuild()
         {
-            if(!_isActive)
-                return;
-            
             var playersBlock = RoundToInt(transform.position);
             
-            if(_buildPos.Equals(playersBlock) || _buildPos.Equals(new Vector3(playersBlock.x, playersBlock.y + 1, playersBlock.z)))
-                return;
-
-            if (_canModify)
-            {
-                WorldGenerator.Instance.SetVoxel(_detectedChunk, _buildPos, InventoryManager.Instance.GetBlockIndex());
-                Instantiate(_buildparticle, _buildPos - new Vector3(0, .5f, 0), Quaternion.identity);
-            }
-                
-        }
-        
-        private void SetScrolling(InputAction.CallbackContext ctx)
-        {
-            if(!_isActive)
+            if(!_isActive || _buildPos.Equals(playersBlock) || _buildPos.Equals(new Vector3(playersBlock.x, playersBlock.y + 1, playersBlock.z)) || !_canModify)
                 return;
             
-            var scrollValue = ctx.ReadValue<float>();
-            
-            if(scrollValue > 0f && _scrollIndex < 6)
-            {
-                _scrollIndex++;
-            }
+            WorldGenerator.Instance.SetVoxel(_detectedChunk, _buildPos, InventoryManager.Instance.GetBlockIndex());
+            Instantiate(_buildparticle, _buildPos - new Vector3(0, .5f, 0), Quaternion.identity);
 
-            if (scrollValue < 0f && _scrollIndex > 0)
-            {
-                _scrollIndex--;
-            }
         }
 
 

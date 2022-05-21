@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9bdc134e1033614b8713c206f60a23e, type: 3}
+  m_Name: BooksLedge
+  m_EditorClassIdentifier: 
+  _type: 11
+  _isTransparent: 1
+  _textures:
+  - _blockSide: 0
+    _id: 7
+  - _blockSide: 1
+    _id: 7
+  - _blockSide: 2
+    _id: 2
+  - _blockSide: 3
+    _id: 2
+  - _blockSide: 4
+    _id: 2
+  - _blockSide: 5
+    _id: 2
+  _meshData: {fileID: 11400000, guid: 1981cf8ac38f11746bcf68ac209fdc4b, type: 2}
+  _blockProfile: {fileID: 2800000, guid: 9f2e22f489f878f4390a02890ac12611, type: 3}
+  _destroyParticles: 1

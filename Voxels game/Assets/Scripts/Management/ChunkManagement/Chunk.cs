@@ -114,7 +114,7 @@ namespace Management.ChunkManagement
                         if (!_worldGenerator.BlockTypes[_voxelMap[x, y, z]].IsSolid)
                             continue;
 
-                        AddVoxelData(new Vector3(x, y, z));
+                        AddVoxelData(new Vector3(x, y, z), true);
                         CreateMesh();
                     }
                 }
@@ -152,7 +152,7 @@ namespace Management.ChunkManagement
                 _voxelMap[voxelCoord.x, voxelCoord.y, voxelCoord.z] = id;
                 UpdateChunk();
                 SetCollisionActive(true);
-                // UpdateNearestVoxel(voxelCoord);
+                UpdateNearestVoxel(voxelCoord);
             }
             else
             {
@@ -170,8 +170,15 @@ namespace Management.ChunkManagement
                 if (!Math3D.IsInsideTheObject(nearestVoxelPosition, WorldGenerator.Instance.ChunkSize))
                     continue;
                 
-                WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position).UpdateChunk();
+                var chunk = WorldGenerator.Instance.GetChunkFromVector3(nearestVoxelPosition.ToVector3() + position);
+                chunk.UpdateChunk();
+                chunk.SetCollisionActive(true);
             }
+        }
+
+        public void ChangeColor()
+        {
+            _meshRenderer.material = null;
         }
 
         private void UpdateChunk()
@@ -187,8 +194,7 @@ namespace Management.ChunkManagement
                         if (!WorldGenerator.Instance.BlockTypes[_voxelMap[x, y, z]].IsSolid)
                             continue;
 
-                        AddVoxelData(new Vector3(x, y, z));
-                        
+                        AddVoxelData(new Vector3(x, y, z), false);
                     }
                 }
             }
@@ -233,17 +239,29 @@ namespace Management.ChunkManagement
                    x > WorldGenerator.Instance.ChunkSize.x - 1 || z < 0 || z > WorldGenerator.Instance.ChunkSize.z - 1;
         }
 
-        private bool CanRenderSide(Vector3 pos)
+        bool IsVoxelInChunk(int x, int y, int z)
+        {
+
+            return !(x < 0 || x > _worldGenerator.ChunkSize.x - 1 || y < 0 || y > _worldGenerator.ChunkSize.y - 1 ||
+                     z < 0 || z > _worldGenerator.ChunkSize.x - 1);
+        }
+
+        private bool CanRenderSide(Vector3 pos, bool firstGenerate)
         {
             var intPos = new IntVector(pos);
             var blocks = _worldGenerator.BlockTypes;
 
-            return IsInsideChunk(intPos.x, intPos.y, intPos.z) 
-                ? _worldGenerator.IsVoxelExist(pos + position) && !blocks[_worldGenerator.GetVoxelByPosition(pos + position)].IsTransparent
-                : blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid && !blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsTransparent;
+            if (!IsVoxelInChunk(intPos.x, intPos.y, intPos.z))
+            {
+                return !firstGenerate
+                    ? _worldGenerator.IsVoxelExist(pos + position)
+                    : _worldGenerator.CheckForVoxel(pos + position);
+            }
+
+            return blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsSolid && !blocks[_voxelMap[intPos.x, intPos.y, intPos.z]].IsTransparent;
         }
 
-        private void AddVoxelData(Vector3 pos)
+        private void AddVoxelData(Vector3 pos, bool firstGenerate)
         {
             var voxelPos = new IntVector(pos);
             var id = _voxelMap[voxelPos.x, voxelPos.y, voxelPos.z];
@@ -251,11 +269,12 @@ namespace Management.ChunkManagement
 
             for (int i = 0; i < type.MeshData.Faces.Length; i++)
             {
-                if (CanRenderSide(pos + type.MeshData.Faces[i].Value) )
+                if (CanRenderSide(pos + type.MeshData.Faces[i].Value, firstGenerate) )
                     continue;
                 
                 AddTexture(type, type.GetTextureIDFromSide(VoxelData.Sides[i]), ref _uvs);
-
+                
+                
                 for (int j = 0; j < type.MeshData.Faces.Length; j++)
                 {
                     var trisIndex = type.MeshData.Faces[i].Triangles[j];

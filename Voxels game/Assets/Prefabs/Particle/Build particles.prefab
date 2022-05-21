@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4077920570446983573}
   - component: {fileID: 4077920570446983572}
   - component: {fileID: 4077920570446983575}
+  - component: {fileID: 5083162916497731467}
   m_Layer: 0
   m_Name: Build particles
   m_TagString: Untagged
@@ -3677,15 +3678,16 @@ ParticleSystem:
         m_NumAlphaKeys: 2
     range: {x: 0, y: 1}
   CollisionModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 4
-    type: 0
+    type: 1
     collisionMode: 0
     colliderForce: 0
     multiplyColliderForceByParticleSize: 0
     multiplyColliderForceByParticleSpeed: 0
     multiplyColliderForceByCollisionAngle: 1
-    m_Planes: []
+    m_Planes:
+    - {fileID: 0}
     m_Dampen:
       serializedVersion: 2
       minMaxState: 0
@@ -4871,3 +4873,16 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &5083162916497731467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4077920570446983574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070c1a56323998a4e82a24d74bea699c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _time: 0.3

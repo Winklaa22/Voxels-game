@@ -6,9 +6,10 @@ using _3D.Mathf2;
 using Blocks.Type;
 using Controllers.Player;
 using Management.ChunkManagement;
+using Management.Particles;
 using Management.UI;
 using Management.VoxelManagement;
-using Unity.Mathematics;
+using Types.Particles;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -24,8 +25,6 @@ namespace Management.WorldManagement
         [SerializeField] private PlayerController _player;
         [SerializeField] private int _atlasSize = 4;
         [SerializeField] private float _terrain;
-        [SerializeField] private GameObject _destroyParticle;
-        [SerializeField] private Material _destroyParticleMaterial;
 
         [Header("Caves")] 
         [SerializeField] private float _cavesNoiseScale = .2f;
@@ -236,7 +235,20 @@ namespace Management.WorldManagement
 
         public bool IsVoxelExist(Vector3 pos)
         {
-            return CheckForVoxel(pos);
+            var thisChunk = new ChunkCoord(pos);
+
+            if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > _chunkSize.y || _chunks[thisChunk.x, thisChunk.z])
+                return false;
+
+            var type = _blockTypes[
+                _chunks[thisChunk.x, thisChunk.z].GetVoxelType(_chunks[thisChunk.x, thisChunk.z].GetVoxel(pos))];
+
+            return _chunks[thisChunk.x, thisChunk.z] != null ? type.IsSolid && !type.IsTransparent : _blockTypes[GetVoxelByPosition(pos)].IsSolid;
+        }
+
+        public Block GetVoxelType(Vector3 pos)
+        {
+            return _blockTypes[GetChunkFromVector3(pos).GetVoxelID(pos)];
         }
 
         public bool CheckForVoxel (Vector3 pos) {
@@ -254,10 +266,13 @@ namespace Management.WorldManagement
 
         }
 
+
         public void CreateDestroyParticle(Vector3 pos)
         {
-            _destroyParticleMaterial.mainTexture = _blockTypes[GetChunkFromVector3(pos).GetVoxelID(pos)].BlockProfile;
-            Instantiate(_destroyParticle, pos, quaternion.identity);
+            var blockType = _blockTypes[GetChunkFromVector3(pos).GetVoxelID(pos)];
+            var particleType = ParticlesManager.Instance.GetParticle(blockType.DestroyParticles);
+            particleType.ParticleMaterial.mainTexture = blockType.BlockProfile;
+            Instantiate(particleType.System, pos, Quaternion.identity);
         }
 
         public void SetVoxel(Chunk chunk ,Vector3 pos, byte type)
@@ -282,6 +297,11 @@ namespace Management.WorldManagement
                 return VoxelData.GetMaterialIndexFromType(MaterialType.BEDROCK);
             
             
+            if (Get3DNoiseMap(pos, 100, _cavesNoiseScale,  _thresholdNoiseCaves))
+            {
+                return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
+            }
+            
 
             if (y == terrainHeight)
             {
@@ -300,15 +320,13 @@ namespace Management.WorldManagement
                     return VoxelData.GetMaterialIndexFromType(MaterialType.WATER);
                 }
             }
+            
 
             if (y < terrainHeight)
             {
                 if (y < terrainHeight - terrainHeight * 0.05f)
                 {
-                    if (Get3DNoiseMap(pos, 100, _cavesNoiseScale,  _thresholdNoiseCaves))
-                    {
-                        return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
-                    }
+                    
                     
                     return VoxelData.GetMaterialIndexFromType(MaterialType.STONE);
                 }

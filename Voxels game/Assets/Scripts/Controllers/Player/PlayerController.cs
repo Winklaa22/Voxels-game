@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using _3D.Mathf2;
 using Inventory;
@@ -30,10 +31,15 @@ namespace Controllers.Player
         
         [SerializeField] private MeshFilter _block;
         [SerializeField] private float _jumpForce;
+
+
+        [Header("Animations")] 
+        [SerializeField] private Animator _animator;
+        private float _movementTransition;
+        private Vector2 _animInputs;
         
         private ActionsManager _inputs;
-        
-        
+
         private int _scrollIndex;
         private Rigidbody _rigidbody;
         private Transform _cam;
@@ -86,6 +92,7 @@ namespace Controllers.Player
 
         private void Update()
         {
+            UpdateAnimations();
             UpdateRaycast();
         }
 
@@ -106,10 +113,22 @@ namespace Controllers.Player
             if(!_isActive)
                 return;
             
+            
             _movementInputs = ctx.ReadValue<Vector2>();
+            StartCoroutine(SetInputs(ctx.ReadValue<Vector2>()));
             _isMoving = _movementInputs.magnitude > 0;
             StartCoroutine(Movement());
         }
+
+        private IEnumerator SetInputs(Vector2 value)
+        {
+            if(!_animInputs.Equals(value))
+            {
+            }
+
+            yield return null;
+        }
+
         private IEnumerator Movement()
         {
             while (_isMoving)
@@ -120,7 +139,7 @@ namespace Controllers.Player
 
         private bool IsGrounded()
         {
-            return Physics.Raycast(transform.position, -transform.up, 2);
+            return Physics.Raycast(transform.position, -transform.up, 1);
         }
 
         public void SetJump()
@@ -132,6 +151,23 @@ namespace Controllers.Player
             {
                 _rigidbody.AddForce(_jumpForce * Vector3.up, ForceMode.Impulse);
             }
+        }
+
+        private void UpdateAnimations()
+        {
+            
+            _animInputs = _isMoving ? Vector2.Lerp(_animInputs, _movementInputs, .1f) : Vector2.zero;
+
+            _movementTransition = Mathf.Clamp(_movementTransition += _isMoving ? Time.deltaTime : -Time.deltaTime, 0, .3f);
+            
+            _animator.SetFloat("Speed", _movementTransition);
+            
+            // directions
+            _animator.SetFloat("Horizontal", _animInputs.x);
+            _animator.SetFloat("Vertical", _animInputs.y);
+            
+            //falling
+            _animator.SetBool("IsGrounded", IsGrounded());
         }
 
         public void SetRotate(InputAction.CallbackContext ctx)

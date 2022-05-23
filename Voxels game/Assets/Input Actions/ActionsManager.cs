@@ -98,6 +98,15 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""PauseGame"",
+                    ""type"": ""Button"",
+                    ""id"": ""1f92c595-4fda-4b32-9993-4cf0c3f8e29c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -232,6 +241,17 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                     ""action"": ""MousePosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""84c051fc-defd-43e4-a248-75ecf7ed68b2"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PauseGame"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -254,6 +274,7 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         m_Player_Scrolling = m_Player.FindAction("Scrolling", throwIfNotFound: true);
         m_Player_InventoryActive = m_Player.FindAction("InventoryActive", throwIfNotFound: true);
         m_Player_MousePosition = m_Player.FindAction("MousePosition", throwIfNotFound: true);
+        m_Player_PauseGame = m_Player.FindAction("PauseGame", throwIfNotFound: true);
         // Inventory
         m_Inventory = asset.FindActionMap("Inventory", throwIfNotFound: true);
     }
@@ -323,6 +344,7 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Scrolling;
     private readonly InputAction m_Player_InventoryActive;
     private readonly InputAction m_Player_MousePosition;
+    private readonly InputAction m_Player_PauseGame;
     public struct PlayerActions
     {
         private @ActionsManager m_Wrapper;
@@ -335,6 +357,7 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         public InputAction @Scrolling => m_Wrapper.m_Player_Scrolling;
         public InputAction @InventoryActive => m_Wrapper.m_Player_InventoryActive;
         public InputAction @MousePosition => m_Wrapper.m_Player_MousePosition;
+        public InputAction @PauseGame => m_Wrapper.m_Player_PauseGame;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -368,6 +391,9 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                 @MousePosition.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
                 @MousePosition.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
                 @MousePosition.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMousePosition;
+                @PauseGame.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseGame;
+                @PauseGame.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseGame;
+                @PauseGame.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPauseGame;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -396,6 +422,9 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
                 @MousePosition.started += instance.OnMousePosition;
                 @MousePosition.performed += instance.OnMousePosition;
                 @MousePosition.canceled += instance.OnMousePosition;
+                @PauseGame.started += instance.OnPauseGame;
+                @PauseGame.performed += instance.OnPauseGame;
+                @PauseGame.canceled += instance.OnPauseGame;
             }
         }
     }
@@ -435,6 +464,7 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         void OnScrolling(InputAction.CallbackContext context);
         void OnInventoryActive(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
+        void OnPauseGame(InputAction.CallbackContext context);
     }
     public interface IInventoryActions
     {

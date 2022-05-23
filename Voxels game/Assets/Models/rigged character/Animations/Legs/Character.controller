@@ -82,9 +82,9 @@ AnimatorController:
     m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
-    m_Name: Base Layer
+    m_Name: Legs
     m_StateMachine: {fileID: 4666794880225807761}
-    m_Mask: {fileID: 0}
+    m_Mask: {fileID: 31900000, guid: d047b0922b4af3642b8e7e145f8a5254, type: 2}
     m_Motions: []
     m_Behaviours: []
     m_BlendingMode: 0
@@ -158,14 +158,14 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Speed
+  m_Name: Legs
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 6289602296413566479}
     m_Position: {x: 30, y: 210, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 3586888299296423313}
-    m_Position: {x: 10, y: 360, z: 0}
+    m_Position: {x: 20, y: 360, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []

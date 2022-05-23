@@ -2,7 +2,7 @@ using System;
 using Types._Cursor;
 using UnityEngine;
 
-namespace Management.Cursor
+namespace Management._Cursor
 {
     public class CursorManager : MonoBehaviour
     {
@@ -27,6 +27,12 @@ namespace Management.Cursor
         public Vector2 CursorPosition()
         {
             return _inputs.Player.MousePosition.ReadValue<Vector2>();
+        }
+
+        public void SetActive(bool active)
+        {
+            Cursor.visible = active;
+            Cursor.lockState = active ? CursorLockMode.None : CursorLockMode.Locked;
         }
 
         public void SetCursor(CursorName name)

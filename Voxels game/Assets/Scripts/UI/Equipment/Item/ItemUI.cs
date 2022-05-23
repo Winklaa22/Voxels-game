@@ -1,5 +1,5 @@
 using System;
-using Management.Cursor;
+using Management._Cursor;
 using Management.UI;
 using Types._Cursor;
 using UnityEngine;

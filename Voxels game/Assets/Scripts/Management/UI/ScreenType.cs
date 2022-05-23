@@ -2,6 +2,6 @@
 {
     public enum ScreenType
     {
-        HUD, RENDER, INVENTORY,
+        HUD, RENDER, INVENTORY, PAUSE
     }
 }

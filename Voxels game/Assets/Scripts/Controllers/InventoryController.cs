@@ -1,6 +1,6 @@
 using System;
 using Inventory;
-using Management.Cursor;
+using Management._Cursor;
 using Management.Game;
 using Management.UI;
 using UnityEngine;
@@ -18,7 +18,7 @@ namespace Controllers
             _inputs = new ActionsManager();
             _inputs.Enable();
             
-            _inputs.Player.InventoryActive.started += ctx => ChangeActive();
+            // _inputs.Player.InventoryActive.started += ctx => ChangeActive();
         }
 
         private void Start()

@@ -27,6 +27,6 @@ MonoBehaviour:
     _id: 7
   - _blockSide: 5
     _id: 7
-  _meshData: {fileID: 11400000, guid: a4f0ba8cb1404cc43aba3e32ec111604, type: 2}
+  _meshData: {fileID: 11400000, guid: d59063bc97cbae342b5e21aa0c61ded5, type: 2}
   _blockProfile: {fileID: 2800000, guid: 92cec7442ee04a048854103c788fa4d6, type: 3}
   _destroyParticles: 1

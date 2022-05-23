@@ -5,7 +5,7 @@ using System.Threading;
 using _3D.Mathf2;
 using Inventory;
 using Management.ChunkManagement;
-using Management.Cursor;
+using Management._Cursor;
 using Management.UI;
 using Management.WorldManagement;
 using UnityEngine;

@@ -113,6 +113,9 @@ namespace Management.WorldManagement
 
         private void SpawnPlayer()
         {
+            if (_player is null)
+                return;
+            
             var spawnPos = new Vector3(_worldSize * .5f, _chunkSize.y, _worldSize * .5f);
             _player.transform.position = spawnPos;
         }
@@ -122,8 +125,11 @@ namespace Management.WorldManagement
             CreateChunk(x, z);
             _chunksToGenerate.Add(new ChunkCoord(x, z));
         }
-        
-        private ChunkCoord PlayerCoords() => GetChunkCoords(_player.transform.position);
+
+        private ChunkCoord PlayerCoords()
+        {
+            return _player != null ? GetChunkCoords(_player.transform.position) : new ChunkCoord(0, 0);
+        } 
         
         private IEnumerator GenerateWorld()
         {

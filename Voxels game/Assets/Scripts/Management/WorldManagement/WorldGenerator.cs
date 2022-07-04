@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using _3D.Mathf2;
+using Assets.Scripts.Chunks;
 using Blocks.Type;
 using Controllers.Player;
 using Management.ChunkManagement;
@@ -18,35 +19,57 @@ namespace Management.WorldManagement
     public sealed class WorldGenerator : MonoBehaviour
     {
         public static WorldGenerator Instance;
-        [SerializeField] private float _noiseIncent;
+        
+        
+        [Header("Terrain")]
+        [SerializeField] private float _terrainHeight;
         [SerializeField] private int _seed;
+        [SerializeField] private float _noiseIncent;
+        
+        [Header("World data")]
         [SerializeField] private int _worldSize = 25;
         [SerializeField] private int _renderDistance = 5;
-        [SerializeField] private PlayerController _player;
+        
+        [Header("Atlas texture")]
         [SerializeField] private int _atlasSize = 4;
-        [SerializeField] private float _terrain;
-
-        [Header("Caves")] 
-        [SerializeField] private float _cavesNoiseScale = .2f;
-
-        [SerializeField] private float _thresholdNoiseCaves = .5f;
         
-        
-        private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
-        private ChunkCoord _previousPlayerCoords = new ChunkCoord(0, 0);
         public int AtlasSize
         {
             get { return _atlasSize; }
         }
-
+        
         public float BlockOnAtlasSize
         {
             get { return 1 / (float)_atlasSize; }
         }
 
+        [Header("Caves")] 
+        [SerializeField] private float _cavesNoiseScale = .2f;
+        [SerializeField] private float _thresholdNoiseCaves = .5f;
+        
+        [Header("Chunks")] 
+        [SerializeField] private IntVector _chunkSize;
+        private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
+        private Queue<ChunkData> _chunksToRender = new Queue<ChunkData>();
+
+        public Queue<ChunkData> ChunksToRender
+        {
+            get
+            {
+                return _chunksToRender;
+            }
+        }
+
         private List<ChunkCoord> _activeChunks = new List<ChunkCoord>();
 
-        [SerializeField] private IntVector _chunkSize;
+        
+        
+        [Header("Player")]
+        [SerializeField] private PlayerController _player;
+        private ChunkCoord _previousPlayerCoords = new ChunkCoord(0, 0);
+        private ChunkCoord _playerCoordinates;
+        
+
 
         public IntVector ChunkSize
         {
@@ -85,7 +108,7 @@ namespace Management.WorldManagement
             }
         }
 
-        private Chunk[,] _chunks;
+        private ChunkData[,] _chunks;
 
         public delegate void WorldIsGenerated();
         public event WorldIsGenerated OnWorldIsGenerated;
@@ -99,25 +122,22 @@ namespace Management.WorldManagement
         {
             Instance = this;
             _blockTypes = Resources.LoadAll<Block>("TextureTypes");
-            _chunks = new Chunk[_worldSize, _worldSize];
+            _chunks = new ChunkData[_worldSize, _worldSize];
         }
 
         private void Start()
         {
             _seed = Random.Range(0, 1000);
-
-            _previousPlayerCoords = PlayerCoords();
             SpawnPlayer();
             StartCoroutine(GenerateWorld());
         }
 
         private void SpawnPlayer()
         {
-            if (_player is null)
-                return;
-            
             var spawnPos = new Vector3(_worldSize * .5f, _chunkSize.y, _worldSize * .5f);
             _player.transform.position = spawnPos;
+            _playerCoordinates = GetChunkCoords(_player.transform.position);
+            _previousPlayerCoords = GetChunkCoords(_player.transform.position);
         }
 
         private void CreateEmptyChunk(int x, int z)
@@ -126,18 +146,13 @@ namespace Management.WorldManagement
             _chunksToGenerate.Add(new ChunkCoord(x, z));
         }
 
-        private ChunkCoord PlayerCoords()
-        {
-            return _player != null ? GetChunkCoords(_player.transform.position) : new ChunkCoord(0, 0);
-        } 
-        
         private IEnumerator GenerateWorld()
         {
-            var chunksToRenderCount = Mathf.Pow(_renderDistance * 2, 2);;
+            var chunksToRenderCount = Mathf.Pow(_renderDistance * 2, 2);
             var generatedChunks = 0.0f;
-            for (int x = PlayerCoords().x - _renderDistance; x < PlayerCoords().x + _renderDistance; x++)
+            for (int x = _playerCoordinates.x - _renderDistance; x < _playerCoordinates.x + _renderDistance; x++)
             {
-                for (int z = PlayerCoords().z - _renderDistance; z < PlayerCoords().z + _renderDistance; z++)
+                for (int z = _playerCoordinates.z - _renderDistance; z < _playerCoordinates.z + _renderDistance; z++)
                 {
                     CreateEmptyChunk(x, z);
                     generatedChunks++;
@@ -149,14 +164,29 @@ namespace Management.WorldManagement
             OnWorldIsGenerated?.Invoke();
             yield return null;
         }
-        
 
+        private void DrawAllChunks()
+        {
+            if (_chunksToRender.Count <= 0) 
+                return;
+            
+            lock(_chunksToRender)
+            {
+                if (_chunksToRender.Peek().CanModify)
+                {
+                    _chunksToRender.Dequeue().CreateMesh();
+                }
+                    
+            }
+        }
 
         private IEnumerator TryToGenerate()
         {
             while (_chunksToGenerate.Count > 0)
             {
-                _chunks[_chunksToGenerate[0].x, _chunksToGenerate[0].z].IsGenerated = true;
+                var chunk = _chunks[_chunksToGenerate[0].x, _chunksToGenerate[0].z];
+                chunk.IsGenerated = true;
+                
                 _chunksToGenerate.RemoveAt(0);
             }
 
@@ -170,7 +200,7 @@ namespace Management.WorldManagement
             return new ChunkCoord(x, z);
         }
         
-        public Chunk GetChunkFromVector3 (Vector3 pos) {
+        public ChunkData GetChunkFromVector3 (Vector3 pos) {
 
             var x = Mathf.FloorToInt(pos.x / _chunkSize.x);
             var z = Mathf.FloorToInt(pos.z / _chunkSize.x);
@@ -180,17 +210,22 @@ namespace Management.WorldManagement
         }
 
 
+        private void Update()
+        {
+            DrawAllChunks();
+        }
+
         public IEnumerator UpdateRenderChunks()
         {
-            if (PlayerCoords().Equals(_previousPlayerCoords)) 
+            if (_playerCoordinates.Equals(_previousPlayerCoords)) 
                 yield break;
 
-            _previousPlayerCoords = PlayerCoords();
+            _previousPlayerCoords = _playerCoordinates;
             var previouslyActiveChunks = new List<ChunkCoord>(_activeChunks);
 
-            for (int x = PlayerCoords().x - _renderDistance; x < PlayerCoords().x + _renderDistance; x++)
+            for (int x = _playerCoordinates.x - _renderDistance; x < _playerCoordinates.x + _renderDistance; x++)
             {
-                for (int z = PlayerCoords().z - _renderDistance; z < PlayerCoords().z + _renderDistance; z++)
+                for (int z = _playerCoordinates.z - _renderDistance; z < _playerCoordinates.z + _renderDistance; z++)
                 {
                     if (_chunks[x, z] is null)
                     {
@@ -198,15 +233,25 @@ namespace Management.WorldManagement
                         StartCoroutine(TryToGenerate());
                         yield return null;
                     }
-                    
+
                     _chunks[x, z].IsActive = true;
 
-                    for (int i = 0; i < previouslyActiveChunks.Count; i++) {
+                    for (int i = 0; i < previouslyActiveChunks.Count; i++)
+                    {
 
                         if (previouslyActiveChunks[i].Equals(new ChunkCoord(x, z)))
                             previouslyActiveChunks.RemoveAt(i);
                     }
 
+                    // if (x > PlayerCoords().x - 2 && x < PlayerCoords().x + 2 && z > PlayerCoords().z - 2 && z < PlayerCoords().x + 2)
+                    // {
+                    //     _chunks[x, z].SetActive(true);
+                    // }
+                    // else
+                    // {
+                    //     _chunks[x, z].SetActive(false);
+                    // }
+                    
                 }
             }
 
@@ -217,9 +262,13 @@ namespace Management.WorldManagement
             }
         }
 
+        private void FixedUpdate()
+        {
+            _playerCoordinates = GetChunkCoords(_player.transform.position);
+        }
+
         private void CreateChunk(int x, int z)
         {
-
             var coord = new ChunkCoord(x, z);
             
             var newChunk = new GameObject()
@@ -235,8 +284,15 @@ namespace Management.WorldManagement
                 }
             };
             
-            _chunks[x, z] = newChunk.AddComponent<Chunk>();
+            _chunks[x, z] = newChunk.AddComponent<ChunkData>();
             _activeChunks.Add(coord);
+        }
+
+
+
+        public Block GetVoxelType(Vector3 pos)
+        {
+            return _blockTypes[GetChunkFromVector3(pos).GetVoxelID(pos)];
         }
 
         public bool IsVoxelExist(Vector3 pos)
@@ -251,12 +307,7 @@ namespace Management.WorldManagement
 
             return _chunks[thisChunk.x, thisChunk.z] != null ? type.IsSolid && !type.IsTransparent : _blockTypes[GetVoxelByPosition(pos)].IsSolid;
         }
-
-        public Block GetVoxelType(Vector3 pos)
-        {
-            return _blockTypes[GetChunkFromVector3(pos).GetVoxelID(pos)];
-        }
-
+        
         public bool CheckForVoxel (Vector3 pos) {
 
             var thisChunk = new ChunkCoord(pos);
@@ -264,7 +315,7 @@ namespace Management.WorldManagement
             if (!IsChunkInWorld(thisChunk) || pos.y < 0 || pos.y > _chunkSize.y)
                 return false;
 
-            if (_chunks[thisChunk.x, thisChunk.z] != null && _chunks[thisChunk.x, thisChunk.z].IsVoxelMapPopulated)
+            if (_chunks[thisChunk.x, thisChunk.z] != null && _chunks[thisChunk.x, thisChunk.z].CanModify)
                 return _blockTypes[_chunks[thisChunk.x, thisChunk.z].GetVoxelType(_chunks[thisChunk.x, thisChunk.z].GetVoxel(pos))].IsSolid;
 
 
@@ -281,19 +332,19 @@ namespace Management.WorldManagement
             Instantiate(particleType.System, pos, Quaternion.identity);
         }
 
-        public void SetVoxel(Chunk chunk ,Vector3 pos, byte type)
+        public void SetVoxel(ChunkData chunkData ,Vector3 pos, byte type)
         {
             if (pos.y < 0 || pos.y > _chunkSize.y)
                 return;
 
-            var voxel = chunk.GetVoxel(pos);
-            chunk.SetVoxel(voxel, type);
+            var voxel = chunkData.GetVoxel(pos);
+            chunkData.SetVoxel(voxel, type);
         }
 
         public byte GetVoxelByPosition(Vector3 pos)
         {
-            var y = Mathf.FloorToInt(pos.y);
-            var terrainHeight = Mathf.FloorToInt(_chunkSize.y * .25f) +  Mathf.FloorToInt(_terrain * GetNoiseMap(new Vector3(pos.x, pos.z), _noiseIncent, _seed));
+            var y = Mathf.RoundToInt(pos.y);
+            var terrainHeight = Mathf.FloorToInt(_chunkSize.y * .25f) +  Mathf.FloorToInt(_terrainHeight * GetNoiseMap(new Vector3(pos.x, pos.z), _noiseIncent, _seed));
 
             if(AxisFitsToRenderDistance(pos.x) && AxisFitsToRenderDistance(pos.z) && !IsVoxelInTheWorld(pos))
                 return VoxelData.GetMaterialIndexFromType(MaterialType.AIR);
@@ -348,7 +399,7 @@ namespace Management.WorldManagement
 
         private bool AxisFitsToRenderDistance(float value)
         {
-            return value < (PlayerCoords().x + _renderDistance) - 1 && value > (PlayerCoords().x - _renderDistance) - 1;;
+            return value < (_playerCoordinates.x + _renderDistance) - 1 && value > (_playerCoordinates.x - _renderDistance) - 1;;
         }
 
         private float GetNoiseMap(Vector3 pos, float increment, float offset)

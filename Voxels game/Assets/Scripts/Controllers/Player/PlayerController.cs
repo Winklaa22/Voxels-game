@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using _3D.Mathf2;
+using Assets.Scripts.Chunks;
 using Inventory;
 using Management.ChunkManagement;
 using Management._Cursor;
@@ -48,7 +49,7 @@ namespace Controllers.Player
         private GameObject _buildparticle;
         [SerializeField] private float _maxRaycastDistance = 3;
         private bool _canModify;
-        private Chunk _detectedChunk;
+        private ChunkData _detectedChunkData;
         private Vector3 _hitPoint, _hitNormal, _voxelPos, _buildPos;
 
         private void Awake()
@@ -65,6 +66,8 @@ namespace Controllers.Player
 
         private void Start()
         {
+            Application.targetFrameRate = 60;
+            
             _isActive = true;
             _cam = Camera.main.transform;
             _rigidbody = GetComponent<Rigidbody>();
@@ -200,7 +203,7 @@ namespace Controllers.Player
             _voxelPos = RoundToInt(hit.point - hit.normal * .5f);
             _buildPos = RoundToInt(hit.point + hit.normal * .5f);
             
-            if (!WorldGenerator.Instance.CheckForVoxel(_voxelPos) && !hit.transform.GetComponent<Chunk>())
+            if (!WorldGenerator.Instance.CheckForVoxel(_voxelPos) && !hit.transform.GetComponent<ChunkData>())
             {
                 _canModify = false;
                 return;
@@ -209,7 +212,7 @@ namespace Controllers.Player
             _canModify = true;
             _block.mesh = WorldGenerator.Instance.GetVoxelType(_voxelPos).GetVoxelMesh();
             _block.gameObject.SetActive(true);
-            _detectedChunk = hit.transform.GetComponent<Chunk>();
+            _detectedChunkData = hit.transform.GetComponent<ChunkData>();
             _block.transform.position = _voxelPos;
         }
 
@@ -219,7 +222,7 @@ namespace Controllers.Player
                 return;
             
             WorldGenerator.Instance.CreateDestroyParticle(_voxelPos);
-            WorldGenerator.Instance.SetVoxel(_detectedChunk, _voxelPos, 0);
+            WorldGenerator.Instance.SetVoxel(_detectedChunkData, _voxelPos, 0);
         }
 
         private void TryBuild()
@@ -229,7 +232,7 @@ namespace Controllers.Player
             if(!_isActive || _buildPos.Equals(playersBlock) || _buildPos.Equals(new Vector3(playersBlock.x, playersBlock.y + 1, playersBlock.z)) || !_canModify)
                 return;
             
-            WorldGenerator.Instance.SetVoxel(_detectedChunk, _buildPos, InventoryManager.Instance.GetBlockIndex());
+            WorldGenerator.Instance.SetVoxel(_detectedChunkData, _buildPos, InventoryManager.Instance.GetBlockIndex());
             Instantiate(_buildparticle, _buildPos - new Vector3(0, .5f, 0), Quaternion.identity);
 
         }

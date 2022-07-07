@@ -7,6 +7,6 @@ namespace Management.Menu
 {
     public class MenuManager : MonoBehaviour
     {
-
+        
     }
 }

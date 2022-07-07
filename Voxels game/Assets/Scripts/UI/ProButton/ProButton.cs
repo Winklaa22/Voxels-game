@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace UI.ProButton
 {
-    public class ProButton : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerExitHandler
+    public class ProButton : MonoBehaviour, IPointerEnterHandler
     {
         [SerializeField] private Ease _ease;
         [SerializeField] private float _duration;
@@ -18,17 +18,7 @@ namespace UI.ProButton
         {
             SetScale(_pressSize);
         }
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            
-        }
-
+        
         private void SetScale(float size)
         {
             var sequence = DOTween.Sequence();

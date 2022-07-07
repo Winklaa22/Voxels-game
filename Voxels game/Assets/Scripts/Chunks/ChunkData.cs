@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using _3D.Mathf2;
+using Blocks;
+using Blocks.Textures;
 using Blocks.Type;
 using Management.ChunkManagement;
 using Management.VoxelManagement;
 using Management.WorldManagement;
 using UnityEngine;
 
-namespace Assets.Scripts.Chunks
+namespace Chunks
 {
     public class ChunkData : MonoBehaviour
     {
@@ -232,7 +234,7 @@ namespace Assets.Scripts.Chunks
                     {
                         var voxelPosition = new Vector3(x, y, z) + _position;
                         var voxelIndex = _worldGenerator.GetVoxelByPosition(voxelPosition);
-
+   
                         _voxelMap[x, y, z] = voxelIndex;
                     }
                 }
@@ -288,42 +290,6 @@ namespace Assets.Scripts.Chunks
 
         private void CreateFaceData(Block type, Vector3 pos, int face)
         {
-            // var index = new NativeArray<int>(1, Allocator.TempJob);
-            // index[0] = _vertexIndex;
-            //
-            // var nativeVertices = new NativeList<Vector3>(Allocator.Persistent);
-            // var nativeTriangles = new NativeList<int>(Allocator.Persistent);
-            //
-            // var nativePos = new NativeArray<Vector3>(1, Allocator.TempJob);
-            // nativePos[0] = pos;
-            //
-            // var verData = new NativeArray<Vector3>(type.MeshData.Vertices.Length, Allocator.Persistent);
-            // verData.CopyFrom(type.MeshData.Vertices);
-            //
-            // var trianData = new NativeArray<int>(type.MeshData.Faces[face].Triangles.Length, Allocator.Persistent);
-            // trianData.CopyFrom(type.MeshData.Faces[face].Triangles);
-            //
-            // var job = new GeneratingDataJob()
-            // {
-            //     vertices = nativeVertices,
-            //     triangles = nativeTriangles,
-            //     verticesData = verData,
-            //     trianglesData = trianData,
-            //     position = nativePos,
-            //     index = index
-            // };
-            //
-            // var handle = job.Schedule();
-            // handle.Complete();
-            //
-            // nativeTriangles.Dispose();
-            // nativeVertices.Dispose();
-            // trianData.Dispose();
-            // index.Dispose();
-            // nativePos.Dispose();
-            // verData.Dispose();
-            
-
             for (int j = 0; j < type.MeshData.Faces.Length; j++)
             {
                 var trisIndex = type.MeshData.Faces[face].Triangles[j];

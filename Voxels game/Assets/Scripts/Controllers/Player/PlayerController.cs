@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using _3D.Mathf2;
-using Assets.Scripts.Chunks;
+using Chunks;
 using Inventory;
 using Management.ChunkManagement;
 using Management._Cursor;

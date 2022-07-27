@@ -17,6 +17,15 @@ namespace Blocks
         [SerializeField] private MeshData _meshData;
         [SerializeField] private Texture2D _blockProfile;
         [SerializeField] private ParticlesName _destroyParticles;
+        [SerializeField] private bool _itsPredefinedModel;
+        [SerializeField] private GameObject _predefinedPrefab;
+        public bool ItsPredefinedModel
+        {
+            get
+            {
+                return _itsPredefinedModel;
+            }
+        }
 
         public ParticlesName DestroyParticles
         {
@@ -98,6 +107,11 @@ namespace Blocks
         }
 
 
+        public void InstantiatePredefinedModel(Vector3 position)
+        {
+            Instantiate(_predefinedPrefab, position, Quaternion.identity);
+        }
+        
         public int GetTextureIDFromSide(BlockSide side)
         {
             for (int i = 0; i < _textures.Length; i++)

@@ -26,7 +26,7 @@ namespace Controllers.Player
 
         [Header("Looking")] 
         private bool _canLooking;
-        public bool CanLooking => _canLooking;
+
         [SerializeField] private float _sensivity = 3;
         private Vector2 _mouseInput;
         
@@ -45,20 +45,13 @@ namespace Controllers.Player
         private Rigidbody _rigidbody;
         private Transform _cam;
 
-        [Header("Building Raycast")] [SerializeField]
-        private GameObject _buildparticle;
-        [SerializeField] private float _maxRaycastDistance = 3;
-        private bool _canModify;
-        private ChunkData _detectedChunkData;
-        private Vector3 _hitPoint, _hitNormal, _voxelPos, _buildPos;
+
 
         private void Awake()
         {
             _inputs = new ActionsManager();
             _inputs.Enable();
-
-            _inputs.Player.Build.started += ctx => TryBuild();
-            _inputs.Player.Destroy.started += ctx => DestroyBlock();
+            
             _inputs.Player.Jump.started += ctx => SetJump();
 
             WorldGenerator.Instance.OnWorldIsGenerated += OnWorldGenerated;
@@ -69,7 +62,7 @@ namespace Controllers.Player
             Application.targetFrameRate = 60;
             
             _isActive = true;
-            _cam = Camera.main.transform;
+            if (Camera.main is not null) _cam = Camera.main.transform;
             _rigidbody = GetComponent<Rigidbody>();
             Cursor.lockState = CursorLockMode.Locked;
 
@@ -96,7 +89,6 @@ namespace Controllers.Player
         private void Update()
         {
             UpdateAnimations();
-            UpdateRaycast();
         }
 
         public void SetActive(bool active)
@@ -158,7 +150,6 @@ namespace Controllers.Player
 
         private void UpdateAnimations()
         {
-            
             _animInputs = _isMoving ? Vector2.Lerp(_animInputs, _movementInputs, .1f) : Vector2.zero;
 
             _movementTransition = Mathf.Clamp(_movementTransition += _isMoving ? Time.deltaTime : -Time.deltaTime, 0, .3f);
@@ -185,68 +176,5 @@ namespace Controllers.Player
             transform.localEulerAngles = new Vector3(0, _mouseInput.x, 0);
             _cam.localEulerAngles = new Vector3(_mouseInput.y, 0, 0);
         }
-
-
-        private void UpdateRaycast()
-        {
-            var hit = new RaycastHit();
-            var selectHit = new RaycastHit();
-            if (!Physics.Raycast(_cam.position, _cam.forward, out hit, _maxRaycastDistance))
-            {
-                _canModify = false;
-                _block.gameObject.SetActive(false);
-                return;
-            }
-            
-            _hitPoint = hit.point;
-            
-            _voxelPos = RoundToInt(hit.point - hit.normal * .5f);
-            _buildPos = RoundToInt(hit.point + hit.normal * .5f);
-            
-            if (!WorldGenerator.Instance.CheckForVoxel(_voxelPos) && !hit.transform.GetComponent<ChunkData>())
-            {
-                _canModify = false;
-                return;
-            }
-
-            _canModify = true;
-            _block.mesh = WorldGenerator.Instance.GetVoxelType(_voxelPos).GetVoxelMesh();
-            _block.gameObject.SetActive(true);
-            _detectedChunkData = hit.transform.GetComponent<ChunkData>();
-            _block.transform.position = _voxelPos;
-        }
-
-        private void DestroyBlock()
-        {
-            if(!_canModify || !_isActive)
-                return;
-            
-            WorldGenerator.Instance.CreateDestroyParticle(_voxelPos);
-            WorldGenerator.Instance.SetVoxel(_detectedChunkData, _voxelPos, 0);
-        }
-
-        private void TryBuild()
-        {
-            var playersBlock = RoundToInt(transform.position);
-            
-            if(!_isActive || _buildPos.Equals(playersBlock) || _buildPos.Equals(new Vector3(playersBlock.x, playersBlock.y + 1, playersBlock.z)) || !_canModify)
-                return;
-            
-            WorldGenerator.Instance.SetVoxel(_detectedChunkData, _buildPos, InventoryManager.Instance.GetBlockIndex());
-            Instantiate(_buildparticle, _buildPos - new Vector3(0, .5f, 0), Quaternion.identity);
-
-        }
-
-
-        private Vector3 RoundToInt(Vector3 vector)
-        {
-            var x = Mathf.RoundToInt(vector.x);
-            var y = Mathf.RoundToInt(vector.y);
-            var z = Mathf.RoundToInt(vector.z);
-            
-            return new Vector3(x, y, z);
-        }
-
-
     }
 }

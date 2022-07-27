@@ -1,18 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Chunks;
+using Management.WorldManagement;
 using UnityEngine;
 
 public class WorldData : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

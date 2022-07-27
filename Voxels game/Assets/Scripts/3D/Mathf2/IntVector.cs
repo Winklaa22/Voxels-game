@@ -16,8 +16,6 @@ namespace _3D.Mathf2
             z = Mathf.FloorToInt(vector3.z);
         }
         
-        
-        
         public IntVector(Vector2 vector2)
         {
             x = Mathf.FloorToInt(vector2.x);
@@ -34,6 +32,11 @@ namespace _3D.Mathf2
         public Vector3 ToVector3()
         {
             return new Vector3(x, y, z);
+        }
+
+        public string ToString()
+        {
+            return "(" + x + ", " + y + ", " + z + ")";
         }
     }
 }

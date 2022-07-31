@@ -1,8 +1,8 @@
-namespace Management.Save_System
+namespace Management.Save
 {
     public interface ISaveable
     {
-        object CaptureState();
+        object CatureState();
 
         void RestoreState(object state);
     }

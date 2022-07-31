@@ -1,14 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using _3D.Mathf2;
-using Management.Save_System;
+using Management.Save;
 using Management.WorldManagement;
 using UnityEngine;
 
 namespace Chunks
 {
     [System.Serializable]
-    public class ChunkData : ISaveable
+    public class ChunkData
     {
         public string Name
         {
@@ -66,8 +66,8 @@ namespace Chunks
         public void LoadData()
         {
             Debug.Log("Try to load: " + Name);
-            var save = SaveManager.Instance.LoadChunk(WorldGenerator.Instance.WorldName, new IntVector(Position));
-            Debug.Log(save.Last());
+            // var save = SaveManager.Instance.LoadChunk(WorldGenerator.Instance.WorldName, new IntVector(Position));
+            // Debug.Log(save.Last());
         }
 
         public void ModifyVoxel(Vector3 coord, byte id)

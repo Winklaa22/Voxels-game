@@ -12,7 +12,7 @@ using Chunks;
 using Controllers.Player;
 using Management.ChunkManagement;
 using Management.Particles;
-using Management.Save_System;
+using Management.Save;
 using Management.UI;
 using Management.VoxelManagement;
 using Types.Particles;
@@ -21,7 +21,7 @@ using Random = UnityEngine.Random;
 
 namespace Management.WorldManagement
 {
-    public sealed class WorldGenerator : MonoBehaviour, ISaveable
+    public sealed class WorldGenerator : MonoBehaviour
     {
         public static WorldGenerator Instance;
 
@@ -443,22 +443,22 @@ namespace Management.WorldManagement
             return new SaveData
             {
                 Seed = _seed,
-                ChunksToSave = _modifiedChuks
+                // ChunksToSave = _modifiedChuks
             };
         }
-
+        
         public void RestoreState(object state)
         {
             var saveData = (SaveData) state;
             _seed = saveData.Seed;
-            _modifiedChuks = saveData.ChunksToSave;
+            // _modifiedChuks = saveData.ChunksToSave;
         }
         
         [System.Serializable]
         private struct SaveData
         {
             public int Seed;
-            public List<ChunkData> ChunksToSave;
+            // public List<ChunkData> ChunksToSave;
         }
     }
 }

@@ -2,19 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Management.Save_System
+namespace Management.Save
 {
     public class SaveableEntity : MonoBehaviour
     {
         [SerializeField] private string _id;
 
-        public string ID
-        {
-            get
-            {
-                return _id;
-            }
-        }
+        public string ID => _id;
 
         [ContextMenu("Generate id")]
         private void GenerateID()
@@ -28,7 +22,7 @@ namespace Management.Save_System
 
             foreach (var saveable in GetComponents<ISaveable>())
             {
-                state[saveable.GetType().ToString()] = saveable.CaptureState();
+                state[saveable.GetType().ToString()] = saveable.CatureState();
             }
 
             return state;
@@ -42,11 +36,13 @@ namespace Management.Save_System
             {
                 var typeName = saveable.GetType().ToString();
 
-                if (stateDictionary.TryGetValue(typeName, out object value))
+                if (stateDictionary.TryGetValue(typeName, out var value))
                 {
                     saveable.RestoreState(value);
                 }
             }
+            
         }
+        
     }
 }

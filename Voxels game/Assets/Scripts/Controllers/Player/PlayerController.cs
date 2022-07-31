@@ -1,14 +1,7 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using _3D.Mathf2;
-using Chunks;
-using Inventory;
-using Management.ChunkManagement;
-using Management._Cursor;
 using Management.UI;
 using Management.WorldManagement;
+using Player.Data;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,8 +14,7 @@ namespace Controllers.Player
         [Header("Movement")]
         [SerializeField] private float _speed = 5;
         private Vector2 _movementInputs;
-        [SerializeField]private bool _isMoving;
-        public bool IsMoving => _isMoving;
+        [SerializeField] private bool _isMoving;
 
         [Header("Looking")] 
         private bool _canLooking;
@@ -30,7 +22,6 @@ namespace Controllers.Player
         [SerializeField] private float _sensivity = 3;
         private Vector2 _mouseInput;
         
-        [SerializeField] private MeshFilter _block;
         [SerializeField] private float _jumpForce;
 
 
@@ -38,14 +29,13 @@ namespace Controllers.Player
         [SerializeField] private Animator _animator;
         private float _movementTransition;
         private Vector2 _animInputs;
-        
+
+
         private ActionsManager _inputs;
 
         private int _scrollIndex;
         private Rigidbody _rigidbody;
         private Transform _cam;
-
-
 
         private void Awake()
         {
@@ -60,7 +50,7 @@ namespace Controllers.Player
         private void Start()
         {
             Application.targetFrameRate = 60;
-            
+
             _isActive = true;
             if (Camera.main is not null) _cam = Camera.main.transform;
             _rigidbody = GetComponent<Rigidbody>();
@@ -108,21 +98,11 @@ namespace Controllers.Player
             if(!_isActive)
                 return;
             
-            
             _movementInputs = ctx.ReadValue<Vector2>();
-            StartCoroutine(SetInputs(ctx.ReadValue<Vector2>()));
             _isMoving = _movementInputs.magnitude > 0;
             StartCoroutine(Movement());
         }
-
-        private IEnumerator SetInputs(Vector2 value)
-        {
-            if(!_animInputs.Equals(value))
-            {
-            }
-
-            yield return null;
-        }
+        
 
         private IEnumerator Movement()
         {

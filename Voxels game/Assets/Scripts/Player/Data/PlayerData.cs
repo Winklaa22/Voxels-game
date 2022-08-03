@@ -1,31 +1,49 @@
+using System;
+using _3D.Mathf2;
+using Controllers.Player;
 using Management.Save;
+using Management.WorldManagement;
 using UnityEngine;
 
 namespace Player.Data
 {
     public class PlayerData : MonoBehaviour, ISaveable
     {
-        [SerializeField] private string _position;
+        private PlayerController _player;
+        
+        private Vector3 _savedPosition;
+        
+        private void Awake()
+        {
+            _player = GetComponent<PlayerController>();
+        }
 
-        public object CatureState()
+        public object CaptureState()
         {
             return new SaveData
             {
-                Position = _position
+                Position = new IntVector(transform.position)
             };
         }
 
         public void RestoreState(object state)
         {
             var saveData = (SaveData) state;
-            _position = saveData.Position;
+            _savedPosition = saveData.Position.ToVector3();
+            Spawn();
         }
         
-        
+        private void Spawn()
+        {
+            var spawnPos = _savedPosition.Equals(Vector3.zero) ? WorldGenerator.Instance.GetSpawnPosition() : _savedPosition + Vector3.one;
+            WorldGenerator.Instance.SetPlayersCoord(spawnPos);
+            _player.Spawn();
+        }
+
         [System.Serializable]
         public struct SaveData
         {
-            public string Position;
+            public IntVector Position;
         }
     }
 }

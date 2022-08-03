@@ -10,7 +10,6 @@ using Blocks.Textures;
 using Blocks.Type;
 using Chunks;
 using Controllers.Player;
-using Management.ChunkManagement;
 using Management.Particles;
 using Management.Save;
 using Management.UI;
@@ -21,7 +20,7 @@ using Random = UnityEngine.Random;
 
 namespace Management.WorldManagement
 {
-    public sealed class WorldGenerator : MonoBehaviour
+    public sealed class WorldGenerator : MonoBehaviour, ISaveable
     {
         public static WorldGenerator Instance;
 
@@ -61,15 +60,8 @@ namespace Management.WorldManagement
         [Header("Chunks")] 
         [SerializeField] private IntVector _chunkSize;
         private List<ChunkCoord> _chunksToGenerate = new List<ChunkCoord>();
-        private List<ChunkData> _modifiedChuks = new List<ChunkData>();
-        public List<ChunkData> ModifiedChuks
-        {
-            get
-            {
-                return _modifiedChuks;
-            }
-        }
-        
+        [SerializeField] private Dictionary<string, ChunkData> _modifiedChunks = new Dictionary<string, ChunkData>();
+
         private Queue<Chunk> _chunksToRender = new Queue<Chunk>();
 
         public Queue<Chunk> ChunksToRender
@@ -86,7 +78,7 @@ namespace Management.WorldManagement
         
         [Header("Player")]
         [SerializeField] private PlayerController _player;
-        private ChunkCoord _previousPlayerCoords = new ChunkCoord(0, 0);
+        private ChunkCoord _previousPlayerCoords = new ChunkCoord(0, 0); 
         private ChunkCoord _playerCoordinates;
         
 
@@ -118,7 +110,7 @@ namespace Management.WorldManagement
             }   
         }
 
-        private Block[] _blockTypes;
+        [SerializeField] private Block[] _blockTypes;
 
         public Block[] BlockTypes
         {
@@ -141,23 +133,26 @@ namespace Management.WorldManagement
         private void Init()
         {
             Instance = this;
-            _blockTypes = Resources.LoadAll<Block>("TextureTypes");
+            _player.OnSpawnEntity += () => {StartCoroutine(GenerateWorld());};
             _chunks = new Chunk[_worldSize, _worldSize];
         }
 
         private void Start()
         {
             _seed = Random.Range(0, 99999);
-            SpawnPlayer();
-            StartCoroutine(GenerateWorld());
         }
 
-        private void SpawnPlayer()
+        public void SetPlayersCoord(Vector3 pos)
         {
-            var spawnPos = new Vector3(_worldSize * .5f, _chunkSize.y, _worldSize * .5f);
-            _player.transform.position = spawnPos;
+            _player.transform.position = pos;
             _playerCoordinates = GetChunkCoords(_player.transform.position);
             _previousPlayerCoords = GetChunkCoords(_player.transform.position);
+        }
+
+        public Vector3 GetSpawnPosition()
+        {
+            var halfSize = _worldSize * .5f;
+            return new Vector3(halfSize, GetNoiseHeight(new Vector3(halfSize, 0 ,halfSize)) + 2, halfSize);
         }
 
         private void CreateEmptyChunk(int x, int z)
@@ -185,6 +180,13 @@ namespace Management.WorldManagement
             yield return null;
         }
 
+        public bool CheckSavedVoxel(IntVector pos)
+        {
+            var chunk = GetChunkFromVector3(pos.ToVector3());
+            
+            return chunk.Data.ModifiedVoxels.ContainsKey(pos.ToString());
+        }
+
         private void DrawAllChunks()
         {
             if (_chunksToRender.Count <= 0) 
@@ -206,9 +208,12 @@ namespace Management.WorldManagement
             {
                 var chunk = _chunks[_chunksToGenerate[0].x, _chunksToGenerate[0].z];
                 chunk.CanBeGenerate = true;
-                
-                if(_modifiedChuks.Contains(chunk.Data))
-                    chunk.Data.LoadData();
+
+                if (_modifiedChunks.ContainsKey(chunk.Data.Name))
+                {
+                    chunk.Data.LoadData(_modifiedChunks[chunk.Data.Name].ModifiedVoxels);
+                }
+                    
 
                 _chunksToGenerate.RemoveAt(0);
             }
@@ -357,7 +362,7 @@ namespace Management.WorldManagement
         public byte GetVoxelByPosition(Vector3 pos)
         {
             var y = Mathf.RoundToInt(pos.y);
-            var terrainHeight = Mathf.FloorToInt(_chunkSize.y * .25f) +  Mathf.FloorToInt(_terrainHeight * GetNoiseMap(new Vector3(pos.x, pos.z), _noiseIncent, _seed));
+            var terrainHeight = GetNoiseHeight(pos);
 
             if(AxisFitsToRenderDistance(pos.x) && AxisFitsToRenderDistance(pos.z) && !IsVoxelInTheWorld(pos))
                 return VoxelProperties.GetMaterialIndexFromType(MaterialType.AIR);
@@ -398,6 +403,17 @@ namespace Management.WorldManagement
 
             return VoxelProperties.GetMaterialIndexFromType(MaterialType.AIR);
 
+        }
+
+        private int GetNoiseHeight(Vector3 pos)
+        {
+            return Mathf.FloorToInt(_chunkSize.y * .25f) +  Mathf.FloorToInt(_terrainHeight * GetNoiseMap(new Vector3(pos.x, pos.z), _noiseIncent, _seed));
+        }
+
+        public void ModifyChunk(string name, ChunkData data)
+        {
+            if(!_modifiedChunks.ContainsKey(name))
+                _modifiedChunks.Add(name, data);
         }
 
         private bool AxisFitsToRenderDistance(float value)
@@ -443,22 +459,28 @@ namespace Management.WorldManagement
             return new SaveData
             {
                 Seed = _seed,
-                // ChunksToSave = _modifiedChuks
+                ChunksToSave = _modifiedChunks
             };
         }
         
+
         public void RestoreState(object state)
         {
             var saveData = (SaveData) state;
             _seed = saveData.Seed;
-            // _modifiedChuks = saveData.ChunksToSave;
+            _modifiedChunks = saveData.ChunksToSave;
+
+            // foreach (var chunk in _modifiedChuks)
+            // {
+            //     Debug.Log(chunk.Name);
+            // }
         }
         
         [System.Serializable]
         private struct SaveData
         {
             public int Seed;
-            // public List<ChunkData> ChunksToSave;
+            public Dictionary<string, ChunkData> ChunksToSave;
         }
     }
 }

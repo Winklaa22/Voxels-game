@@ -11,6 +11,9 @@ namespace Controllers.Player
     {
         private bool _isActive = true;
 
+        public delegate void OnSpawn();
+        public event OnSpawn OnSpawnEntity;
+        
         [Header("Movement")]
         [SerializeField] private float _speed = 5;
         private Vector2 _movementInputs;
@@ -49,6 +52,8 @@ namespace Controllers.Player
 
         private void Start()
         {
+            
+            
             Application.targetFrameRate = 60;
 
             _isActive = true;
@@ -58,6 +63,8 @@ namespace Controllers.Player
 
             _rigidbody.isKinematic = true;
         }
+
+     
 
         private void OnWorldGenerated()
         {
@@ -91,6 +98,11 @@ namespace Controllers.Player
             _movementInputs = Vector2.zero;
             _rigidbody.velocity = Vector3.zero;
             _isMoving = false;
+        }
+
+        public void Spawn()
+        {
+            OnSpawnEntity?.Invoke();
         }
 
         public void SetMove(InputAction.CallbackContext ctx)

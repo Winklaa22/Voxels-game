@@ -2,7 +2,7 @@ namespace Management.Save
 {
     public interface ISaveable
     {
-        object CatureState();
+        object CaptureState();
 
         void RestoreState(object state);
     }

@@ -14,113 +14,54 @@ namespace Chunks
         {
             get
             {
-                return Position.x + "-" + Position.z;
+                return _position.x + "-" + _position.z;
             }
         }
 
-        private Dictionary<Vector3, byte> _modifiedVoxels = new Dictionary<Vector3, byte>();
+        private Dictionary<string, byte> _modifiedVoxels = new Dictionary<string, byte>();
 
-
-        private byte[,,] _map;
-        public byte[,,] Map
+        public Dictionary<string, byte> ModifiedVoxels
         {
             get
             {
-                return _map;
+                return _modifiedVoxels;
             }
         }
 
-        public Vector3 Position
-        {
-            get
-            {
-                return _parent.Position;
-            }
-        }
-        
-        
-        private bool isMapPopulated;
+        private IntVector _position;
+
+        private bool _isMapPopulated;
 
         public bool IsMapPopulated
         {
-            get { return isMapPopulated; }
-        }
-
-        
-        private IntVector _size;
-        private Chunk _parent;
-
-
-        public ChunkData(Chunk parent)
-        {
-            _parent = parent;
-            Init();
-        }
-        
-        private void Init()
-        {
-            _size = WorldGenerator.Instance.ChunkSize;
-            _map = new byte[_size.x, _size.y, _size.z];
-        }
-
-        public void LoadData()
-        {
-            Debug.Log("Try to load: " + Name);
-            // var save = SaveManager.Instance.LoadChunk(WorldGenerator.Instance.WorldName, new IntVector(Position));
-            // Debug.Log(save.Last());
-        }
-
-        public void ModifyVoxel(Vector3 coord, byte id)
-        {
-            if(_modifiedVoxels.ContainsKey(coord))
-                _modifiedVoxels.Remove(coord);
-            
-            _modifiedVoxels.Add(coord, id);
-        }
-
-        public void PopulateMap()
-        {
-            for (int y = 0; y < _size.y; y++)
+            get
             {
-                for (int x = 0; x < _size.x; x++)
-                {
-                    for (int z = 0; z < _size.z; z++)
-                    {
-                        if (_modifiedVoxels.ContainsKey(new Vector3(x, y, z)))
-                        {
-                            _map[x, y, z] = _modifiedVoxels[new Vector3(x, y, z)];
-                            return;
-                        }
-                        
-                        var voxelPosition = new Vector3(x, y, z) + _parent.Position;
-                        var voxelIndex = WorldGenerator.Instance.GetVoxelByPosition(voxelPosition);
-
-                        _map[x, y, z] = voxelIndex;
-                    }
-                }
+                return _isMapPopulated;
             }
 
-            isMapPopulated = true;
-        }
-
-        public object CaptureState()
-        {
-            return new SaveData
+            set
             {
-                ModifiedVoxels = _modifiedVoxels
-            };
-        }
-
-        public void RestoreState(object state)
-        {
-            var saveData = (SaveData) state;
-            _modifiedVoxels = saveData.ModifiedVoxels;
+                _isMapPopulated = value;
+            }
         }
         
-        [System.Serializable]
-        private struct SaveData
+        public ChunkData(Vector3 pos)
         {
-            public Dictionary<Vector3, byte> ModifiedVoxels;
+            _position = new IntVector(pos);
+        }
+
+        public void LoadData(Dictionary<string, byte> voxels)
+        {
+            // Debug.Log("Try to load: " + Name + " modified voxels count: " + voxels.Count.ToString());
+            _modifiedVoxels = voxels;
+        }
+
+        public void ModifyVoxel(IntVector coord, byte id)
+        {
+            if(_modifiedVoxels.ContainsKey(coord.ToString()))
+                _modifiedVoxels.Remove(coord.ToString());
+            
+            _modifiedVoxels.Add(coord.ToString(), id);
         }
     }
 }

@@ -35,6 +35,7 @@ namespace Management.Save
 
         private void Start()
         {
+            Debug.Log(saveDirectiory);
             LoadGame();
         }
 

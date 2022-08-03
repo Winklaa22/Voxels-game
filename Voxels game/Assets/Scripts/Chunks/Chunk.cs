@@ -6,7 +6,6 @@ using _3D.Mathf2;
 using Blocks;
 using Blocks.Textures;
 using Blocks.Type;
-using Management.ChunkManagement;
 using Management.VoxelManagement;
 using Management.WorldManagement;
 using UnityEngine;
@@ -32,6 +31,8 @@ namespace Chunks
         [SerializeField] private List<int> _triangles = new List<int>();
         private Mesh _mesh;
         private List<Vector2> _uvs = new List<Vector2>();
+        
+        private byte[,,] _map;
 
         [Header("Threading")] 
         [SerializeField] private bool _threadingIsLocked;
@@ -89,23 +90,20 @@ namespace Chunks
         private void Awake()
         {
             ID = new IntVector(transform.position).ToString();
-            _data = new ChunkData(this);
+            _map = new byte[_size.x, _size.y, _size.z];
+            _data = new ChunkData(transform.position);
             _collider = gameObject.AddComponent<MeshCollider>();
             _meshFilter = gameObject.AddComponent<MeshFilter>();
             _meshRenderer = gameObject.AddComponent<MeshRenderer>();
             _worldGenerator = WorldGenerator.Instance;
             _meshRenderer.material = _worldGenerator.WorldMaterial;
             _position = transform.position;
+            
         }
 
         private void Start()
         {
             StartCoroutine(TryToCreate());
-        }
-
-        public void SetActive(bool active)
-        {
-            _collider.enabled = active;
         }
 
         private IEnumerator TryToCreate()
@@ -119,8 +117,33 @@ namespace Chunks
 
         private void Initialize()
         {
-            _data.PopulateMap();
+            PopulateMap();
             CreateChunk();
+        }
+
+        private void PopulateMap()
+        {
+            for (int y = 0; y < _size.y; y++)
+            {
+                for (int x = 0; x < _size.x; x++)
+                {
+                    for (int z = 0; z < _size.z; z++)
+                    {
+                        if (_data.ModifiedVoxels.ContainsKey(new IntVector(x, y, z).ToString()))
+                        {
+                            _map[x, y, z] = _data.ModifiedVoxels[new IntVector(x, y, z).ToString()];
+                            continue;
+                        }
+                        
+                        var voxelPosition = new Vector3(x, y, z) + _position;
+                        var voxelIndex = WorldGenerator.Instance.GetVoxelByPosition(voxelPosition);
+
+                        _map[x, y, z] = voxelIndex;
+                    }
+                }
+            }
+
+            _data.IsMapPopulated = true;
         }
 
         private void CreateChunk()
@@ -139,7 +162,7 @@ namespace Chunks
                 {
                     for (int z = 0; z < WorldGenerator.Instance.ChunkSize.z; z++)
                     {
-                        if (!_worldGenerator.BlockTypes[_data.Map[x, y, z]].IsSolid)
+                        if (!_worldGenerator.BlockTypes[_map[x, y, z]].IsSolid)
                             continue;
                         
                         UpdateMeshData(new Vector3(x, y, z), true);
@@ -159,7 +182,7 @@ namespace Chunks
         public byte GetVoxelID(Vector3 pos)
         {
             var coords = GetVoxel(pos);
-            return _data.Map[coords.x, coords.y, coords.z];
+            return _map[coords.x, coords.y, coords.z];
         }
 
         public IntVector GetVoxel(Vector3 pos)
@@ -178,14 +201,13 @@ namespace Chunks
         {
             if (!Math3D.IsInsideTheObject(voxelCoord, WorldGenerator.Instance.ChunkSize))
             {
-                _data.Map[voxelCoord.x, voxelCoord.y, voxelCoord.z] = id;
+                _map[voxelCoord.x, voxelCoord.y, voxelCoord.z] = id;
                 UpdateChunk();
                 UpdateNearestVoxel(voxelCoord);
                 
-                _data.ModifyVoxel(voxelCoord.ToVector3(), id);
-                
-                if(!_worldGenerator.ModifiedChuks.Contains(_data))
-                    _worldGenerator.ModifiedChuks.Add(_data);
+                _data.ModifyVoxel(voxelCoord, id);
+                _worldGenerator.ModifyChunk(_data.Name, _data);
+                    
             }
             else
             {
@@ -218,7 +240,7 @@ namespace Chunks
                 {
                     for (int z = 0; z < WorldGenerator.Instance.ChunkSize.z; z++)
                     {
-                        if (!WorldGenerator.Instance.BlockTypes[_data.Map[x, y, z]].IsSolid)
+                        if (!WorldGenerator.Instance.BlockTypes[_map[x, y, z]].IsSolid)
                             continue;
 
                         UpdateMeshData(new Vector3(x, y, z), false);
@@ -239,7 +261,7 @@ namespace Chunks
 
         public byte GetVoxelType(IntVector coords)
         {
-            return _data.Map[coords.x, coords.y, coords.z];
+            return _map[coords.x, coords.y, coords.z];
         }
 
         bool IsVoxelInChunk(int x, int y, int z)
@@ -255,18 +277,22 @@ namespace Chunks
 
             if (!IsVoxelInChunk(intPos.x, intPos.y, intPos.z))
             {
-                return !firstGenerate
-                    ? _worldGenerator.IsVoxelExist(pos + _position)
-                    : _worldGenerator.CheckForVoxel(pos + _position);
+
+                if (!firstGenerate)
+                {
+                    return _worldGenerator.IsVoxelExist(pos);
+                }
+                else
+                    return _worldGenerator.CheckForVoxel(pos + _position);
             }
 
-            return blocks[_data.Map[intPos.x, intPos.y, intPos.z]].IsSolid && !blocks[_data.Map[intPos.x, intPos.y, intPos.z]].IsTransparent;
+            return blocks[_map[intPos.x, intPos.y, intPos.z]].IsSolid && !blocks[_map[intPos.x, intPos.y, intPos.z]].IsTransparent;
         }
 
         private void UpdateMeshData(Vector3 pos, bool firstGenerate)
         {
             var voxelPos = new IntVector(pos);
-            var id = _data.Map[voxelPos.x, voxelPos.y, voxelPos.z];
+            var id = _map[voxelPos.x, voxelPos.y, voxelPos.z];
             var type = _worldGenerator.BlockTypes[id];
 
             for (int i = 0; i < type.MeshData.Faces.Length; i++)

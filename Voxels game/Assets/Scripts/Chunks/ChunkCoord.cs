@@ -1,8 +1,9 @@
 using Management.WorldManagement;
 using UnityEngine;
 
-namespace Management.ChunkManagement
+namespace Chunks
 {
+    [System.Serializable]
     public class ChunkCoord
     {
         public int x, z;

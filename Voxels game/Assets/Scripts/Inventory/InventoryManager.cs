@@ -1,14 +1,6 @@
-using System;
 using Assets.Scripts.Blocks.Gallery;
-using Assets.Scripts.UI.Gallery;
-using Blocks;
 using Blocks.Block_material;
-using Blocks.Type;
-using Inventory._Item;
-using Inventory._Item._Type;
-using Management.UI;
 using Management.VoxelManagement;
-using Management.WorldManagement;
 using UnityEngine;
 
 namespace Inventory

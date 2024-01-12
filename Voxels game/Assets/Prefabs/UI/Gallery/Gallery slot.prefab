@@ -219,8 +219,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 0
-  _haveInfinityBlocks: 1
+  _hasInfinityBlocks: 1
   _blockPicture: {fileID: 2142206501829359041}
+  _block: {fileID: 0}
 --- !u!222 &5286105171686840559
 CanvasRenderer:
   m_ObjectHideFlags: 0

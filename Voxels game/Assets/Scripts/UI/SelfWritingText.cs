@@ -11,11 +11,24 @@ public class SelfWritingText : MonoBehaviour
     private TMP_Text _text;
     private CanvasGroup _canvasGroup;
     [SerializeField] private float m_spaceBetween;
-
+    [SerializeField] private string m_textOnStart;
+    [SerializeField] private bool m_playOnStart;
+    [SerializeField] private bool _isFade = true;
     private void Awake()
     {
         _text = GetComponent<TMP_Text>();
-        _canvasGroup = GetComponent<CanvasGroup>();
+
+        if (TryGetComponent(out CanvasGroup canvasGroup))
+        {
+            _canvasGroup = canvasGroup;
+        }
+        
+    }
+
+    private void Start()
+    {
+        if (m_playOnStart)
+            WriteText(m_textOnStart);
     }
 
     public void WriteText(string text)
@@ -25,7 +38,8 @@ public class SelfWritingText : MonoBehaviour
 
     private IEnumerator StartWrite(string txt)
     {
-        _canvasGroup.DOFade(1, .3f);
+        if(_canvasGroup != null) 
+            _canvasGroup.DOFade(1, .3f);
         
         _text.text = "";
 
@@ -35,6 +49,7 @@ public class SelfWritingText : MonoBehaviour
             yield return new WaitForSeconds(m_spaceBetween);
         }
         
-        _canvasGroup.DOFade(0, .3f);
+        if(_isFade)
+            _canvasGroup.DOFade(0, .3f);
     }
 }

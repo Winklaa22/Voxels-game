@@ -32,7 +32,7 @@ namespace Assets.Scripts.Controllers.UI
         }
         
         
-        private void SetScreen(ScreenType type, bool active)
+        public void SetScreen(ScreenType type, bool active)
         {
             if(UIManager.Instance.CurrentScreen != ScreenType.HUD && UIManager.Instance.CurrentScreen != type)
                 return;

@@ -9,11 +9,19 @@ namespace Management.Save
 {
     public class SaveSystem : MonoBehaviour
     {
+        public static SaveSystem Instance;
+        
         [Header("Game save data")] 
         [SerializeField] private string _gameDataFileName;
         [SerializeField] private string _fileType;
         
         private string saveDirectiory => $"{Application.persistentDataPath}/{WorldGenerator.Instance.WorldName} /Saves/";
+
+
+        private void Awake()
+        {
+            Instance = this;
+        }
 
         private string GetPath(string fileName)
         {

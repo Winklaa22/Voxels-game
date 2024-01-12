@@ -13,7 +13,9 @@ namespace Management.UI
     public class UIManager : MonoBehaviour
     {
         public static UIManager Instance;
+        [SerializeField] private SelfWritingText _textAfterSaving;
 
+        public SelfWritingText TextAfterSaving => _textAfterSaving;
         [SerializeField] private RectTransform _mainCanvas;
         public RectTransform MainCanvas => _mainCanvas;
 

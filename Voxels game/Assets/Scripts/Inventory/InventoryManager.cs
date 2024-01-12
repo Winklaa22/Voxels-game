@@ -9,7 +9,8 @@ namespace Inventory
     {
         public static InventoryManager Instance;
         [SerializeField] private int _currentSlot;
-        
+
+
         public int CurrentSlot
         {
             get => _currentSlot;

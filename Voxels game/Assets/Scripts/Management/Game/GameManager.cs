@@ -9,6 +9,7 @@ namespace Management.Game
         public static GameManager Instance;
         
         [SerializeField] private PlayerController _mainPlayer;
+        public bool CantBuild { get; set; }
 
         public PlayerController MainPlayer
         {

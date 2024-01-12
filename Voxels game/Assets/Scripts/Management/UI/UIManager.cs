@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Assets.Scripts.Blocks.Gallery;
-using Assets.Scripts.Pickable;
 using Assets.Scripts.UI.Gallery;
 using Blocks;
 using Controllers;
@@ -22,7 +20,7 @@ namespace Management.UI
         [Header("Screens")] 
         [SerializeField] private ScreenUI[] _screens;
 
-        private ScreenType _currentScreen;
+        [SerializeField] private ScreenType _currentScreen;
         public ScreenType CurrentScreen
         {
             get

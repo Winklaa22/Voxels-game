@@ -2,6 +2,7 @@ using System;
 using Chunks;
 using Controllers.Build_Voxel;
 using Inventory;
+using Management.Game;
 using Management.WorldManagement;
 using UnityEngine;
 
@@ -21,7 +22,6 @@ namespace Controllers.Modify
         [SerializeField] private Material _selectCubeMaterial;
         [SerializeField] private BuildVoxelControlller _cube;
         
-
         private bool _canModify;
         private Chunk _detectedChunk;
         private Vector3 _hitPoint, _hitNormal, _voxelPos, _buildPos;
@@ -97,7 +97,7 @@ namespace Controllers.Modify
 
         private void DestroyBlock()
         {
-            if(!_canModify)
+            if(!_canModify || GameManager.Instance.CantBuild)
                 return;
             
             WorldGenerator.Instance.CreateDestroyParticle(_voxelPos);
@@ -106,6 +106,9 @@ namespace Controllers.Modify
 
         private void TryBuild()
         {
+            if(GameManager.Instance.CantBuild)
+                return;
+
             var playersBlock = RoundToInt(transform.position);
             
             if(_buildPos.Equals(playersBlock) || _buildPos.Equals(new Vector3(playersBlock.x, playersBlock.y + 1, playersBlock.z)) || !_canModify)

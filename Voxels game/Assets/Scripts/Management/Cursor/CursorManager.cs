@@ -36,6 +36,7 @@ namespace Management._Cursor
         {
             Cursor.visible = active;
             Cursor.lockState = active ? CursorLockMode.None : CursorLockMode.Locked;
+            
         }
 
         public void SetCursor(CursorName name)

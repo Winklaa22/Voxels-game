@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Assets.Scripts.Pickable;
 using Blocks.Block_material;
 using Blocks.Block_Mesh;
 using Blocks.Side;
@@ -19,13 +20,6 @@ namespace Blocks
         [SerializeField] private ParticlesName _destroyParticles;
         [SerializeField] private bool _itsPredefinedModel;
         [SerializeField] private GameObject _predefinedPrefab;
-        public bool ItsPredefinedModel
-        {
-            get
-            {
-                return _itsPredefinedModel;
-            }
-        }
 
         public ParticlesName DestroyParticles
         {
@@ -100,18 +94,10 @@ namespace Blocks
             };
             mesh.name = _type.ToString();
             mesh.RecalculateNormals();
-
-
-
+            
             return mesh;
         }
 
-
-        public void InstantiatePredefinedModel(Vector3 position)
-        {
-            Instantiate(_predefinedPrefab, position, Quaternion.identity);
-        }
-        
         public int GetTextureIDFromSide(BlockSide side)
         {
             for (int i = 0; i < _textures.Length; i++)
@@ -121,6 +107,11 @@ namespace Blocks
             }
             
             return 0;
+        }
+
+        public Texture2D GetPicture()
+        {
+            return _blockProfile;
         }
     }
 }

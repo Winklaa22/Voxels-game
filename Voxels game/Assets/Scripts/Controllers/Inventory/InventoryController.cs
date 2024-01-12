@@ -1,14 +1,18 @@
 using System;
+using Blocks.Block_material;
 using Inventory;
 using Management._Cursor;
 using Management.Game;
 using Management.UI;
+using Management.VoxelManagement;
 using UnityEngine;
 
 namespace Controllers
 {
     public class InventoryController : MonoBehaviour
     {
+        public static InventoryController Instance;
+        
         private int _scrollIndex;
         private ActionsManager _inputs;
         private bool _active;
@@ -17,17 +21,29 @@ namespace Controllers
         {
             _inputs = new ActionsManager();
             _inputs.Enable();
-            
+
+            Instance = this;
+
             // _inputs.Player.InventoryActive.started += ctx => ChangeActive();
         }
 
         private void Start()
         {
             UIManager.Instance.SetSlot(0);
+            RefreshSlots();
+        }
+
+        public void RefreshSlots()
+        {
+
             var slots = InventoryManager.Instance.Slots;
             for (int i = 0; i < slots.Length; i++)
             {
-                UIManager.Instance.SetInventoryImageActive(i, slots[i].ItemImage);
+                if(slots[i] == MaterialType.AIR)
+                    continue;
+                
+                Debug.Log($"Create slot: {VoxelProperties.GetBlockByType(slots[i]).GetPicture().name}");
+                UIManager.Instance.SetInventoryImageActive(i, VoxelProperties.GetBlockByType(slots[i]).GetPicture());
             }
         }
 

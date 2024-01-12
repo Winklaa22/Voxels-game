@@ -236,8 +236,30 @@
         {
             "name": "Inventory",
             "id": "a5e45fbf-08bd-4d70-b5c0-9254afe3713a",
-            "actions": [],
-            "bindings": []
+            "actions": [
+                {
+                    "name": "GrabAndPut",
+                    "type": "Button",
+                    "id": "95cde922-cd03-4d13-b6a0-e88ba865e7cc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fea7185b-2d7e-4261-9248-8c8429c421ef",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "GrabAndPut",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

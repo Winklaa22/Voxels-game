@@ -18,6 +18,11 @@ namespace Player.Data
             _player = GetComponent<PlayerController>();
         }
 
+        private void Start()
+        {
+            Spawn();
+        }
+
         public object CaptureState()
         {
             return new SaveData
@@ -30,7 +35,6 @@ namespace Player.Data
         {
             var saveData = (SaveData) state;
             _savedPosition = saveData.Position.ToVector3();
-            Spawn();
         }
         
         private void Spawn()

@@ -469,11 +469,6 @@ namespace Management.WorldManagement
             var saveData = (SaveData) state;
             _seed = saveData.Seed;
             _modifiedChunks = saveData.ChunksToSave;
-
-            // foreach (var chunk in _modifiedChuks)
-            // {
-            //     Debug.Log(chunk.Name);
-            // }
         }
         
         [System.Serializable]

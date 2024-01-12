@@ -1,3 +1,4 @@
+using System.Linq;
 using Blocks;
 using Blocks.Side;
 using Management.WorldManagement;
@@ -27,6 +28,12 @@ namespace Management.VoxelManagement
             Vector3.left, 
             Vector3.right
         };
+
+        public static Block GetBlockByType(MaterialType type)
+        {
+            var types = WorldGenerator.Instance.BlockTypes;
+            return types.First(p => p.Type.Equals(type));
+        }
         
         public static byte GetMaterialIndexFromType(MaterialType type)
         {

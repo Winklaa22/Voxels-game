@@ -1,6 +1,7 @@
 using System;
 using Types._Cursor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Management._Cursor
 {
@@ -9,7 +10,9 @@ namespace Management._Cursor
         public static CursorManager Instance;
         private ActionsManager _inputs;
         [SerializeField] private CursorType[] _cursors;
-        
+        [SerializeField] private RawImage _cursorIcon;
+        public RawImage CursorIcon => _cursorIcon;
+
         private void Awake()
         {
             Instance = this;
@@ -42,8 +45,20 @@ namespace Management._Cursor
                 if(!cursor.Name.Equals(name))
                     continue;
                 
-                UnityEngine.Cursor.SetCursor(cursor.MainTexture, Vector2.zero, CursorMode.Auto);
+                Cursor.SetCursor(cursor.MainTexture, Vector2.zero, CursorMode.Auto);
             }
+        }
+
+        public void GrabIcon(Texture icon)
+        {
+            if (icon.Equals(null))
+            {
+                _cursorIcon.enabled = false;
+                return;
+            }
+
+            _cursorIcon.enabled = true;
+            _cursorIcon.texture = icon;
         }
     } 
 }

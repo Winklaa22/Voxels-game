@@ -1,4 +1,10 @@
 ﻿using System;
+using System.Linq;
+using Assets.Scripts.Blocks.Gallery;
+using Assets.Scripts.Pickable;
+using Assets.Scripts.UI.Gallery;
+using Blocks;
+using Controllers;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -16,6 +22,15 @@ namespace Management.UI
         [Header("Screens")] 
         [SerializeField] private ScreenUI[] _screens;
 
+        private ScreenType _currentScreen;
+        public ScreenType CurrentScreen
+        {
+            get
+            {
+                return _currentScreen;
+            }
+        }
+
         [Header("Rendering chunks")] 
         [SerializeField] private TextMeshProUGUI _generationCounter;
         [SerializeField] private Image _generationBar;
@@ -23,6 +38,19 @@ namespace Management.UI
         [Header("Inventory")]
         [SerializeField] private RectTransform[] _rectSlots;
         [SerializeField] private RawImage[] _slotsImages = new RawImage[6];
+        
+        
+        [Header("Blocks collection")] 
+        [SerializeField] private Transform _galleryContent;
+        [SerializeField] private BlockGallery _galleryIcon;
+        [SerializeField] private GallerySlot _gallerySlot;
+        private BlockGallery _grabbedBlock;
+
+        public BlockGallery GrabbedBlock
+        {
+            get => _galleryIcon;
+        }
+
 
         private void Awake()
         {
@@ -41,7 +69,17 @@ namespace Management.UI
                 var active = screen.Type.Equals(type);
                 
                 screen.SetActive(active);
+
+                _currentScreen = active ? type : _currentScreen;
+
+                if(type == ScreenType.HUD)
+                    InventoryController.Instance.RefreshSlots();
             }
+        }
+        
+        public ScreenUI GetScreen(ScreenType type)
+        {
+            return _screens.First(p => p.Type.Equals(type));
         }
 
         public void SetSlot(int value)
@@ -55,6 +93,23 @@ namespace Management.UI
             }
         }
 
+
+        public void AddGallerySlot(Block item)
+        {
+            var slot = Instantiate(_gallerySlot, _galleryContent) as GallerySlot;
+            slot.ChangeBlockPicture(item);
+        }
+
+        public void GrabInventoryBlock(Block block, Vector3 pos)
+        {
+            _galleryIcon.Grab(pos, block);
+        }
+
+        public bool IsGalleryBlockGrabbed()
+        {
+            return _galleryIcon.IsGrabbed;
+        }
+
         public void SetRenderBarValue(float value)
         {
             _generationCounter.text = Mathf.FloorToInt(value * 100) + "%";
@@ -64,7 +119,9 @@ namespace Management.UI
 
         public void SetInventoryImageActive(int index, Texture2D image)
         {
-            _slotsImages[index].gameObject.SetActive(image != null);
+            Debug.Log("Change slot name");
+            
+            _slotsImages[index].enabled = true;
             _slotsImages[index].texture = image;
         }
     }

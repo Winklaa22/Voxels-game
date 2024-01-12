@@ -258,8 +258,30 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         {
             ""name"": ""Inventory"",
             ""id"": ""a5e45fbf-08bd-4d70-b5c0-9254afe3713a"",
-            ""actions"": [],
-            ""bindings"": []
+            ""actions"": [
+                {
+                    ""name"": ""GrabAndPut"",
+                    ""type"": ""Button"",
+                    ""id"": ""95cde922-cd03-4d13-b6a0-e88ba865e7cc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""fea7185b-2d7e-4261-9248-8c8429c421ef"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GrabAndPut"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -277,6 +299,7 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         m_Player_PauseGame = m_Player.FindAction("PauseGame", throwIfNotFound: true);
         // Inventory
         m_Inventory = asset.FindActionMap("Inventory", throwIfNotFound: true);
+        m_Inventory_GrabAndPut = m_Inventory.FindAction("GrabAndPut", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -433,10 +456,12 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
     // Inventory
     private readonly InputActionMap m_Inventory;
     private IInventoryActions m_InventoryActionsCallbackInterface;
+    private readonly InputAction m_Inventory_GrabAndPut;
     public struct InventoryActions
     {
         private @ActionsManager m_Wrapper;
         public InventoryActions(@ActionsManager wrapper) { m_Wrapper = wrapper; }
+        public InputAction @GrabAndPut => m_Wrapper.m_Inventory_GrabAndPut;
         public InputActionMap Get() { return m_Wrapper.m_Inventory; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -446,10 +471,16 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_InventoryActionsCallbackInterface != null)
             {
+                @GrabAndPut.started -= m_Wrapper.m_InventoryActionsCallbackInterface.OnGrabAndPut;
+                @GrabAndPut.performed -= m_Wrapper.m_InventoryActionsCallbackInterface.OnGrabAndPut;
+                @GrabAndPut.canceled -= m_Wrapper.m_InventoryActionsCallbackInterface.OnGrabAndPut;
             }
             m_Wrapper.m_InventoryActionsCallbackInterface = instance;
             if (instance != null)
             {
+                @GrabAndPut.started += instance.OnGrabAndPut;
+                @GrabAndPut.performed += instance.OnGrabAndPut;
+                @GrabAndPut.canceled += instance.OnGrabAndPut;
             }
         }
     }
@@ -468,5 +499,6 @@ public partial class @ActionsManager : IInputActionCollection2, IDisposable
     }
     public interface IInventoryActions
     {
+        void OnGrabAndPut(InputAction.CallbackContext context);
     }
 }
